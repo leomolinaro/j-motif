@@ -1,5 +1,8 @@
 package motif.brit.config;
 
+
+
+
 public class BritConfig {
 
 	public static boolean AUTO_RESPOND_IF_NO_CHOICES = true;
@@ -9,4 +12,4 @@ public class BritConfig {
 	public static final String INFANTRY_IMAGE_SOURCE = "assets/brit/infantries/{nationId}.png";
 	public static final String CAVALRY_IMAGE_SOURCE = "assets/brit/cavalries/{nationId}.png";
 	
-} // BritConfig
+}
