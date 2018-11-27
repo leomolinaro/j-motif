@@ -1,8 +1,5 @@
 package motif.brit.config;
 
-
-
-
 public class BritConfig {
 
 	public static boolean AUTO_RESPOND_IF_NO_CHOICES = true;
