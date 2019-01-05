@@ -4,8 +4,8 @@ import motif.brit.endpoint.BritContext;
 
 public interface IBritIO {
 
-	public IBritAutoIO getParent ();
+	public IBritAutoIO getParent();
 	
-	public IBritIO getNext (BritContext context);
+	public IBritIO getNext(BritContext context);
 	
-} // IBritIO
+}

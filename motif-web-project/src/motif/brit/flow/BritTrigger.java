@@ -8,50 +8,50 @@ public class BritTrigger {
 
 	private IBritSender sender;
 	
-	public BritTrigger (IBritSender sender) {
+	public BritTrigger(IBritSender sender) {
 		this.sender = sender;
-	} // BritTrigger
+	}
 
 	@Getter private BritRequest<?> pendingRequest;
 	private IBritHumanIO pendingIO;
 	public boolean hasPendingRequest () { return pendingRequest != null; }
 	
-	private void request (IBritHumanIO IO, BritContext context) {
-		BritRequest<?> request = IO.request (context);
+	private void request(IBritHumanIO IO, BritContext context) {
+		BritRequest<?> request = IO.request(context);
 		this.pendingRequest = request;
 		this.pendingIO = IO;
-		sender.send (request, context);
-	} // request
+		sender.send(request, context);
+	}
 	
-	public void receive (BritResponse response, BritContext context) {
-		if (pendingRequest.isValidResponse (response)) {
+	public void receive(BritResponse response, BritContext context) {
+		if (pendingRequest.isValidResponse(response)) {
 			IBritHumanIO IO = this.pendingIO;
-			IO.response (response, context);
+			IO.response(response, context);
 			this.pendingRequest = null;
 			this.pendingIO = null;
-			IBritIO nextIO = IO.getNext (context);
-			execute (nextIO, IO.getParent (), context);
+			IBritIO nextIO = IO.getNext(context);
+			execute(nextIO, IO.getParent(), context);
 		} else {
-			sender.send (pendingRequest, context);
-		} // if - else
-	} // receive
+			sender.send(pendingRequest, context);
+		}
+	}
 	
-	public void start (IBritAutoIO IO, BritContext context) {
-		IBritIO subIO = IO.start (context);
-		execute (subIO, IO, context);
-	} // start
+	public void start(IBritAutoIO IO, BritContext context) {
+		IBritIO subIO = IO.start(context);
+		execute(subIO, IO, context);
+	}
 
-	private void end (IBritAutoIO IO, BritContext context) {
-		IBritIO nextIO = IO.getNext (context);
+	private void end(IBritAutoIO IO, BritContext context) {
+		IBritIO nextIO = IO.getNext(context);
 		IBritAutoIO parentIO = IO.getParent ();
 		if (parentIO != null) {
 			execute (nextIO, parentIO, context);
 		} // if
 	} // end
 	
-	private void execute (IBritIO IO, IBritAutoIO parentIO, BritContext context) {
+	private void execute(IBritIO IO, IBritAutoIO parentIO, BritContext context) {
 		if (IO == null) {
-			end (parentIO, context);
+			end(parentIO, context);
 		} else {
 			if (IO instanceof IBritAutoIO) {
 				start ((IBritAutoIO) IO, context);

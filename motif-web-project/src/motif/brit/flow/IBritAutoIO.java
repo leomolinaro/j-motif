@@ -4,6 +4,8 @@ import motif.brit.endpoint.BritContext;
 
 public interface IBritAutoIO extends IBritIO {
 
-	public abstract IBritIO start (BritContext context);
+	public abstract IBritIO start(BritContext context);
 
-} // IBritAutoIO
+	// public abstract void accept(IBritAutoIOVisitor visitor);
+	
+}
