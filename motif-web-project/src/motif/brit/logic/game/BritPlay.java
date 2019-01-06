@@ -3,26 +3,20 @@ package motif.brit.logic.game;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import motif.brit.endpoint.BritContext;
-import motif.brit.flow.IBritAutoIO;
-import motif.brit.flow.IBritIO;
+import motif.brit.flow.IBritIOVisitor;
 import motif.brit.logic.BritSetup;
-import motif.brit.logic.round.BritRoundTask.ABritRoundIO;
+import motif.brit.logic.round.BritRound.ABritRoundIO;
 import motif.brit.state.BritGame;
 
 public class BritPlay {
 
-	public static abstract class ABritPlayIO implements IBritAutoIO {
-		@Override public IBritIO start (BritContext context) { return new BritPlay ().start (this, context); }
-		public abstract BritGame getGame ();
-	}
-	
 	@RequiredArgsConstructor
-	private class BritRoundIO extends ABritRoundIO {
-		@Override public IBritIO getNext (BritContext context) { return BritPlay.this.next (this, context); }
+	public class BritRoundIO extends ABritRoundIO {
 		@Getter private final int roundNumber;
 		@Getter private final ABritPlayIO parent;
-		@Override public BritGame getGame () { return parent.getGame (); }
-	} // BritRoundIO
+		@Override public BritGame getGame() { return parent.getGame(); }
+		@Override public void accept(IBritIOVisitor visitor) { visitor.visit(this); }
+	}
 	
 	public ABritRoundIO start (ABritPlayIO IO, BritContext context) {
 		BritSetup setup = new BritSetup ();

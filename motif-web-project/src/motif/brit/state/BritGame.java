@@ -13,38 +13,38 @@ import motif.brit.endpoint.BritContext;
 
 public class BritGame {
 	
-	@Expose private HashMap<String, BritPlayer> playerMap = new HashMap<> ();
-	public BritPlayer getPlayer (String playerId) { return this.playerMap.get (playerId); }
-	public void initPlayer (BritPlayer player) { playerMap.put (player.getId (), player); }
-	public Stream<BritPlayer> players () { return playerMap.values ().stream (); }
-	public Stream<BritPlayer> opponents (BritPlayer player) { return players ().filter (p -> p != player); }
+	@Expose private HashMap<String, BritPlayer> playerMap = new HashMap<>();
+	public BritPlayer getPlayer(String playerId) { return this.playerMap.get(playerId); }
+	public void initPlayer(BritPlayer player) { playerMap.put(player.getId(), player); }
+	public Stream<BritPlayer> players() { return playerMap.values().stream(); }
+	public Stream<BritPlayer> opponents(BritPlayer player) { return players().filter(p -> p != player); }
 	
-	@Expose private HashMap<String, BritNation> nationMap = new HashMap<> ();
-	@Expose private ArrayList<String> nationIds = new ArrayList<> ();
-	public void initNation (BritNation nation) { nationMap.put (nation.getId (), nation); nationIds.add (nation.getId ()); }
-	public BritNation getNation (String nationId) { return this.nationMap.get (nationId); }
-	public Iterator<BritNation> getNationIt () {
-		return new Iterator<BritNation> () {
-			private Iterator<String> nationIdIt = nationIds.iterator ();
-			@Override public boolean hasNext () { return nationIdIt.hasNext (); }
-			@Override public BritNation next () { return getNation (nationIdIt.next ()); }
+	@Expose private HashMap<String, BritNation> nationMap = new HashMap<>();
+	@Expose private ArrayList<String> nationIds = new ArrayList<>();
+	public void initNation(BritNation nation) { nationMap.put (nation.getId(), nation); nationIds.add(nation.getId()); }
+	public BritNation getNation(String nationId) { return this.nationMap.get(nationId); }
+	public Iterator<BritNation> getNationIt() {
+		return new Iterator<BritNation>() {
+			private Iterator<String> nationIdIt = nationIds.iterator();
+			@Override public boolean hasNext() { return nationIdIt.hasNext(); }
+			@Override public BritNation next() { return getNation(nationIdIt.next()); }
 		};
-	} // getNationIt
+	}
 
-	@Expose private HashMap<String, BritArea> areaMap = new HashMap<> ();
-	public Stream<BritArea> areas () { return areaMap.values ().stream (); }
-	public Stream<BritLandArea> landAreas () { return areas ().filter (area -> area.isLand ()).map (area -> (BritLandArea) area); }
-	public BritArea getArea (String areaId) { return this.areaMap.get (areaId); }
-	public BritLandArea getLandArea (String areaId) { return (BritLandArea) getArea (areaId); }
-	public BritSeaArea getSeaArea (String areaId) { return (BritSeaArea) getArea (areaId); }
-	@Expose private ArrayList<String> areaIds = new ArrayList<> ();
-	public void initArea (BritArea area) {
-		areaIds.add (area.getId ());
-		areaMap.put (area.getId (), area);
-	} // initArea
+	@Expose private HashMap<String, BritArea> areaMap = new HashMap<>();
+	public Stream<BritArea> areas() { return areaMap.values ().stream(); }
+	public Stream<BritLandArea> landAreas() { return areas ().filter(area -> area.isLand()).map (area -> (BritLandArea) area); }
+	public BritArea getArea(String areaId) { return this.areaMap.get(areaId); }
+	public BritLandArea getLandArea(String areaId) { return (BritLandArea) getArea(areaId); }
+	public BritSeaArea getSeaArea(String areaId) { return (BritSeaArea) getArea(areaId); }
+	@Expose private ArrayList<String> areaIds = new ArrayList<>();
+	public void initArea(BritArea area) {
+		areaIds.add(area.getId());
+		areaMap.put(area.getId(), area);
+	}
 	
-	@Expose private HashMap<String, BritUnit> unitMap = new HashMap<> ();
-	public void initUnit (BritUnit unit) { unitMap.put (unit.getId (), unit); }
+	@Expose private HashMap<String, BritUnit> unitMap = new HashMap<>();
+	public void initUnit (BritUnit unit) { unitMap.put(unit.getId(), unit); }
 	
 	@Expose private BritBattle battle = null;
 	public Stream<BritDie> attDice() { return battle.attDice(); }
@@ -81,41 +81,41 @@ public class BritGame {
 		context.actions().updateBattle(null);
 	}
 	
-	@Expose private ArrayList<BritGameLog.MotifGameLogRow> log = new ArrayList<> ();
-	private BritGameLog logManager = new BritGameLog (log);
-	public BritGameLog log () { return logManager; }
+	@Expose private ArrayList<BritGameLog.MotifGameLogRow> log = new ArrayList<>();
+	private BritGameLog logManager = new BritGameLog(log);
+	public BritGameLog log() { return logManager; }
 	
-	private ArrayList<ArrayList<BritTimelineElement>> timeline = new ArrayList<> (16);
-	public void initTimelineRound (ArrayList<BritTimelineElement> timelineRound) { timeline.add (timelineRound); }
-	public BritTimelineElement getTimelineElement (int round, BritNation nation) {
-		return timeline.get (round - 1).stream ()
-				.filter (e -> e.getNation () == nation)
-				.findAny ()
-				.orElse (null);
-	} // getTimelineElement
+	private ArrayList<ArrayList<BritTimelineElement>> timeline = new ArrayList<>(16);
+	public void initTimelineRound(ArrayList<BritTimelineElement> timelineRound) { timeline.add(timelineRound); }
+	public BritTimelineElement getTimelineElement(int round, BritNation nation) {
+		return timeline.get(round - 1).stream()
+				.filter(e -> e.getNation() == nation)
+				.findAny()
+				.orElse(null);
+	}
 	
 	@Expose private String round;
-	public void setRound (String round, BritContext context) {
+	public void setRound(String round, BritContext context) {
 		this.round = round;
-		context.actions ().setPhase (round, nationId, phase);
-	} // setRound
+		context.actions().setPhase(round, nationId, phase);
+	}
 	
 	@Expose private String nationId;
-	public void setNationId (String nationId, BritContext context) {
+	public void setNationId(String nationId, BritContext context) {
 		this.nationId = nationId;
-		context.actions ().setPhase (round, nationId, phase);
-	} // setNationId
+		context.actions().setPhase(round, nationId, phase);
+	}
 	
 	@Expose @Getter private AngPhase phase;
-	public void setPhase (AngPhase phase, BritContext context) {
+	public void setPhase(AngPhase phase, BritContext context) {
 		this.phase = phase;
-		context.actions ().setPhase (round, nationId, phase);
-	} // setPhase
+		context.actions().setPhase(round, nationId, phase);
+	}
 	
 	@Expose @Getter private boolean started = false;
-	public void setStarted (boolean started, BritContext context) {
+	public void setStarted(boolean started, BritContext context) {
 		this.started = started;
-		context.actions ().setGameStarted (started);
+		context.actions().setGameStarted(started);
 	}
 	
 }

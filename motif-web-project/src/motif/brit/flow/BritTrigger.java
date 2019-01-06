@@ -29,7 +29,7 @@ public class BritTrigger {
 			IO.response(response, context);
 			this.pendingRequest = null;
 			this.pendingIO = null;
-			IBritIO nextIO = IO.getNext(context);
+			IBritIO nextIO = BritIONexter.next(IO, context);
 			execute(nextIO, IO.getParent(), context);
 		} else {
 			sender.send(pendingRequest, context);
@@ -37,12 +37,12 @@ public class BritTrigger {
 	}
 	
 	public void start(IBritAutoIO IO, BritContext context) {
-		IBritIO subIO = IO.start(context);
+		IBritIO subIO = BritAutoIOStarter.start(IO, context);
 		execute(subIO, IO, context);
 	}
 
 	private void end(IBritAutoIO IO, BritContext context) {
-		IBritIO nextIO = IO.getNext(context);
+		IBritIO nextIO = BritIONexter.next(IO, context);
 		IBritAutoIO parentIO = IO.getParent ();
 		if (parentIO != null) {
 			execute (nextIO, parentIO, context);

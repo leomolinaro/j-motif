@@ -6,8 +6,8 @@ import motif.brit.flow.BritRequest;
 import motif.brit.flow.BritResponse;
 import motif.brit.flow.BritTrigger;
 import motif.brit.flow.IBritAutoIO;
-import motif.brit.flow.IBritIO;
-import motif.brit.logic.game.BritPlay.ABritPlayIO;
+import motif.brit.flow.IBritIOVisitor;
+import motif.brit.logic.game.ABritPlayIO;
 import motif.brit.logic.init.BritInitializer;
 import motif.brit.state.BritGame;
 import motif.brit.state.BritPlayer;
@@ -22,11 +22,12 @@ import motif.shared.exceptions.MotifUnexpectedError;
 public class BritEndpoint implements IBritSender {
 	
 	@RequiredArgsConstructor
-	private class BritGameIO extends ABritPlayIO {
-		@Override public IBritIO getNext (BritContext context) { return null; }
-		@Override public IBritAutoIO getParent () { return null; }
+	public class BritGameIO extends ABritPlayIO {
+		@Override public void accept(IBritIOVisitor visitor) { visitor.visit(this); }
+		// @Override public IBritIO getNext(BritContext context) { return null; }
+		@Override public IBritAutoIO getParent() { return null; }
 		@Getter private final BritGame game;
-	} // BritRoundIO
+	}
 	
 	private BritGame game = null;
 	private BritTrigger trigger;

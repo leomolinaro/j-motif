@@ -52,21 +52,22 @@ public class BritNation {
 	
 	@Expose @Getter @ToString.Include private String name;
 	@Expose private BritColor color;
-	private int sort;
+	@Expose private int sort;
 	
 	@Expose private String cardImageSource;
 	
 	@Getter private BritPlayer controller;
 	
-	public BritNation (int sort, String id, String name, BritColor color, BritPlayer controller) {
+	public BritNation(int sort, String id, String name, BritColor color, BritPlayer controller) {
 		this.sort = sort;
 		this.id = id;
 		this.name = name;
 		this.color = color;
 		this.controller = controller;
-		this.cardImageSource = BritConfig.NATION_CARD_IMAGE_SOURCE.replace ("{id}", id);
-		this.popMarkerImageSource = isRoman () ? "" : BritConfig.POP_MARKER_IMAGE_SOURCE.replace ("{id}", id);
-	} // BritNation
+		this.cardImageSource = BritConfig.NATION_CARD_IMAGE_SOURCE.replace("{id}", id);
+		this.popMarkerImageSource = isRoman () ? "" : BritConfig.POP_MARKER_IMAGE_SOURCE.replace("{id}", id);
+		this.infantryImageSource = BritConfig.INFANTRY_IMAGE_SOURCE.replace("{nationId}", id);
+	}
 	
 	@Expose private int victoryPoints = 0;
 	
@@ -75,6 +76,8 @@ public class BritNation {
 	@Expose private int popMarkerSvgX;
 	@Expose private int popMarkerSvgY;
 	@Expose @Getter private boolean popMarkerActive = false;
+	
+	@Expose private String infantryImageSource;
 
 	public void setPopulationMarker (int populationMarker, BritContext context) {
 		this.popMarker = populationMarker;
@@ -82,7 +85,7 @@ public class BritNation {
 		this.popMarkerSvgY = 1227 + ((sort - 1) / 4) * 15;
 		this.popMarkerActive = true;
 		context.actions ().updateNation (this);
-	} // setPopulationMarker
+	}
 
 	public static final String ROMANS = "romans";
 	public static final String ROMANO_BRITISH = "romano_british";
