@@ -9,7 +9,7 @@ import com.google.gson.annotations.Expose;
 import lombok.Getter;
 import lombok.ToString;
 import motif.brit.endpoint.BritContext;
-import motif.brit.flow.IBritModel;
+import motif.brit.logic.flow.IBritModel;
 
 @ToString(onlyExplicitlyIncluded = true)
 public abstract class BritArea implements IBritModel {

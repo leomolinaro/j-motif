@@ -1,6 +1,6 @@
 package motif.brit.endpoint;
 
-import motif.brit.flow.BritRequest;
+import motif.brit.logic.flow.BritRequest;
 
 public interface IBritSender {
 

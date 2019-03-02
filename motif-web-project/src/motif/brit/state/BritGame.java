@@ -5,13 +5,18 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.stream.Stream;
 
+import org.bson.types.ObjectId;
+
 import com.google.gson.annotations.Expose;
 
 import lombok.Getter;
+import lombok.Setter;
 import motif.brit.ang.enums.AngPhase;
 import motif.brit.endpoint.BritContext;
 
 public class BritGame {
+	
+	@Getter @Setter private ObjectId id;
 	
 	@Expose private HashMap<String, BritPlayer> playerMap = new HashMap<>();
 	public BritPlayer getPlayer(String playerId) { return this.playerMap.get(playerId); }
@@ -93,6 +98,10 @@ public class BritGame {
 				.findAny()
 				.orElse(null);
 	}
+	
+	@Getter private Integer roundNumber;
+	public void firstRoundNumber() { roundNumber = 1; }
+	public void nextRoundNumber() { roundNumber++; }
 	
 	@Expose private String round;
 	public void setRound(String round, BritContext context) {

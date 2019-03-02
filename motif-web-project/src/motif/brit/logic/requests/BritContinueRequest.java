@@ -1,27 +1,26 @@
 package motif.brit.logic.requests;
 
+import lombok.RequiredArgsConstructor;
 import motif.brit.endpoint.BritContext;
-import motif.brit.flow.BritRequest;
-import motif.brit.flow.BritResponse;
-import motif.brit.flow.IBritHumanIO;
+import motif.brit.logic.flow.BritRequest;
+import motif.brit.logic.flow.BritResponse;
+import motif.brit.logic.flow.IBritFlowDecision;
 import motif.brit.state.BritPlayer;
 
-public class BritContinueRequest {
+@RequiredArgsConstructor
+public abstract class BritContinueRequest implements IBritFlowDecision {
 
-	public static abstract class ABritContinueRequestIO implements IBritHumanIO {
-		@Override public BritRequest<?> request(BritContext context) { return new BritContinueRequest().getRequest(this, context); }
-		@Override public void response(BritResponse response, BritContext context) { new BritContinueRequest().response(response, this, context); }
-		public abstract String getText();
-		public abstract BritPlayer getPlayer();
-	}
+	private final String text;
+	private final BritPlayer player;
 	
-	public BritRequest<?> getRequest (ABritContinueRequestIO IO, BritContext context) {
-		BritRequest<?> pendingRequest = BritRequest.createContinueRequest (IO.getPlayer (), IO.getText());
+	@Override
+	public BritRequest<?> request(BritContext context) {
+		BritRequest<?> pendingRequest = BritRequest.createContinueRequest(this.player, this.text);
 		pendingRequest.addContinueOption ();
 		return pendingRequest;
 	}
 
-	public void response (BritResponse response, ABritContinueRequestIO IO, BritContext context) {
+	public void response (BritResponse response, BritContext context) {
 	}
 
 }

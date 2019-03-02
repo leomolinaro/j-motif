@@ -1,82 +1,70 @@
 package motif.brit.logic.requests;
 
+import java.util.HashMap;
 import java.util.List;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import motif.brit.endpoint.BritContext;
-import motif.brit.flow.IBritAutoIO;
-import motif.brit.flow.IBritAutoIOVisitor;
-import motif.brit.flow.IBritIO;
-import motif.brit.flow.IBritIOVisitor;
-import motif.brit.logic.requests.BritSelectAreaSvgRequest.ABritSelectAreaSvgRequestIO;
-import motif.brit.logic.requests.BritSelectUnitRequest.ABritSelectUnitRequestIO;
+import motif.brit.logic.flow.IBritFlowProcess;
+import motif.brit.logic.flow.IBritFlowStep;
+import motif.brit.logic.requests.BritSelectAreaSvgRequest.IBritFlowWithSelectAreaSvg;
+import motif.brit.logic.requests.BritSelectUnitRequest.IBritFlowWithSelectUnit;
 import motif.brit.state.BritArea;
 import motif.brit.state.BritPlayer;
 import motif.brit.state.BritUnit;
 
-public class BritSelectUnitAreaSvgRequests<U extends BritUnit, A extends BritArea> {
+@RequiredArgsConstructor
+public abstract class BritSelectUnitAreaSvgRequests<U extends BritUnit, A extends BritArea> implements
+		IBritFlowProcess,
+		IBritFlowWithSelectAreaSvg<A>,
+		IBritFlowWithSelectUnit<U> {
 	
-	public static abstract class ABritSelectUnitAreaSvgRequestsIO<U extends BritUnit, A extends BritArea> implements IBritAutoIO {
-		// @Override public IBritIO start(BritContext context) { return new BritSelectUnitAreaSvgRequests<U, A>().start(this, context); }
-		@Override public void accept(IBritAutoIOVisitor visitor) { visitor.visit(this); }
-		public abstract List<U> getAvailableUnits();
-		public abstract String getSelectUnitText();
-		public abstract BritPlayer getPlayer();
-		public abstract boolean canPass();
-		public abstract void setUnit(U unit);
-		public abstract String getSelectAreaText();
-		public abstract void setArea(A area);
-		public abstract List<A> getAvailableAreas();
-		public abstract void setSvgX(double svgX);
-		public abstract void setSvgY(double svgY);
+	public abstract String getSelectAreaText(U unit);
+	
+	private final List<U> availableUnits;
+	private final String selectUnitText;
+	protected final BritPlayer player;
+	private final boolean canPass;
+	private final HashMap<String, List<A>> availableAreasPerUnit;
+	
+	@Getter private U unit;
+	@Getter private A area;
+	@Getter private double svgX;
+	@Getter private double svgY;
+
+	@Override
+	public IBritFlowStep start(BritContext context) {
+		return new BritSelectUnitRequest<U>(
+				this.availableUnits, 
+				this.selectUnitText,
+				this.player, 
+				this.canPass,
+				this
+		);
 	}
 	
-	@RequiredArgsConstructor
-	public class BritSelectUnitRequestIO extends ABritSelectUnitRequestIO<U> {
-		// @Override public IBritIO getNext(BritContext context) { return BritSelectUnitAreaSvgRequests.this.afterUnitIsSelected(unit, parent, context); }
-		@Override public void accept(IBritIOVisitor visitor) { visitor.visit(this); }
-		@Getter private final ABritSelectUnitAreaSvgRequestsIO<U, A> parent;
-		@Override public List<U> getAvailableUnits() { return parent.getAvailableUnits(); }
-		@Override public String getText() { return parent.getSelectUnitText(); }
-		@Override public BritPlayer getPlayer() { return parent.getPlayer(); }
-		@Override public boolean canPass() { return parent.canPass(); }
-		@Getter @Setter private U unit;
-	}
-	
-	@RequiredArgsConstructor
-	public class BritSelectAreaSvgRequestIO extends ABritSelectAreaSvgRequestIO<A> {
-		// @Override public IBritIO getNext(BritContext context) { return BritSelectUnitAreaSvgRequests.this.afterAreaIsSelected(area, svgX, svgY, parent, context); }
-		@Override public void accept(IBritIOVisitor visitor) { visitor.visit(this); }
-		@Getter private final ABritSelectUnitAreaSvgRequestsIO<U, A> parent;
-		@Override public List<A> getAvailableAreas() { return parent.getAvailableAreas(); }
-		@Override public String getText() { return parent.getSelectAreaText(); }
-		@Override public BritPlayer getPlayer() { return parent.getPlayer(); }
-		@Override public boolean canPass() { return parent.canPass(); }
-		@Getter @Setter private A area;
-		@Getter @Setter private double svgX;
-		@Getter @Setter private double svgY;
-	}
-
-	public IBritIO start(ABritSelectUnitAreaSvgRequestsIO<U, A> IO, BritContext context) {
-		return new BritSelectUnitRequestIO(IO);
-	}
-
-	public IBritIO afterAreaIsSelected(A area, double svgX, double svgY, ABritSelectUnitAreaSvgRequestsIO<U, A> IO, BritContext context) {
-		IO.setArea(area);
-		IO.setSvgX(svgX);
-		IO.setSvgY(svgY);
-		return null;
-	}
-
-	public IBritIO afterUnitIsSelected(U unit, ABritSelectUnitAreaSvgRequestsIO<U, A> IO, BritContext context) {
-		if (unit == null) {
+	@Override
+	public IBritFlowStep after(BritSelectUnitRequest<U> selectUnit, BritContext context) {
+		if (selectUnit.getUnit() == null) {
 			return null;
 		} else {
-			IO.setUnit(unit);
-			return new BritSelectAreaSvgRequestIO(IO);
+			this.unit = selectUnit.getUnit();
+			return new BritSelectAreaSvgRequest<A>(
+					this.availableAreasPerUnit.get(unit.getId()),
+					this.getSelectAreaText(this.unit),
+					this.player,
+					this.canPass,
+					this);
 		}
 	}
 
+	@Override
+	public IBritFlowStep after(BritSelectAreaSvgRequest<A> selectAreaSvg, BritContext context) {
+		this.area = selectAreaSvg.getArea();
+		this.svgX = selectAreaSvg.getSvgX();
+		this.svgY = selectAreaSvg.getSvgY();
+		return null;
+	}
+	
 }

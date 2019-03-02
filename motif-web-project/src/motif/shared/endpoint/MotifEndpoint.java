@@ -16,7 +16,7 @@ import motif.agot.endpoint.AgotGson;
 import motif.agot.flow.request.AgotResponse;
 import motif.brit.endpoint.BritEndpoint;
 import motif.brit.endpoint.BritGson;
-import motif.brit.flow.BritResponse;
+import motif.brit.logic.flow.BritResponse;
 import motif.shared.endpoint.messages.MessageDecoder;
 import motif.shared.endpoint.messages.MessageEncoder;
 import motif.shared.endpoint.messages.MessageIn;

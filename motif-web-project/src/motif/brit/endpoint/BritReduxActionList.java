@@ -7,7 +7,7 @@ import com.google.gson.annotations.Expose;
 import lombok.RequiredArgsConstructor;
 import motif.brit.ang.enums.AngPhase;
 import motif.brit.endpoint.BritReduxAction.ActionPayload;
-import motif.brit.flow.BritRequest;
+import motif.brit.logic.flow.BritRequest;
 import motif.brit.state.BritArea;
 import motif.brit.state.BritBattle;
 import motif.brit.state.BritGame;

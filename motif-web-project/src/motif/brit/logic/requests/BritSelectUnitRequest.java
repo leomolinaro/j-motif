@@ -2,38 +2,44 @@ package motif.brit.logic.requests;
 
 import java.util.List;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import motif.brit.endpoint.BritContext;
-import motif.brit.flow.BritRequest;
-import motif.brit.flow.BritRequest.BritChoice;
-import motif.brit.flow.BritResponse;
-import motif.brit.flow.IBritHumanIO;
+import motif.brit.logic.flow.BritRequest;
+import motif.brit.logic.flow.BritResponse;
+import motif.brit.logic.flow.IBritFlowDecision;
+import motif.brit.logic.flow.IBritFlowProcess;
+import motif.brit.logic.flow.IBritFlowStep;
+import motif.brit.logic.flow.BritRequest.BritChoice;
 import motif.brit.state.BritPlayer;
 import motif.brit.state.BritUnit;
 
-public class BritSelectUnitRequest {
+@RequiredArgsConstructor
+public class BritSelectUnitRequest<U extends BritUnit> implements IBritFlowDecision {
 
-	public static abstract class ABritSelectUnitRequestIO<U extends BritUnit> implements IBritHumanIO {
-		@Override public BritRequest<?> request(BritContext context) { return new BritSelectUnitRequest().getRequest(this, context); }
-		@Override public void response(BritResponse response, BritContext context) { new BritSelectUnitRequest().response(response, this, context); }
-		public abstract List<U> getAvailableUnits();
-		public abstract String getText();
-		public abstract BritPlayer getPlayer();
-		public abstract boolean canPass();
-		private BritRequest<U> pendingRequest;
-		public abstract void setUnit(U unit);
-	}
+	private final List<U> availableUnits;
+	private final String text;
+	private final BritPlayer player;
+	private final boolean canPass;
 	
-	public <U extends BritUnit> BritRequest<U> getRequest(ABritSelectUnitRequestIO<U> IO, BritContext context) {
-		IO.pendingRequest = BritRequest.createSelectUnitRequest (IO.getPlayer(), IO.getAvailableUnits(), IO.getText());
-		if (IO.canPass()) { IO.pendingRequest.addPassOption(); }
-		return IO.pendingRequest;
+	public interface IBritFlowWithSelectUnit<U extends BritUnit> extends IBritFlowProcess { public IBritFlowStep after(BritSelectUnitRequest<U> selectUnit, BritContext context); }
+	@Getter private final IBritFlowWithSelectUnit<U> parent;
+	@Override public IBritFlowStep next(BritContext context) { return this.parent.after(this, context); }
+	
+	private BritRequest<U> pendingRequest;
+	@Getter private U unit;
+	
+	public BritRequest<U> request(BritContext context) {
+		this.pendingRequest = BritRequest.createSelectUnitRequest(this.player, this.availableUnits, this.text);
+		if (this.canPass) { this.pendingRequest.addPassOption(); }
+		return this.pendingRequest;
 	}
 
-	public <U extends BritUnit> void response(BritResponse response, ABritSelectUnitRequestIO<U> IO, BritContext context) {
-		BritChoice<U> choice = IO.pendingRequest.getChoice(response);
-		if (!(IO.canPass() && choice.isPass())) {
-			U unit = IO.pendingRequest.getChoice(response).getModel();
-			IO.setUnit(unit);			
+	public void response(BritResponse response, BritContext context) {
+		BritChoice<U> choice = this.pendingRequest.getChoice(response);
+		if (!(this.canPass && choice.isPass())) {
+			U unit = this.pendingRequest.getChoice(response).getModel();
+			this.unit = unit;			
 		}
 	}
 

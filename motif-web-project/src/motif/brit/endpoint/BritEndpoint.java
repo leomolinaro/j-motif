@@ -1,14 +1,11 @@
 package motif.brit.endpoint;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import motif.brit.flow.BritRequest;
-import motif.brit.flow.BritResponse;
-import motif.brit.flow.BritTrigger;
-import motif.brit.flow.IBritAutoIO;
-import motif.brit.flow.IBritIOVisitor;
-import motif.brit.logic.game.ABritPlayIO;
+import motif.brit.logic.flow.BritRequest;
+import motif.brit.logic.flow.BritResponse;
+import motif.brit.logic.flow.BritTrigger;
 import motif.brit.logic.init.BritInitializer;
+import motif.brit.logic.play.BritPlay;
+import motif.brit.state.BritDatabase;
 import motif.brit.state.BritGame;
 import motif.brit.state.BritPlayer;
 import motif.shared.endpoint.MotifEndpoint;
@@ -21,14 +18,6 @@ import motif.shared.exceptions.MotifUnexpectedError;
 
 public class BritEndpoint implements IBritSender {
 	
-	@RequiredArgsConstructor
-	public class BritGameIO extends ABritPlayIO {
-		@Override public void accept(IBritIOVisitor visitor) { visitor.visit(this); }
-		// @Override public IBritIO getNext(BritContext context) { return null; }
-		@Override public IBritAutoIO getParent() { return null; }
-		@Getter private final BritGame game;
-	}
-	
 	private BritGame game = null;
 	private BritTrigger trigger;
 
@@ -36,18 +25,21 @@ public class BritEndpoint implements IBritSender {
 	public static BritEndpoint getInstance () {
 		if (instance == null) { instance = new BritEndpoint (); }
 		return instance;
-	} // getInstance
+	}
 	private BritEndpoint () {};
 	
 	private BritGame init () {
 		BritInitializer initializer = new BritInitializer ();
 		game = initializer.init ();
 		return game;
-	} // init	
+	}
 
 	public void initState (MotifSession session) {
 		BritContext context = BritContext.create (session);
-		if (game == null) { game = init (); } 
+		if (game == null) {
+			game = init ();
+			new BritDatabase().insert(game);
+		} 
 		MessageOut message = new MessageOut (MotifApp.BRIT);
 		message.setSession (session);
 		message.setType (MessageOut.BRIT_REDUX_ACTION_LIST);
@@ -56,26 +48,26 @@ public class BritEndpoint implements IBritSender {
 			BritRequest<?> pendingRequest = trigger.getPendingRequest ();
 			if (context.getPlayerId ().equals (pendingRequest.getPlayer ().getId ())) {
 				request = pendingRequest;
-			} // if			
-		} // if
+			}		
+		}
 		context.actions ().initState (game, context, request); 
 		message.setData (context.actions ());
 		MotifEndpoint.send (message, session);
-	} // initState
+	}
 	
-	public void start (MotifSession session) {
-		BritContext context = BritContext.create (session);
-		if (!game.isStarted ()) {
-			game.setStarted (true, context);
-			trigger = new BritTrigger (this);
-			trigger.start (new BritGameIO (game), context);
-		} // if
-	} // start
+	public void start(MotifSession session) {
+		BritContext context = BritContext.create(session);
+		if (!game.isStarted()) {
+			game.setStarted(true, context);
+			trigger = new BritTrigger(this);
+			trigger.start(new BritPlay(game), context);
+		}
+	}
 
 	public void actionChoice (BritResponse response, MotifSession session) throws MotifUnexpectedError {
 		BritContext context = BritContext.create (session);
 		trigger.receive (response, context);
-	} // actionChoice
+	}
 	
 	public void send (BritRequest<?> request, BritContext context) {
 		BritPlayer player = request.getPlayer ();
@@ -91,7 +83,7 @@ public class BritEndpoint implements IBritSender {
 				oppMessage.setData (actions);
 				MotifEndpoint.send (oppMessage, oppUser);
 				actions.removeLast ();
-			} // if
+			}
 		});
 		
 		if (user != null) {
@@ -102,8 +94,8 @@ public class BritEndpoint implements IBritSender {
 			message.setData (actions);
 			MotifEndpoint.send (message, user);
 			actions.removeLast ();
-		} // if
+		}
 		
-	} // send
+	}
 	
-} // AgotEndpoint
+}
