@@ -7,11 +7,11 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class MongoWrap {
 
-	private final MongoTemplate mongoTemplate;
+//	private MongoTemplate mongoTemplate;
 	
 	@Autowired
     public MongoWrap(MongoTemplate mongoTemplate) {
-        this.mongoTemplate = mongoTemplate;
+//        this.mongoTemplate = mongoTemplate;
     }
 	
 }
