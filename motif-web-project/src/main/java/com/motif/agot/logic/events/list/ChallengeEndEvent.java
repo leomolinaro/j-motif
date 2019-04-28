@@ -1,22 +1,22 @@
 package com.motif.agot.logic.events.list;
 
 import com.motif.agot.endpoint.AgotContext;
-import com.motif.agot.flow.task.IAgotTask;
-import com.motif.agot.logic.events.Event;
+import com.motif.agot.logic.events.AgotEvent;
 import com.motif.agot.logic.events.IEventVisitor;
+import com.motif.agot.logic.flow.IAgotFlowStep;
 import com.motif.agot.state.AgotGame;
 
-public class ChallengeEndEvent extends Event {
+public class ChallengeEndEvent extends AgotEvent {
 
-	public ChallengeEndEvent (AgotGame game) {
-		super (game);
-	} // ChallengeEndEvent
+	public ChallengeEndEvent(AgotGame game) {
+		super(game);
+	}
 
 	@Override
-	public IAgotTask resolveEffect (AgotContext context) {
+	public IAgotFlowStep start(AgotContext context) {
 		return null;
-	} // resolveEffect
+	}
 
 	@Override public boolean accept (IEventVisitor visitor) { return visitor.visit (this); }
 
-} // ChallengeEndEvent
+}

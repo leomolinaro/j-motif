@@ -3,9 +3,10 @@ package com.motif.agot.endpoint;
 import com.motif.agot.ang.enums.AngFaction;
 import com.motif.agot.ang.sets.CoreSet;
 import com.motif.agot.endpoint.clientstate.AgotReduxActionList;
-import com.motif.agot.flow.request.AgotRequest;
-import com.motif.agot.flow.request.AgotResponse;
-import com.motif.agot.logic.GameFlow;
+import com.motif.agot.logic.AgotPlay;
+import com.motif.agot.logic.flow.AgotResponse;
+import com.motif.agot.logic.flow.AgotTrigger;
+import com.motif.agot.logic.flow.IAgotFlowRequest;
 import com.motif.agot.state.AgotGame;
 import com.motif.agot.state.AgotPlayer;
 import com.motif.shared.endpoint.MotifEndpoint;
@@ -15,14 +16,13 @@ import com.motif.shared.endpoint.sessions.MotifSession;
 import com.motif.shared.endpoint.sessions.MotifSessionManager;
 import com.motif.shared.endpoint.sessions.MotifUser;
 import com.motif.shared.exceptions.MotifUnexpectedError;
-import com.motif.shared.flow.IMotifSender;
-import com.motif.shared.flow.TaskTrigger;
 
-public class AgotEndpoint implements IMotifSender<AgotContext, AgotRequest<?>> {
+public class AgotEndpoint implements IAgotSender {
 
 	private AgotGame game = null;
+	private AgotTrigger trigger;
+
 	private boolean gameStarted = false;
-	private TaskTrigger<AgotContext, AgotRequest<?>, AgotResponse> trigger;
 
 	private static AgotEndpoint instance;
 	public static AgotEndpoint getInstance () {
@@ -151,10 +151,10 @@ public class AgotEndpoint implements IMotifSender<AgotContext, AgotRequest<?>> {
 		MessageOut message = new MessageOut (MotifApp.AGOT);
 		message.setSession (session);
 		message.setType (MessageOut.AGOT_REDUX_ACTION_LIST);
-		AgotRequest<?> request = null;
-		if (trigger != null && trigger.hasPendingRequest ()) {
-			AgotRequest<?> pendingRequest = trigger.getPendingRequest ();
-			if (context.getPlayer ().equals (pendingRequest.getPlayer ().getUsername ())) {
+		IAgotFlowRequest request = null;
+		if (trigger != null && trigger.hasPendingDecision()) {
+			var pendingRequest = trigger.getPendingDecision();
+			if (context.getPlayerId ().equals (pendingRequest.getPlayer ().getUsername())) {
 				request = pendingRequest;
 			} // if			
 		} // if
@@ -167,8 +167,8 @@ public class AgotEndpoint implements IMotifSender<AgotContext, AgotRequest<?>> {
 		AgotContext context = AgotContext.create (session);
 		if (!gameStarted) {
 			gameStarted = true;
-			trigger = new TaskTrigger<AgotContext, AgotRequest<?>, AgotResponse> (this);
-			trigger.start (new GameFlow (game), context);
+			trigger = new AgotTrigger (this);
+			trigger.start (new AgotPlay (game), context);
 		} // if
 	} // start
 
@@ -178,7 +178,7 @@ public class AgotEndpoint implements IMotifSender<AgotContext, AgotRequest<?>> {
 	} // actionChoice
 	
 	@Override
-	public void send (AgotRequest<?> request, AgotContext context) {
+	public void send (IAgotFlowRequest request, AgotContext context) {
 		AgotPlayer player = request.getPlayer ();
 		MotifUser user = MotifSessionManager.getInstance ().getUser (player.getUsername ());
 		AgotPlayer oppPlayer = player.getNextPlayer ();

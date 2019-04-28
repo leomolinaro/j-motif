@@ -23,7 +23,7 @@ import com.motif.agot.ang.text.triggeringconditions.AngYouMarshallThis;
 import com.motif.agot.ang.text.triggeringconditions.AngYouWinDominance;
 import com.motif.agot.ang.text.triggeringconditions.IAngTriggeringCondition;
 import com.motif.agot.ang.text.triggeringconditions.IAngTriggeringConditionVisitor;
-import com.motif.agot.logic.events.Event;
+import com.motif.agot.logic.events.AgotEvent;
 import com.motif.agot.logic.events.IEventVisitor;
 import com.motif.agot.logic.events.list.ApplyLastingEffectEvent;
 import com.motif.agot.logic.events.list.ChallengeEndEvent;
@@ -58,7 +58,7 @@ import com.motif.agot.state.cards.TextCard;
 
 public class TriggerChecker implements IEventVisitor {
 
-	public static boolean canTrigger (Event event, IAngTriggeringCondition trigCond, TextCard<?> trigCard, AgotPlayer trigPlayer, AgotGame game) {
+	public static boolean canTrigger (AgotEvent event, IAngTriggeringCondition trigCond, TextCard<?> trigCard, AgotPlayer trigPlayer, AgotGame game) {
 		TriggerChecker checker = new TriggerChecker (trigCard, trigPlayer, game);
 		boolean hasEventChecker = event.accept (checker);
 		if (hasEventChecker) {
@@ -85,7 +85,7 @@ public class TriggerChecker implements IEventVisitor {
 		return Subjects.test (subject, cardFilter, predicate, null, trigCard, you, game);
 	} // checkSubject
 	
-	private abstract class EventTrigChecker<E extends Event> implements IAngTriggeringConditionVisitor {
+	private abstract class EventTrigChecker<E extends AgotEvent> implements IAngTriggeringConditionVisitor {
 		protected E event;
 		protected EventTrigChecker (E event) {
 			this.event = event;
@@ -96,7 +96,7 @@ public class TriggerChecker implements IEventVisitor {
 		} // visit
 	} // EventTriggerChecker
 	
-	private abstract class StandardEventTrigChecker<E extends Event> extends EventTrigChecker<E> {
+	private abstract class StandardEventTrigChecker<E extends AgotEvent> extends EventTrigChecker<E> {
 		protected StandardEventTrigChecker (E event) { super (event); }
 		@Override public boolean visit (AngYouMarshallThis trigCond) { return false; }
 		@Override public boolean visit (AngPhaseBegins trigCond) { return false; }
@@ -260,7 +260,7 @@ public class TriggerChecker implements IEventVisitor {
 	private class MultiEventTrigChecker extends EventTrigChecker<MultiEvent> {
 		protected MultiEventTrigChecker (MultiEvent event) { super (event); }
 		private boolean canTrigger (IAngTriggeringCondition trigCond) {
-			List<? extends Event> events = event.getEvents ();
+			List<? extends AgotEvent> events = this.event.getEvents ();
 			return events.stream ()
 			.anyMatch (event -> {
 				TriggerChecker checker = TriggerChecker.this;
@@ -269,7 +269,7 @@ public class TriggerChecker implements IEventVisitor {
 				boolean canTrigger = trigCond.accept (eventChecker);
 				return canTrigger;
 			});
-		} // canTrigger
+		}
 		@Override public boolean visit (AngYouMarshallThis trigCond) { return canTrigger (trigCond); }
 		@Override public boolean visit (AngPhaseBegins trigCond) { return canTrigger (trigCond); }
 		@Override public boolean visit (AngPhaseEnds trigCond) { return canTrigger (trigCond); }

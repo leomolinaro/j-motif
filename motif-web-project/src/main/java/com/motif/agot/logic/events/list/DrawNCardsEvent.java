@@ -1,31 +1,33 @@
 package com.motif.agot.logic.events.list;
 
 import com.motif.agot.endpoint.AgotContext;
-import com.motif.agot.flow.task.IAgotTask;
-import com.motif.agot.logic.events.Event;
+import com.motif.agot.logic.events.AgotEvent;
 import com.motif.agot.logic.events.IEventVisitor;
+import com.motif.agot.logic.flow.IAgotFlowStep;
 import com.motif.agot.state.AgotGame;
 import com.motif.agot.state.AgotPlayer;
 
-public class DrawNCardsEvent extends Event {
+public class DrawNCardsEvent extends AgotEvent {
 
-	private int n;
-	private AgotPlayer player;
+	private final int n;
+	private final AgotPlayer player;
 
-	public DrawNCardsEvent (int n, AgotPlayer player, AgotGame game) {
-		super (game);
+	public DrawNCardsEvent(int n, AgotPlayer player, AgotGame game) {
+		super(game);
 		this.n = n;
 		this.player = player;
-	} // DrawNCardsEvent
+	}
 
 	@Override
-	public IAgotTask resolveEffect (AgotContext context) {
-		int nCards = Math.min (player.drawDeckSize (), n);
-		for (int i = 0; i < nCards; i++) { player.draw (context); }
-		game.log ().drawsNCards (player, nCards, context);
+	public IAgotFlowStep start(AgotContext context) {
+		int nCards = Math.min(this.player.drawDeckSize(), this.n);
+		for (int i = 0; i < nCards; i++) {
+			this.player.draw(context);
+		}
+		this.game.log().drawsNCards(this.player, nCards, context);
 		return null;
-	} // resolveEffect
+	}
 
 	@Override public boolean accept (IEventVisitor visitor) { return visitor.visit (this); }
 
-} // DrawNCardsEvent
+}

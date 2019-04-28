@@ -6,22 +6,29 @@ import java.util.stream.Stream;
 import com.motif.agot.ang.enums.AngIcon;
 import com.motif.agot.state.cards.CharacterCard;
 
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor
 public class Challenge {
 
-	private AngIcon type;
+	private final AngIcon type;
 	public boolean isType (AngIcon icon) { return type.equals (icon); }
 	public AngIcon type () { return type; }
-	private AgotPlayer attacker;
+	
+	public final AgotPlayer attacker;
 	public AgotPlayer attacker () { return attacker; }
-	private ArrayList<CharacterCard> attackers = new ArrayList<CharacterCard> ();
+	
+	public final AgotPlayer defender;
+	public AgotPlayer defender () { return defender; }
+	
+	private final ArrayList<CharacterCard> attackers;
 	public Stream<CharacterCard> attackers () { return attackers.stream (); }
 	public boolean isAttacker (CharacterCard card) { return attackers.contains (card); }
-	private ArrayList<CharacterCard> bypassed = new ArrayList<CharacterCard> ();
+	
+	private final ArrayList<CharacterCard> bypassed;
 	public Stream<CharacterCard> bypassed () { return bypassed.stream (); }
 	public boolean isBypassed (CharacterCard card) { return bypassed.contains (card); }
-	public AgotPlayer defender;
-	public AgotPlayer defender () { return defender; }
-
+	
 	private ArrayList<CharacterCard> defenders = new ArrayList<CharacterCard> ();
 	public void addDefender (CharacterCard defender) { this.defenders.add (defender); }
 	public boolean isDefender (CharacterCard card) { return defenders.contains (card); }
@@ -50,22 +57,22 @@ public class Challenge {
 	public AgotPlayer winner () { return attackWins ? attacker : (defenseWins ? defender : null); }
 	public AgotPlayer loser () { return attackLoses ? attacker : (defenseLoses ? defender : null); }
 	
-	public static class ChallengeBuilder {
-		
-		private Challenge challenge = new Challenge ();
-		
-		public ChallengeBuilder (AgotPlayer attacker) {
-			challenge.attacker = attacker;
-		} // ChallengeBuilder
-		
-		public ChallengeBuilder type (AngIcon type) { challenge.type = type; return this; }
-		public ChallengeBuilder defender (AgotPlayer defender) { challenge.defender = defender; return this; }
-		public ChallengeBuilder attacker (CharacterCard attacker) { challenge.attackers.add (attacker); return this; }
-		public void bypassed (CharacterCard bypassed) { challenge.bypassed.add (bypassed); }
-
-		public Challenge build () { return challenge; }
-
-		
-	} // ChallengeBuilder
+//	public static class ChallengeBuilder {
+//		
+//		private Challenge challenge = new Challenge ();
+//		
+//		public ChallengeBuilder (AgotPlayer attacker) {
+//			challenge.attacker = attacker;
+//		} // ChallengeBuilder
+//		
+//		public ChallengeBuilder type (AngIcon type) { challenge.type = type; return this; }
+//		public ChallengeBuilder defender (AgotPlayer defender) { challenge.defender = defender; return this; }
+//		public ChallengeBuilder attacker (CharacterCard attacker) { challenge.attackers.add (attacker); return this; }
+//		public void bypassed (CharacterCard bypassed) { challenge.bypassed.add (bypassed); }
+//
+//		public Challenge build () { return challenge; }
+//
+//		
+//	} // ChallengeBuilder
 
 } // Challenge

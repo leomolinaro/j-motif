@@ -1,30 +1,30 @@
 package com.motif.agot.logic.events.list;
 
 import com.motif.agot.endpoint.AgotContext;
-import com.motif.agot.flow.task.IAgotTask;
-import com.motif.agot.logic.events.Event;
+import com.motif.agot.logic.events.AgotEvent;
 import com.motif.agot.logic.events.IEventVisitor;
+import com.motif.agot.logic.flow.IAgotFlowStep;
 import com.motif.agot.state.AgotGame;
 import com.motif.agot.state.AgotPlayer;
 
-public class GainNGoldEvent extends Event {
+public class GainNGoldEvent extends AgotEvent {
 
-	private AgotPlayer player;
-	private int goldGained;
+	private final AgotPlayer player;
+	private final int goldGained;
 
-	public GainNGoldEvent (int goldGained, AgotPlayer player, AgotGame game) {
-		super (game);
+	public GainNGoldEvent(int goldGained, AgotPlayer player, AgotGame game) {
+		super(game);
 		this.player = player;
 		this.goldGained = goldGained;
-	} // GainNGoldEvent
+	}
 
 	@Override
-	public IAgotTask resolveEffect (AgotContext context) {
-		player.gainGold (goldGained, context);
-		game.log ().gainsNGolds (player, goldGained, context);
+	public IAgotFlowStep start(AgotContext context) {
+		this.player.gainGold(this.goldGained, context);
+		this.game.log().gainsNGolds(this.player, this.goldGained, context);
 		return null;
-	} // resolveEffect
+	}
 
 	@Override public boolean accept (IEventVisitor visitor) { return visitor.visit (this); }
 
-} // GainNGoldEvent
+}

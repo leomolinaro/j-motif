@@ -5,15 +5,23 @@ import java.util.Objects;
 import com.motif.agot.ang.enums.AngIcon;
 import com.motif.agot.ang.enums.AngPhase;
 import com.motif.agot.endpoint.AgotContext;
-import com.motif.agot.flow.request.AgotRequest;
-import com.motif.agot.flow.request.AgotResponse;
-import com.motif.agot.flow.request.AgotRequest.AgotOption;
-import com.motif.agot.flow.request.AgotRequest.AgotRequestCod;
-import com.motif.agot.logic.GameFlow;
-import com.motif.agot.logic.act.Act;
+import com.motif.agot.endpoint.IAgotSender;
+import com.motif.agot.logic.AgotPlay;
+import com.motif.agot.logic.act.IPhaseAct;
 import com.motif.agot.logic.act.MarshallingAct;
-import com.motif.agot.logic.act.ReactionAct;
-import com.motif.agot.logic.round.phases.challenges.InitiateChallengeStep.AvailableChallenge;
+import com.motif.agot.logic.flow.AgotResponse;
+import com.motif.agot.logic.flow.AgotTrigger;
+import com.motif.agot.logic.flow.IAgotFlowRequest;
+import com.motif.agot.logic.requests.AAgotModelOptionalRequest;
+import com.motif.agot.logic.requests.AAgotRequest;
+import com.motif.agot.logic.requests.SelectActionToPerformRequest;
+import com.motif.agot.logic.requests.ChooseAChallengeTypeRequest;
+import com.motif.agot.logic.requests.SelectCharacterToAttackRequest;
+import com.motif.agot.logic.requests.ChooseDefenderCharacterRequest;
+import com.motif.agot.logic.requests.ChoosePlotRequest;
+import com.motif.agot.logic.requests.ContinueRequest;
+import com.motif.agot.logic.requests.FirstPlayerRequest;
+import com.motif.agot.logic.requests.SelectReactionToPerformRequest;
 import com.motif.agot.state.AgotGame;
 import com.motif.agot.state.AgotPlayer;
 import com.motif.agot.state.cards.CharacterCard;
@@ -21,63 +29,61 @@ import com.motif.agot.state.cards.MarshallCard;
 import com.motif.agot.state.cards.PlotCard;
 import com.motif.agot.state.cards.TextCard;
 import com.motif.shared.exceptions.MotifUnexpectedError;
-import com.motif.shared.flow.IMotifSender;
-import com.motif.shared.flow.TaskTrigger;
 
 @SuppressWarnings("unchecked")
 public abstract class Test {
 
-	public final void run () throws AgotTestException {
-		game = init ();
-		IMotifSender<AgotContext, AgotRequest<?>> sender = new IMotifSender<AgotContext, AgotRequest<?>> () {
-			@Override public void send (AgotRequest<?> request, AgotContext context) {
-				pendingRequest = (AgotRequest<?>) request;
-				System.out.println (request);
+	public final void run() throws AgotTestException {
+		this.game = init();
+		IAgotSender sender = new IAgotSender() {
+			@Override
+			public void send(IAgotFlowRequest request, AgotContext context) {
+				Test.this.pendingRequest = (AAgotRequest) request;
+				System.out.println(request);
 			}
 		};
-		context = AgotContext.create (null);
-		trigger = new TaskTrigger<AgotContext, AgotRequest<?>, AgotResponse> (sender);
-		trigger.start (new GameFlow (game), context);
-		execute ();
-	} // run
+		this.context = AgotContext.create(null);
+		this.trigger = new AgotTrigger(sender);
+		this.trigger.start(new AgotPlay(this.game), this.context);
+		execute();
+	}
 	
 	protected abstract AgotGame init ();
 	protected abstract void execute () throws AgotTestException;
 
 	private AgotGame game;
-	private AgotRequest<?> pendingRequest;
-	private TaskTrigger<AgotContext, AgotRequest<?>, AgotResponse> trigger;
+	private AAgotRequest pendingRequest;
+	private AgotTrigger trigger;
 	private AgotContext context;
 	
-	private void passRequests (AgotRequestCod untilRequestCod, AgotPlayer untilPlayer) {
-		boolean matchRequestCod = pendingRequest.getRequestCod ().equals (untilRequestCod);
-		boolean matchPlayer = pendingRequest.getPlayer () == untilPlayer;
+	private void passRequests(String untilRequestType, AgotPlayer untilPlayer) {
+		var matchRequestCod = this.pendingRequest.getType().equals(untilRequestType);
+		var matchPlayer = this.pendingRequest.getPlayer() == untilPlayer;
 		while (!matchRequestCod || !matchPlayer) {
-			if (pendingRequest.hasPassOption ()) {
-				passSafe (pendingRequest.getPlayer ());
-				matchRequestCod = pendingRequest.getRequestCod ().equals (untilRequestCod);
-				matchPlayer = pendingRequest.getPlayer () == untilPlayer;
+			if (this.pendingRequest instanceof AAgotModelOptionalRequest<?>) {
+				passSafe(this.pendingRequest.getPlayer());
+				matchRequestCod = this.pendingRequest.getType().equals(untilRequestType);
+				matchPlayer = this.pendingRequest.getPlayer() == untilPlayer;
 			} else {
 				if (!matchRequestCod) {
-					throw new MotifUnexpectedError ("Test: unexpected operation");
+					throw new MotifUnexpectedError("Test: unexpected operation");
 				} else {
-					throw new MotifUnexpectedError ("Test: unexpected player");
-				} // if - else
-			} // if - else
-		} // while
-	} // passRequests
+					throw new MotifUnexpectedError("Test: unexpected player");
+				}
+			}
+		}
+	}
 	
 	private void passSafe (AgotPlayer player) {
-		AgotOption<?> option = pendingRequest.getPassOption ();
-		trigger.receive (new AgotResponse (option.getKey ()), context);
-	} // pass
+		this.trigger.receive(new AgotResponse(AAgotModelOptionalRequest.PASS_KEY), this.context);
+	}
 	
 	protected void pass (AgotPlayer player) {
-		if (pendingRequest.getPlayer () != player) {
+		if (this.pendingRequest.getPlayer () != player) {
 			throw new MotifUnexpectedError ("Test: unexpected player");
-		} // if
+		}
 		passSafe (player);
-	} // pass
+	}
 	
 	protected void endPlotPhase () { endPhase (AngPhase.PLOT); }
 	protected void endDrawPhase () { endPhase (AngPhase.DRAW); }
@@ -87,100 +93,96 @@ public abstract class Test {
 	protected void endStandingPhase () { endPhase (AngPhase.STANDING); }
 	protected void endTaxationPhase () { endPhase (AngPhase.TAXATION); }
 	
-	protected void endChallenge (AgotPlayer player) {
-		passRequests (AgotRequestCod.CONTINUE, player);
-		if (!game.isDuringChallenge ()) {
-			throw new MotifUnexpectedError ("Test: challenge expected");
-		} // if
-		continueGame ();
-	} // endChallenge
+	protected void endChallenge(AgotPlayer player) {
+		passRequests(AAgotRequest.CONTINUE, player);
+		if (!this.game.isDuringChallenge()) {
+			throw new MotifUnexpectedError("Test: challenge expected");
+		}
+		continueGame();
+	}
 	
-	private void endPhase (AngPhase phase) {
-		passRequests (AgotRequestCod.CONTINUE, game.getFirstPlayer ());
-		if (!game.getPhase ().equals (phase)) {
-			throw new MotifUnexpectedError ("Test: unexpected phase");
-		} // if
-		continueGame ();
-	} // endPhase
+	private void endPhase(AngPhase phase) {
+		passRequests(AAgotRequest.CONTINUE, this.game.getFirstPlayer());
+		if (!this.game.getPhase().equals(phase)) {
+			throw new MotifUnexpectedError("Test: unexpected phase");
+		}
+		continueGame();
+	}
 	
-	private void continueGame () {
-		AgotOption<?> option = pendingRequest.getContinueOption ();
-		trigger.receive (new AgotResponse (option.getKey ()), context);
-	} // continueGame
-	
-	protected void selectPlot (PlotCard plot, AgotPlayer player) {
-		passRequests (AgotRequestCod.SELECT_PLOT_TO_REVEAL, player);
-		AgotRequest<PlotCard> req = (AgotRequest<PlotCard>) pendingRequest;
-		AgotOption<PlotCard> option = req.getOptionByModel (plot);
-		trigger.receive (new AgotResponse (option.getKey ()), context);
-	} // selectPlot
+	private void continueGame() {
+		this.trigger.receive(new AgotResponse(ContinueRequest.CONTINUE_KEY), this.context);
+	}
 
-	protected void selectFirstPlayer (AgotPlayer firstPlayer, AgotPlayer player) {
-		passRequests (AgotRequestCod.SELECT_FIRST_PLAYER, player);
-		AgotRequest<AgotPlayer> req = (AgotRequest<AgotPlayer>) pendingRequest;
-		AgotOption<AgotPlayer> option = req.getOptionByModel (firstPlayer);
-		trigger.receive (new AgotResponse (option.getKey ()), context);
+	protected void selectPlot(PlotCard plot, AgotPlayer player) {
+		passRequests(AAgotRequest.SELECT_PLOT_TO_REVEAL, player);
+		var req = (ChoosePlotRequest) this.pendingRequest;
+		var option = req.getKeyByModel(plot);
+		this.trigger.receive(new AgotResponse(option), this.context);
+	}
+
+	protected void selectFirstPlayer(AgotPlayer firstPlayer, AgotPlayer player) {
+		passRequests(AAgotRequest.SELECT_FIRST_PLAYER, player);
+		var req = (FirstPlayerRequest) this.pendingRequest;
+		var option = req.getKeyByModel(firstPlayer);
+		this.trigger.receive(new AgotResponse(option), this.context);
 	} // selectFirstPlayer
 	
-	protected void marshall (MarshallCard<?> toMarshall, AgotPlayer player) {
-		passRequests (AgotRequestCod.SELECT_ACTION_TO_PERFORM, player);
-		AgotRequest<? super Act> req = (AgotRequest<? super Act>) pendingRequest;
-		MarshallingAct act = req.options ()
-		.map (o -> o.getModel ())
+	protected void marshall(MarshallCard<?> toMarshall, AgotPlayer player) {
+		passRequests(AAgotRequest.SELECT_ACTION_TO_PERFORM, player);
+		var req = (SelectActionToPerformRequest<IPhaseAct>) this.pendingRequest;
+		var act = req.models()
 		.filter (m -> m != null)
 		.filter (m -> m instanceof MarshallingAct)
 		.map (m -> (MarshallingAct) m)
-		.filter (m -> m.getCard () == toMarshall)
-		.findFirst ()
+		.filter (m -> m.getCard() == toMarshall)
+		.findFirst()
 		.get ();
-		AgotOption<? super Act> option = req.getOptionByModel (act);
-		trigger.receive (new AgotResponse (option.getKey ()), context);
-	} // marshall
+		var option = req.getKeyByModel(act);
+		this.trigger.receive(new AgotResponse(option), this.context);
+	}
 
 	protected void initiateChallenge (AngIcon challengeType, AgotPlayer player) {
-		passRequests (AgotRequestCod.SELECT_CHALLENGE_TO_INITIATE, player);
-		AgotRequest<AvailableChallenge> req = (AgotRequest<AvailableChallenge>) pendingRequest;
-		AvailableChallenge avaChal = req.options ()
-		.map (o -> o.getModel ())
+		passRequests (AAgotRequest.SELECT_CHALLENGE_TO_INITIATE, player);
+		var req = (ChooseAChallengeTypeRequest) this.pendingRequest;
+		var avaChal = req.models()
 		.filter (m -> m != null)
-		.filter (m -> m.getChallengeType ().equals (challengeType))
+		.filter (m -> m.equals(challengeType))
 		.findFirst ()
 		.get ();
-		AgotOption<AvailableChallenge> option = req.getOptionByModel (avaChal);
-		trigger.receive (new AgotResponse (option.getKey ()), context);
-	} // initiateChallenge
+		var option = req.getKeyByModel(avaChal);
+		this.trigger.receive(new AgotResponse (option), this.context);
+	}
 	
 	protected void attack (CharacterCard attacker, AgotPlayer player) {
-		passRequests (AgotRequestCod.SELECT_CHARACTER_TO_ATTACK, player);
-		AgotRequest<CharacterCard> req = (AgotRequest<CharacterCard>) pendingRequest;
-		AgotOption<CharacterCard> option = req.getOptionByModel (attacker);
-		trigger.receive (new AgotResponse (option.getKey ()), context);
-	} // attack
+		passRequests (AAgotRequest.SELECT_CHARACTER_TO_ATTACK, player);
+		var req = (SelectCharacterToAttackRequest) pendingRequest;
+		var option = req.getKeyByModel(attacker);
+		trigger.receive (new AgotResponse (option), context);
+	}
 	
 	protected void defend (CharacterCard defender, AgotPlayer player) {
-		passRequests (AgotRequestCod.SELECT_CHARACTER_TO_DEFEND, player);
-		AgotRequest<CharacterCard> req = (AgotRequest<CharacterCard>) pendingRequest;
-		AgotOption<CharacterCard> option = req.getOptionByModel (defender);
-		trigger.receive (new AgotResponse (option.getKey ()), context);
-	} // defend
+		passRequests (AAgotRequest.SELECT_CHARACTER_TO_DEFEND, player);
+		var req = (ChooseDefenderCharacterRequest) this.pendingRequest;
+		var option = req.getKeyByModel(defender);
+		this.trigger.receive (new AgotResponse(option), this.context);
+	}
 	
 	protected void reaction (TextCard<?> reactingCard, AgotPlayer player) {
-		passRequests (AgotRequestCod.SELECT_REACTION_TO_PERFORM, player);
-		AgotRequest<ReactionAct> req = (AgotRequest<ReactionAct>) pendingRequest;
-		ReactionAct reactionAct = req.options ()
-		.map (o -> o.getModel ())
+		passRequests (AAgotRequest.SELECT_REACTION_TO_PERFORM, player);
+		var req = (SelectReactionToPerformRequest) this.pendingRequest;
+		var reactionAct = req.models()
 		.filter (ra -> ra.getTrigCard () == reactingCard)
 		.findFirst ().get ();
-		AgotOption<ReactionAct> option = req.getOptionByModel (reactionAct);
-		trigger.receive (new AgotResponse (option.getKey ()), context);
-	} // reaction
+		var option = req.getKeyByModel(reactionAct);
+		this.trigger.receive (new AgotResponse(option), this.context);
+	}
 	
 	protected <T> void assertEqual (T o1, T o2) throws AgotTestException {
 		if (!Objects.equals (o1, o2)) { throw new AgotTestException (); }
-	} // assertEq
+	}
 	
 	public static class AgotTestException extends Exception {
 		private static final long serialVersionUID = -3252117767029803155L;
-	} // AgotTestException
+	}
 	
-} // Test
+}

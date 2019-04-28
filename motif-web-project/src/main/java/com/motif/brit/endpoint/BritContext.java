@@ -3,11 +3,14 @@ package com.motif.brit.endpoint;
 import com.motif.shared.endpoint.MotifContext;
 import com.motif.shared.endpoint.sessions.MotifSession;
 
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class BritContext extends MotifContext {
 
-	private MotifSession session;
-	public MotifSession getSession() { return this.session; }
-	private void setSession(MotifSession session) { this.session = session; }
+	@Getter private MotifSession session;
 
 	private BritReduxActionList actions;
 	public BritReduxActionList actions() {
@@ -15,11 +18,9 @@ public class BritContext extends MotifContext {
 		return this.actions;
 	}
 	
-	private BritContext() {}
-	
 	public static BritContext create(MotifSession session) {
 		BritContext context = new BritContext();
-		context.setSession(session);
+		context.session = session;
 		return context;
 	}
 	

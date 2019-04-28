@@ -1,37 +1,37 @@
 package com.motif.agot.logic.events.list;
 
 import com.motif.agot.endpoint.AgotContext;
-import com.motif.agot.flow.task.IAgotTask;
-import com.motif.agot.logic.events.Event;
+import com.motif.agot.logic.events.AgotEvent;
 import com.motif.agot.logic.events.IEventVisitor;
+import com.motif.agot.logic.flow.IAgotFlowStep;
 import com.motif.agot.logic.other.ExitGameProcedure;
 import com.motif.agot.state.AgotGame;
 import com.motif.agot.state.cards.MarshallCard;
 
 import lombok.Getter;
 
-public class DiscardFromPlayEvent extends Event {
+public class DiscardFromPlayEvent extends AgotEvent {
 
-	@Getter private MarshallCard<?> card;
+	@Getter private final MarshallCard<?> card;
 	@Getter private boolean saved;
 	
-	public DiscardFromPlayEvent (MarshallCard<?> card, AgotGame game) {
-		super (game);
+	public DiscardFromPlayEvent(MarshallCard<?> card, AgotGame game) {
+		super(game);
 		this.card = card;
-	} // DiscardFromPlayEvent
+	}
 
 	@Override
-	public IAgotTask resolveEffect (AgotContext context) {
-		if (card.isSaved ()) {
+	public IAgotFlowStep start(AgotContext context) {
+		if (this.card.isSaved()) {
 			this.saved = true;
-			card.unsetSaved ();
+			card.unsetSaved();
 		} else {
-			ExitGameProcedure.discardCard (card, game, context);
-			game.log ().discardsCard (card, context);			
-		} // if - else
+			ExitGameProcedure.discardCard(card, game, context);
+			game.log().discardsCard(card, context);
+		}
 		return null;
-	} // resolveEffect
+	}
 
-	@Override public boolean accept (IEventVisitor visitor) { return visitor.visit (this); }
+	@Override public boolean accept(IEventVisitor visitor) { return visitor.visit(this); }
 
-} // DiscardFromPlayEvent
+}

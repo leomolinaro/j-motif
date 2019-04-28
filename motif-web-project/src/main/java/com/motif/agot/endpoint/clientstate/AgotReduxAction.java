@@ -5,7 +5,7 @@ import com.motif.agot.ang.enums.AngArea;
 import com.motif.agot.ang.enums.AngPhase;
 import com.motif.agot.endpoint.AgotContext;
 import com.motif.agot.endpoint.clientstate.AgotReduxAction.ActionData;
-import com.motif.agot.flow.request.AgotRequest;
+import com.motif.agot.logic.flow.IAgotFlowRequest;
 import com.motif.agot.state.AgotGame;
 import com.motif.agot.state.AgotPlayer;
 import com.motif.agot.state.GameLog.GameLogRow;
@@ -44,11 +44,11 @@ public class AgotReduxAction<D extends ActionData> {
 	public static AgotReduxAction<AddDuplicateData> addDuplicate (Card<?> card, Card<?> toCard) { return new AgotReduxAction<AddDuplicateData> (ADD_DUPLICATE, new AddDuplicateData (card, toCard)); }
 	public static AgotReduxAction<AddLogData> addLog (GameLogRow logRow) { return new AgotReduxAction<AddLogData> (ADD_LOG, new AddLogData (logRow)); }
 	public static AgotReduxAction<EmptyDrawDeckData> emptyDrawDeck (AgotPlayer player) { return new AgotReduxAction<EmptyDrawDeckData> (EMPTY_DRAW_DECK, new EmptyDrawDeckData (player)); }
-	public static AgotReduxAction<InitStateData> initState (AgotGame game, AgotContext context, AgotRequest<?> request) { return new AgotReduxAction<InitStateData> (INIT_STATE, new InitStateData (game, context, request)); }
+	public static AgotReduxAction<InitStateData> initState (AgotGame game, AgotContext context, IAgotFlowRequest request) { return new AgotReduxAction<InitStateData> (INIT_STATE, new InitStateData (game, context, request)); }
 	public static AgotReduxAction<RemoveAttachmentData> removeAttachment (Card<?> card, Card<?> fromCard) { return new AgotReduxAction<RemoveAttachmentData> (REMOVE_ATTACHMENT, new RemoveAttachmentData (card, fromCard)); }
 	public static AgotReduxAction<RemoveCardData> removeCard (Card<?> card, AgotPlayer fromPlayer, AngArea fromArea) { return new AgotReduxAction<RemoveCardData> (REMOVE_CARD, new RemoveCardData (card, fromPlayer, fromArea)); }
 	public static AgotReduxAction<RemoveDuplicateData> removeDuplicate (Card<?> card, Card<?> fromCard) { return new AgotReduxAction<RemoveDuplicateData> (REMOVE_DUPLICATE, new RemoveDuplicateData (card, fromCard)); }
-	public static AgotReduxAction<RequestData> request (AgotRequest<?> request) { return new AgotReduxAction<RequestData> (REQUEST, new RequestData (request)); }
+	public static AgotReduxAction<RequestData> request (IAgotFlowRequest request) { return new AgotReduxAction<RequestData> (REQUEST, new RequestData (request)); }
 	public static AgotReduxAction<SetCardKneelingData> setCardKneeling (boolean kneeling, Card<?> card) { return new AgotReduxAction<SetCardKneelingData> (SET_CARD_KNEELING, new SetCardKneelingData (kneeling, card)); }
 	public static AgotReduxAction<SetCardPowerData> setCardPower (int power, Card<?> card) { return new AgotReduxAction<SetCardPowerData> (SET_CARD_POWER, new SetCardPowerData (power, card)); }
 	public static AgotReduxAction<SetCardRevealedData> setCardRevealed (boolean revealed, Card<?> card) { return new AgotReduxAction<SetCardRevealedData> (SET_CARD_REVEALED, new SetCardRevealedData (revealed, card)); }
@@ -104,12 +104,12 @@ public class AgotReduxAction<D extends ActionData> {
 		private static class AgotState {
 			@Expose private AgotGame game;
 			@Expose private AgotContext context;
-			@Expose private AgotRequest<?> request;
+			@Expose private IAgotFlowRequest request;
 		} // AgotState
 		
 		@Expose private AgotState state = new AgotState ();
 		
-		public InitStateData (AgotGame game, AgotContext context, AgotRequest<?> request) {
+		public InitStateData (AgotGame game, AgotContext context, IAgotFlowRequest request) {
 			super ();
 			state.game = game;
 			state.context = context;
@@ -135,9 +135,9 @@ public class AgotReduxAction<D extends ActionData> {
 	
 	public static class RequestData extends ActionData {
 		
-		@Expose private AgotRequest<?> request;
+		@Expose private IAgotFlowRequest request;
 		
-		public RequestData (AgotRequest<?> request) {
+		public RequestData (IAgotFlowRequest request) {
 			super ();
 			this.request = request;
 		} // RequestData

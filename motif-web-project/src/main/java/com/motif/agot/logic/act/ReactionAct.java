@@ -1,8 +1,10 @@
 package com.motif.agot.logic.act;
 
 import com.motif.agot.ang.text.AngReaction;
-import com.motif.agot.flow.request.IAgotModelVisitor;
-import com.motif.agot.logic.events.Event;
+import com.motif.agot.endpoint.AgotContext;
+import com.motif.agot.logic.events.AgotEvent;
+import com.motif.agot.logic.flow.IAgotFlowProcess;
+import com.motif.agot.logic.flow.IAgotFlowStep;
 import com.motif.agot.logic.other.AbilityContext;
 import com.motif.agot.logic.visitors.TriggerChecker;
 import com.motif.agot.state.AgotGame;
@@ -10,20 +12,25 @@ import com.motif.agot.state.AgotPlayer;
 import com.motif.agot.state.cards.TextCard;
 import com.motif.shared.util.MotifConsole;
 
+import lombok.Getter;
+
 public final class ReactionAct extends TrigAbilityAct<AngReaction> {
 
-	private Event event;
+	private final AgotEvent event;
 	
-	public ReactionAct (Event event, AngReaction reaction, TextCard<?> reactingCard, AgotPlayer reactingPlayer, AgotGame game) {
-		super (reaction, new AbilityContext (reactingCard, reactingPlayer), game);
+	public interface IHasReactionAct extends IAgotFlowProcess { public IAgotFlowStep after(ReactionAct reactionAct, AgotContext context); }
+	@Getter private final IHasReactionAct parent;
+	@Override public IAgotFlowStep next(AgotContext context) { return this.parent.after(this, context); }
+
+	public ReactionAct(AgotEvent event, AngReaction reaction, TextCard<?> reactingCard, AgotPlayer reactingPlayer,
+	        AgotGame game, IHasReactionAct parent) {
+		super(reaction, new AbilityContext(reactingCard, reactingPlayer), game);
 		this.event = event;
+		this.parent = parent;
 	} // ReactionStep
 
 	@Override
 	public String getLabel () { return MotifConsole.format ("Reaction {0}", ac.thisCard.getTitle ()); }
-
-	@Override
-	public void accept (IAgotModelVisitor visitor) { visitor.visit (this); }
 
 	@Override
 	public boolean canBeInitiated () {

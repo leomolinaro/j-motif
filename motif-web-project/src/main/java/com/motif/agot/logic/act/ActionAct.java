@@ -3,29 +3,34 @@ package com.motif.agot.logic.act;
 import com.motif.agot.ang.enums.AngPhase;
 import com.motif.agot.ang.text.AngAction;
 import com.motif.agot.ang.text.AngAction.AngActionType;
-import com.motif.agot.flow.request.IAgotModelVisitor;
+import com.motif.agot.endpoint.AgotContext;
+import com.motif.agot.logic.flow.IAgotFlowStep;
 import com.motif.agot.logic.other.AbilityContext;
 import com.motif.agot.state.AgotGame;
 import com.motif.agot.state.AgotPlayer;
 import com.motif.agot.state.cards.TextCard;
 import com.motif.shared.util.MotifConsole;
 
-public final class ActionAct extends TrigAbilityAct<AngAction> {
+import lombok.Getter;
 
-	private AngPhase phase;
-	private AngActionType actionType;
+public final class ActionAct extends TrigAbilityAct<AngAction> implements IPhaseAct {
+
+	private final AngPhase phase;
+	private final AngActionType actionType;
 	
-	public ActionAct (AngPhase phase, AngAction action, TextCard<?> actingCard, AgotPlayer actingPlayer, AgotGame game) {
-		super (action, new AbilityContext (actingCard, actingPlayer), game);
+	@Getter private final IHasPhaseAct parent;
+	@Override public IAgotFlowStep next(AgotContext context) { return this.parent.after(this, context); }
+	
+	public ActionAct(AngPhase phase, AngAction action, TextCard<?> actingCard, AgotPlayer actingPlayer, AgotGame game,
+			IHasPhaseAct parent) {
+		super(action, new AbilityContext(actingCard, actingPlayer), game);
 		this.phase = phase;
-		this.actionType = action.getType ();
-	} // ActionAct
+		this.actionType = action.getType();
+		this.parent = parent;
+	}
 
 	@Override
 	public String getLabel () { return MotifConsole.format ("Action {0}", ac.thisCard.getTitle ()); }
-
-	@Override
-	public void accept (IAgotModelVisitor visitor) { visitor.visit (this); }
 
 	@Override
 	public boolean canBeInitiated () {
@@ -40,9 +45,14 @@ public final class ActionAct extends TrigAbilityAct<AngAction> {
 				case PLOT: if (!actionType.equals (AngActionType.PLOT_ACTION)) { return false; }
 				case STANDING: if (!actionType.equals (AngActionType.STANDING_ACTION)) { return false; }
 				case TAXATION: if (!actionType.equals (AngActionType.TAXATION_ACTION)) { return false; }
-			} // switch
-		} // if
+			}
+		}
 		return true;
-	} // canBeInitiated
+	}
 
-} // ActingActStep
+	@Override
+	public long getCardId() {
+		return this.getTrigCard().getId();
+	}
+
+}

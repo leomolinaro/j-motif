@@ -4,55 +4,43 @@ import java.util.Iterator;
 import java.util.List;
 
 import com.motif.agot.endpoint.AgotContext;
-import com.motif.agot.flow.task.AgotComplexTask;
-import com.motif.agot.flow.task.IAgotTask;
-import com.motif.agot.logic.events.Event;
+import com.motif.agot.logic.events.AgotEvent;
+import com.motif.agot.logic.events.IAgotHasEvent;
 import com.motif.agot.logic.events.IEventVisitor;
+import com.motif.agot.logic.flow.IAgotFlowStep;
 import com.motif.agot.state.AgotGame;
 
 import lombok.Getter;
 
-public class MultiEvent extends Event {
+public class MultiEvent extends AgotEvent implements IAgotHasEvent {
 
-	@Getter private List<? extends Event> events;
-
-	public MultiEvent (List<? extends Event> events, AgotGame game) {
-		super (game);
+	@Getter private final List<? extends AgotEvent> events;
+	private Iterator<? extends AgotEvent> eventIt;
+	
+	public MultiEvent(List<? extends AgotEvent> events, AgotGame game) {
+		super(game);
 		this.events = events;
-	} // MultiEvent
+	}
 
 	@Override
-	public IAgotTask resolveEffect (AgotContext context) {
-		Iterator<? extends Event> eventIt = events.iterator ();
-		SubEventResolver subResolver = new SubEventResolver (eventIt);
-		return subResolver.getStart (context);
-	} // resolveEffect
+	public IAgotFlowStep start(AgotContext context) {
+		this.eventIt = events.iterator();
+		var firstEvent = this.eventIt.next();
+		firstEvent.setParent(this);
+		return firstEvent;
+	}
+	
+	@Override
+	public IAgotFlowStep after(AgotEvent event, AgotContext context) {
+		if (this.eventIt.hasNext()) {
+			var nextEvent = this.eventIt.next();
+			nextEvent.setParent(this);
+			return nextEvent;
+		} else {
+			return null;
+		}
+	}
 	
 	@Override public boolean accept (IEventVisitor visitor) { return visitor.visit (this); }
-	
-	private class SubEventResolver extends AgotComplexTask {
 
-		private Iterator<? extends Event> eventIt;
-
-		private SubEventResolver (Iterator<? extends Event> eventIt) {
-			this.eventIt = eventIt;
-		} // SubEventResolver
-
-		@Override
-		public IAgotTask getStart (AgotContext context) {
-			Event event = eventIt.next ();
-			return event.resolveEffect (context);
-		} // getStart
-
-		@Override
-		public IAgotTask getNextTask (AgotContext context) {
-			if (eventIt.hasNext ()) {
-				return new SubEventResolver (eventIt);
-			} else {
-				return null;
-			} // if - else
-		} // getNextTask
-		
-	} // SubEventResolver
-
-} // MultiEvent
+}

@@ -5,32 +5,34 @@ import com.motif.agot.endpoint.clientstate.AgotReduxActionList;
 import com.motif.shared.endpoint.MotifContext;
 import com.motif.shared.endpoint.sessions.MotifSession;
 
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class AgotContext extends MotifContext {
 
-	private MotifSession session;
-	@Expose @Getter private String player;
-	@Expose private String opponent;
-	public MotifSession getSession () { return this.session; }
-	private void setSession (MotifSession session) {
-		this.session = session;
-		this.player = session.getUsername ();
-		this.opponent = session.getUsername ().equals ("leo") ? "fede" : "leo";
-	} // setSession
-
+	@Getter private MotifSession session;
+	
 	private AgotReduxActionList actions;
 	public AgotReduxActionList actions () {
 		if (actions == null) { actions = new AgotReduxActionList (); }
 		return this.actions;
 	} // actions
 	
-	private AgotContext () {}
-	
 	public static AgotContext create (MotifSession session) {
-		AgotContext context = new AgotContext ();
-		context.setSession (session);
+		AgotContext context = new AgotContext (
+				session == null ? null : session.getUsername(),
+				session == null ? null : session.getUsername().equals("leo") ? "fede" : "leo");
+		context.session = session;
 		return context;
 	} // createAgotContext
 	
+	@Expose private final String player;
+	@Expose private final String opponent;
+	
+	public String getPlayerId() { return session.getUsername(); }
+	
+	public String getOpponentId() { return session.getUsername().equals("leo") ? "fede" : "leo"; }
+
 } // AgotContext

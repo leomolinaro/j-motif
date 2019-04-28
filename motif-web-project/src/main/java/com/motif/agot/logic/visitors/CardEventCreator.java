@@ -45,7 +45,7 @@ import com.motif.agot.ang.text.instants.AngInstants.AngStandEach;
 import com.motif.agot.ang.text.instants.AngInstants.AngStandThat;
 import com.motif.agot.ang.text.instants.AngInstants.AngStandThis;
 import com.motif.agot.ang.text.instants.AngInstants.AngTakeControlOfThat;
-import com.motif.agot.logic.events.Event;
+import com.motif.agot.logic.events.AgotEvent;
 import com.motif.agot.logic.events.list.ApplyLastingEffectEvent;
 import com.motif.agot.logic.events.list.DiscardFromPlayEvent;
 import com.motif.agot.logic.events.list.DiscardNPowerFromEvent;
@@ -73,22 +73,22 @@ import com.motif.agot.state.cards.MarshallCard;
 
 public class CardEventCreator implements IAngEffectVisitor, IAngCostVisitor {
 
-	public static Event getEvent (IAngEffect effect, AbilityContext ac, AgotGame game) {
+	public static AgotEvent getEvent (IAngEffect effect, AbilityContext ac, AgotGame game) {
 		CardEventCreator creator = new CardEventCreator (ac, game);
 		effect.accept (creator);
-		Event event = creator.event;
+		AgotEvent event = creator.event;
 		return event;
 	} // getEvent
 
-	public static Event getEvent (IAngCost cost, AbilityContext ac, AgotGame game) {
+	public static AgotEvent getEvent (IAngCost cost, AbilityContext ac, AgotGame game) {
 		CardEventCreator creator = new CardEventCreator (ac, game);
 		cost.accept (creator);
-		Event event = creator.event;
+		AgotEvent event = creator.event;
 		return event;
 	} // getEvent
 
 	
-	private Event event;
+	private AgotEvent event;
 	private AbilityContext ac;
 	private AgotGame game;
 
@@ -97,8 +97,8 @@ public class CardEventCreator implements IAngEffectVisitor, IAngCostVisitor {
 		this.game = game;
 	} // CardEffectCreator
 	
-	private boolean visit (AngEffectEachCard effect, Function<? super Card<?>, ? extends Event> mapper) {
-		List<? extends Event> events = FilterMatcher.allMatches (ac.you, game, effect.getFilter ())
+	private boolean visit (AngEffectEachCard effect, Function<? super Card<?>, ? extends AgotEvent> mapper) {
+		List<? extends AgotEvent> events = FilterMatcher.allMatches (ac.you, game, effect.getFilter ())
 		.map (mapper)
 		.collect (Collectors.toList ());
 		event = new MultiEvent (events, game);

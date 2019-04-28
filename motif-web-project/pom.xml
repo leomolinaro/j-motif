@@ -26,8 +26,8 @@
 		</dependency>
 		<dependency>
 			<groupId>org.mongodb</groupId>
-			<artifactId>mongo-java-driver</artifactId>
-			<version>3.4.1</version>
+			<artifactId>mongodb-driver</artifactId>
+			<version>3.4.2</version>
 		</dependency>
 
 		<dependency>
@@ -35,15 +35,20 @@
 			<artifactId>graphql-java</artifactId>
 			<version>3.0.0</version>
 		</dependency>
-		<dependency>
+		<!-- <dependency>
 			<groupId>com.graphql-java</groupId>
 			<artifactId>graphql-java-tools</artifactId>
 			<version>3.2.0</version>
-		</dependency>
+		</dependency> -->
 		<dependency>
 			<groupId>com.graphql-java</groupId>
 			<artifactId>graphql-java-servlet</artifactId>
 			<version>4.0.0</version>
+		</dependency>
+		<dependency>
+			<groupId>io.leangen.graphql</groupId>
+			<artifactId>spqr</artifactId>
+			<version>0.9.4</version>
 		</dependency>
 		<dependency>
 			<groupId>javax.servlet</groupId>
@@ -71,9 +76,20 @@
 				<version>3.2.1</version>
 				<configuration>
 					<failOnMissingWebXml>false</failOnMissingWebXml>
-<!-- 					<warSourceDirectory>WebContent</warSourceDirectory>  -->
+					<!-- <warSourceDirectory>WebContent</warSourceDirectory> -->
 				</configuration>
 			</plugin>
+
+			<!-- <plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.6.1</version>
+				<configuration>
+					<compilerArgs>
+						<arg>-parameters</arg>
+					</compilerArgs>
+				</configuration>
+			</plugin>-->
 
 		</plugins>
 

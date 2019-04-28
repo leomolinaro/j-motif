@@ -1,39 +1,44 @@
 package com.motif.agot.logic.events.list;
 
 import com.motif.agot.endpoint.AgotContext;
-import com.motif.agot.flow.task.IAgotTask;
-import com.motif.agot.logic.events.Event;
+import com.motif.agot.logic.events.AgotEvent;
 import com.motif.agot.logic.events.IEventVisitor;
+import com.motif.agot.logic.flow.IAgotFlowStep;
 import com.motif.agot.logic.other.ExitGameProcedure;
 import com.motif.agot.state.AgotGame;
 import com.motif.agot.state.cards.CharacterCard;
 
 import lombok.Getter;
 
-public class KillEvent extends Event {
+public class KillEvent extends AgotEvent {
 
-	private CharacterCard card;
+	private final CharacterCard card;
 	@Getter private boolean saved;
 
-	public KillEvent (CharacterCard card, AgotGame game) {
-		super (game);
+	public KillEvent(CharacterCard card, AgotGame game) {
+		super(game);
 		this.card = card;
-	} // KillEvent
+	}
 
 	@Override
-	public IAgotTask resolveEffect (AgotContext context) {
-		if (card.isSaved ()) {
+	public IAgotFlowStep start(AgotContext context) {
+		if (card.isSaved()) {
 			this.saved = true;
-			card.unsetSaved ();
+			this.card.unsetSaved();
 		} else {
-			ExitGameProcedure.killCharacter (card, game, context);
-			game.log ().killsCharacter (card, context);			
-		} // if - else
+			ExitGameProcedure.killCharacter(this.card, this.game, context);
+			this.game.log().killsCharacter(this.card, context);
+		}
 		return null;
-	} // resolveEffect
+	}
 
-	@Override public boolean accept (IEventVisitor visitor) { return visitor.visit (this); }
+	@Override
+	public boolean accept(IEventVisitor visitor) {
+		return visitor.visit(this);
+	}
 
-	public boolean doesKill (CharacterCard card) { return this.card == card; }
-	
-} // KillEvent
+	public boolean doesKill(CharacterCard card) {
+		return this.card == card;
+	}
+
+}

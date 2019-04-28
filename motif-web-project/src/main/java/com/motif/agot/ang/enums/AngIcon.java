@@ -1,7 +1,6 @@
 package com.motif.agot.ang.enums;
 
-import com.motif.agot.flow.request.IAgotModel;
-import com.motif.agot.flow.request.IAgotModelVisitor;
+import com.motif.agot.logic.flow.IAgotModel;
 
 public enum AngIcon implements IAgotModel {
 	MILITARY ("Military"),
@@ -12,11 +11,9 @@ public enum AngIcon implements IAgotModel {
 	
 	private AngIcon (String label) {
 		this.label = label;
-	} // AngIcon
+	}
 	
 	@Override
 	public String getLabel () { return label; }
 
-	@Override public void accept (IAgotModelVisitor visitor) { visitor.visit (this); }
-	
-} // AngIcon
+}

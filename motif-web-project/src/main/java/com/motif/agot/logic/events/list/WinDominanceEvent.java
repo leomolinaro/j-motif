@@ -1,31 +1,31 @@
 package com.motif.agot.logic.events.list;
 
 import com.motif.agot.endpoint.AgotContext;
-import com.motif.agot.flow.task.IAgotTask;
-import com.motif.agot.logic.events.Event;
+import com.motif.agot.logic.events.AgotEvent;
 import com.motif.agot.logic.events.IEventVisitor;
+import com.motif.agot.logic.flow.IAgotFlowStep;
 import com.motif.agot.state.AgotGame;
 import com.motif.agot.state.AgotPlayer;
 
 import lombok.Getter;
 
-public class WinDominanceEvent extends Event {
+public class WinDominanceEvent extends AgotEvent {
 
-	@Getter private AgotPlayer winner;
+	@Getter private final AgotPlayer winner;
 
-	public WinDominanceEvent (AgotPlayer winner, AgotGame game) {
-		super (game);
+	public WinDominanceEvent(AgotPlayer winner, AgotGame game) {
+		super(game);
 		this.winner = winner;
-	} // WinDominanceEvent
+	}
 
 	@Override
-	public IAgotTask resolveEffect (AgotContext context) {
-		game.log ().winsDominance (winner, context);
-		winner.gainPowerOnTheFactionCard (context);
-		game.log ().dominanceGainPower (winner, context);
+	public IAgotFlowStep start(AgotContext context) {
+		this.game.log().winsDominance(this.winner, context);
+		this.winner.gainPowerOnTheFactionCard(context);
+		this.game.log().dominanceGainPower(this.winner, context);
 		return null;
-	} // resolveEffect
+	}
 
-	@Override public boolean accept (IEventVisitor visitor) { return visitor.visit (this); }
+	@Override public boolean accept(IEventVisitor visitor) { return visitor.visit(this); }
 
-} // WinDominanceEvent
+}

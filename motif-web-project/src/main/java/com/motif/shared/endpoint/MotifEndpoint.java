@@ -13,7 +13,7 @@ import javax.websocket.server.ServerEndpoint;
 
 import com.motif.agot.endpoint.AgotEndpoint;
 import com.motif.agot.endpoint.AgotGson;
-import com.motif.agot.flow.request.AgotResponse;
+import com.motif.agot.logic.flow.AgotResponse;
 import com.motif.brit.endpoint.BritEndpoint;
 import com.motif.brit.endpoint.BritGson;
 import com.motif.brit.logic.flow.BritResponse;

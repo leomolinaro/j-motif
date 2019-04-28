@@ -6,7 +6,7 @@ import com.google.gson.annotations.Expose;
 import com.motif.agot.ang.enums.AngArea;
 import com.motif.agot.ang.enums.AngPhase;
 import com.motif.agot.endpoint.AgotContext;
-import com.motif.agot.flow.request.AgotRequest;
+import com.motif.agot.logic.flow.IAgotFlowRequest;
 import com.motif.agot.state.AgotGame;
 import com.motif.agot.state.AgotPlayer;
 import com.motif.agot.state.GameLog.GameLogRow;
@@ -22,11 +22,11 @@ public class AgotReduxActionList {
 	public void addDuplicate (Card<?> card, Card<?> duplicateTo) { actions.add (AgotReduxAction.addDuplicate (card, duplicateTo)); }
 	public void addLog (GameLogRow logRow) { actions.add (AgotReduxAction.addLog (logRow)); }
 	public void emptyDrawDeck (AgotPlayer player) { actions.add (AgotReduxAction.emptyDrawDeck (player)); }
-	public void initState (AgotGame game, AgotContext context, AgotRequest<?> request) { actions.add (AgotReduxAction.initState (game, context, request)); }
+	public void initState (AgotGame game, AgotContext context, IAgotFlowRequest request) { actions.add (AgotReduxAction.initState (game, context, request)); }
 	public void removeAttachment (Card<?> card, Card<?> fromCard) { actions.add (AgotReduxAction.removeAttachment (card, fromCard)); }
 	public void removeCard (Card<?> card, AgotPlayer fromPlayer, AngArea fromArea) { actions.add (AgotReduxAction.removeCard (card, fromPlayer, fromArea)); }
 	public void removeDuplicate (Card<?> card, Card<?> fromCard) { actions.add (AgotReduxAction.removeDuplicate (card, fromCard)); }
-	public void request (AgotRequest<?> request) { actions.add (AgotReduxAction.request (request)); }
+	public void request (IAgotFlowRequest request) { actions.add (AgotReduxAction.request (request)); }
 	public void setCardKneeling (boolean kneeling, Card<?> card) { actions.add (AgotReduxAction.setCardKneeling (kneeling, card)); }
 	public void setCardPower (int power, Card<?> card) { actions.add (AgotReduxAction.setCardPower (power, card)); }
 	public void setCardRevealed (boolean revealed, Card<?> card) { actions.add (AgotReduxAction.setCardRevealed (revealed, card)); }

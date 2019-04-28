@@ -5,8 +5,7 @@ import com.motif.agot.ang.cards.AngCard;
 import com.motif.agot.ang.enums.AngFaction;
 import com.motif.agot.ang.enums.AngType;
 import com.motif.agot.endpoint.AgotContext;
-import com.motif.agot.flow.request.IAgotModel;
-import com.motif.agot.flow.request.IAgotModelVisitor;
+import com.motif.agot.logic.flow.IAgotModel;
 import com.motif.agot.state.AgotPlayer;
 import com.motif.shared.util.SB;
 
@@ -115,7 +114,5 @@ public abstract class Card<A extends AngCard> implements IAgotModel {
 	} // toView
 	
 	@Override public String toString () { return ang.toString (); }
-	
-	@Override public void accept (IAgotModelVisitor visitor) { visitor.visit (this); }
 	
 } // Card

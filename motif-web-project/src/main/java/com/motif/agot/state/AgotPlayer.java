@@ -11,8 +11,7 @@ import com.google.gson.annotations.Expose;
 import com.motif.agot.ang.enums.AngArea;
 import com.motif.agot.ang.enums.AngType;
 import com.motif.agot.endpoint.AgotContext;
-import com.motif.agot.flow.request.IAgotModel;
-import com.motif.agot.flow.request.IAgotModelVisitor;
+import com.motif.agot.logic.flow.IAgotModel;
 import com.motif.agot.state.cards.AgendaCard;
 import com.motif.agot.state.cards.AttachmentCard;
 import com.motif.agot.state.cards.Card;
@@ -51,8 +50,6 @@ public class AgotPlayer implements IAgotModel {
 	private AgotPlayer nextPlayer;
 	public void setNextPlayer (AgotPlayer nextPlayer) { this.nextPlayer = nextPlayer; }
 	public AgotPlayer getNextPlayer () { return nextPlayer; }
-	
-	@Override public String getLabel () { return getName (); }
 	
 	/********************************************************************************/
 	/****  PLAYER GOLD  *************************************************************/
@@ -455,6 +452,9 @@ public class AgotPlayer implements IAgotModel {
 	
 	@Override public String toString () { return name; }
 	
-	@Override public void accept (IAgotModelVisitor visitor) { visitor.visit (this); }
+	@Override
+	public String getLabel() {
+		return this.name;
+	}
 	
 } // AgotPlayer

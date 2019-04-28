@@ -4,7 +4,7 @@ import com.motif.agot.ang.text.untilconditions.AngUntilTheEndOfTheChallenge;
 import com.motif.agot.ang.text.untilconditions.AngUntilTheEndOfThePhase;
 import com.motif.agot.ang.text.untilconditions.IAngUntilCondition;
 import com.motif.agot.ang.text.untilconditions.IAngUntilConditionVisitor;
-import com.motif.agot.logic.events.Event;
+import com.motif.agot.logic.events.AgotEvent;
 import com.motif.agot.logic.events.IEventVisitor;
 import com.motif.agot.logic.events.list.ApplyLastingEffectEvent;
 import com.motif.agot.logic.events.list.ChallengeEndEvent;
@@ -32,7 +32,7 @@ import com.motif.agot.state.AgotGame;
 
 public class UntilChecker implements IEventVisitor {
 
-	public static boolean check (Event event, IAngUntilCondition untilCond, AgotGame game) {
+	public static boolean check (AgotEvent event, IAngUntilCondition untilCond, AgotGame game) {
 		UntilChecker checker = new UntilChecker (game);
 		boolean check = event.accept (checker);
 		if (check) {
@@ -50,7 +50,7 @@ public class UntilChecker implements IEventVisitor {
 		this.game = game;
 	} // UntilChecker
 	
-	private abstract class EventUntilChecker<E extends Event> implements IAngUntilConditionVisitor {
+	private abstract class EventUntilChecker<E extends AgotEvent> implements IAngUntilConditionVisitor {
 		@SuppressWarnings("unused")
 		protected E event;
 		protected EventUntilChecker (E event) {
@@ -58,7 +58,7 @@ public class UntilChecker implements IEventVisitor {
 		} // EventUntilChecker
 	} // EventTriggerChecker
 	
-	private abstract class StandardEventUntilChecker<E extends Event> extends EventUntilChecker<E> {
+	private abstract class StandardEventUntilChecker<E extends AgotEvent> extends EventUntilChecker<E> {
 		protected StandardEventUntilChecker (E event) { super (event); }
 		@Override public boolean visit (AngUntilTheEndOfThePhase untilCond) { return false; }
 		@Override public boolean visit (AngUntilTheEndOfTheChallenge untilCond) { return false; }

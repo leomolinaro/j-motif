@@ -5,13 +5,13 @@ import java.util.stream.Stream;
 import com.motif.agot.ang.enums.AngType;
 import com.motif.agot.ang.text.instants.AngPayNGold;
 import com.motif.agot.endpoint.AgotContext;
-import com.motif.agot.flow.request.IAgotModelVisitor;
-import com.motif.agot.flow.task.IAgotTask;
-import com.motif.agot.logic.events.Event;
+import com.motif.agot.logic.act.MarshallingPayCostStep.IAgotHasMarshallingPayCostStep;
+import com.motif.agot.logic.events.AgotEventProcess;
 import com.motif.agot.logic.events.list.MarshallEvent;
+import com.motif.agot.logic.flow.IAgotFlowStep;
 import com.motif.agot.logic.other.AbilityContext;
 import com.motif.agot.logic.other.FilterMatcher;
-import com.motif.agot.logic.visitors.CardEventCreator;
+import com.motif.agot.logic.phases.marshalling.IMarshallingPhaseStep;
 import com.motif.agot.logic.visitors.CostPayTester;
 import com.motif.agot.state.AgotGame;
 import com.motif.agot.state.AgotPlayer;
@@ -20,53 +20,66 @@ import com.motif.agot.state.cards.MarshallCard;
 import com.motif.shared.util.MotifConsole;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
-public class MarshallingAct extends Act {
+@RequiredArgsConstructor
+public class MarshallingAct extends Act implements IPhaseAct, IMarshallingPhaseStep, IAgotHasMarshallingPayCostStep {
 
-	@Getter private MarshallCard<?> card;
+	@Getter private final MarshallCard<?> card;
+	private final AgotPlayer player;
+	private final AgotGame game;
 	
-	private AgotPlayer player;
+	@Getter private final IHasPhaseAct parent;
+	@Override public IAgotFlowStep next(AgotContext context) { return this.parent.after(this, context); }
 	
-	public MarshallingAct (MarshallCard<?> card, AgotPlayer player, AgotGame game) {
-		super (game);
-		this.card = card;
-		this.player = player;
-	} // MarshallingTrigger
+	@Override
+	public final IAgotFlowStep start(AgotContext context) {
+		var cost = determineCost();
+		var ac = new AbilityContext(this.card /*or null?*/, this.player);
+		var payCostStep = new MarshallingPayCostStep(cost, ac, this.game, this);
+		return payCostStep;
+	}
 
 	@Override
-	public boolean canBeInitiated () {
-		if (!card.isControlledBy (player)) { return false; }
-		if (!card.isInHand ()) { return false; }
-		if (card.isLimited ()) {
-			if (player.getMarshalledLimited () > 0) { return false; }
-		} // if
-		if (card.isType (AngType.ATTACHMENT)) { if (!canBeAttached ()) { return false; } }
-		return true;
-	} // canBeInitiated
-
-	private boolean canBeAttached () {
-		return attachableTo ().findAny ().isPresent ();
-	} // canBeAttached
+	public IAgotFlowStep after(MarshallingPayCostStep actPayCostStep, AgotContext context) {
+		Stream<MarshallCard<?>> attachableTo = this.card.isType(AngType.ATTACHMENT) ? attachableTo () : null;
+		var event = new MarshallEvent(this.card, this.player, getDuplicate (), attachableTo, this.game); 
+		return new AgotEventProcess(event, this.game, this);
+	}
 	
-	private Stream<MarshallCard<?>> attachableTo () {
+	@Override
+	public boolean canBeInitiated () {
+		if (!this.card.isControlledBy(this.player)) { return false; }
+		if (!this.card.isInHand()) { return false; }
+		if (this.card.isLimited()) {
+			if (this.player.getMarshalledLimited() > 0) { return false; }
+		}
+		if (this.card.isType(AngType.ATTACHMENT)) { if (!canBeAttached()) { return false; } }
+		return true;
+	}
+
+	private boolean canBeAttached() {
+		return attachableTo().findAny().isPresent();
+	}
+	
+	private Stream<MarshallCard<?>> attachableTo() {
 		AttachmentCard att = (AttachmentCard) card;
 		Stream<MarshallCard<?>> attachable = game.players ().flatMap (p -> p.characters ());
 		if (att.hasRestriction ()) {
 			attachable = attachable.filter (card -> FilterMatcher.doesMatch (card, player, att.getRestriction ()));
-		} // if
+		}
 		return attachable;
-	} // attachableTo
+	}
 	
 	@Override
 	public boolean canBePaid () {
-		AngPayNGold cost = determineCost ().finalCost;
+		AngPayNGold cost = determineCost();
 		return CostPayTester.canBePaid (cost, card, player, game);
-	} // canBePaid
+	}
 	
-	private MarshallingCost determineCost () {
-		MarshallingCost mCost = new MarshallingCost ();
-		if (enterAsDuplicate ()) {
-			mCost.finalCost = new AngPayNGold (0);
+	private AngPayNGold determineCost() {
+		if (enterAsDuplicate()) {
+			return new AngPayNGold(0);
 		} else {
 			int cost = card.getCost ();
 //			ArrayList<DelayedEffect> appliedModifiers = new ArrayList<DelayedEffect> ();
@@ -75,11 +88,10 @@ public class MarshallingAct extends Act {
 //				if (delayedEffect.accept (modifier)) { appliedModifiers.add (delayedEffect); }
 //			} // for
 //			cost += modifier.costModifier;
-			mCost.finalCost = new AngPayNGold (cost);
+			return new AngPayNGold (cost);
 //			mCost.appliedModifiers = appliedModifiers;
 		} // if - else
-		return mCost;
-	} // determineCost
+	}
 	
 	private boolean enterAsDuplicate () {
 		return getDuplicate () != null;
@@ -95,10 +107,11 @@ public class MarshallingAct extends Act {
 	@Override
 	public String getLabel () { return MotifConsole.format ("Marshall {0}", card.getTitle ()); }
 
-	private class MarshallingCost {
-		// private ArrayList<DelayedEffect> appliedModifiers = new ArrayList<DelayedEffect> ();
-		private AngPayNGold finalCost;
-	} // MarshallingCost
+	@Override
+	public long getCardId() {
+		return this.card.getId();
+	}
+
 	
 //	@SuppressWarnings("unused")
 //	private class CostModifier implements IAngDelayedEffectVisitor {
@@ -117,42 +130,4 @@ public class MarshallingAct extends Act {
 //		
 //	} // CostModifier
 
-	@Override
-	protected ActPayCostStep getPayCostStep (AgotContext context) {
-		return new MarshallingPayCostStep ();
-	} // getPayCostStep
-
-	@Override
-	protected Event getEvent () {
-		Stream<MarshallCard<?>> attachableTo = card.isType (AngType.ATTACHMENT) ? attachableTo () : null;
-		Event event = new MarshallEvent (card, player, getDuplicate (), attachableTo, game); 
-		return event;
-	} // getEvent
-	
-	protected final class MarshallingPayCostStep extends ActPayCostStep {
-
-		@Override
-		public IAgotTask getStart (AgotContext context) {
-			MarshallingCost mCost = determineCost ();
-			
-			AbilityContext ac = new AbilityContext (card, player);
-			Event event = CardEventCreator.getEvent (mCost.finalCost, ac, game);
-			return event.resolveEffect (context);
-			// if (mCost.appliedModifiers != null) {
-			// 	 for (DelayedEffect delEff : mCost.appliedModifiers) {
-			// 	   game.removeDelayedEffect (delEff);
-			// 	   DebugUtil.todo ("print used modifiers");
-			// 	 } // for			
-			// } // if
-		} // getStart
-		
-	} // MarshallingPayCostStep
-	
-	
-
-	@Override public void accept (IAgotModelVisitor visitor) { visitor.visit (this); }
-
-	@Override
-	protected ActChooseTargetStep getChooseTargetStep (AgotContext context) { return null; }
-
-} // MarshallingTrigger
+}

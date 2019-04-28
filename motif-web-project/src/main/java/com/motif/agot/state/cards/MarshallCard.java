@@ -21,7 +21,7 @@ public abstract class MarshallCard<A extends AngMarshallCard> extends DrawCard<A
 		attachments.remove (card);
 		attachmentIds.remove (card.getId ());
 		if (attachments.isEmpty ()) { attachments = null; attachmentIds = null; }
-	} // removeAttachment
+	}
 	public boolean hasAttachment (AttachmentCard card) { return attachments != null && attachments.contains (card); }
 	public boolean hasAttachments () { return attachments != null && !attachments.isEmpty (); }
 	public void addAttachment (AttachmentCard card) {
@@ -29,7 +29,7 @@ public abstract class MarshallCard<A extends AngMarshallCard> extends DrawCard<A
 		attachments.add (card);
 		if (attachmentIds == null) { attachmentIds = new ArrayList<Long> (); }
 		attachmentIds.add (card.getId ());
-	} // addAttachment
+	}
 
 	private ArrayList<MarshallCard<?>> duplicates = null;
 	@Expose private ArrayList<Long> duplicateIds = null;
@@ -38,7 +38,7 @@ public abstract class MarshallCard<A extends AngMarshallCard> extends DrawCard<A
 		duplicates.remove (card);
 		duplicateIds.remove (card.getId ());
 		if (duplicates.isEmpty ()) { duplicates = null; duplicateIds = null; }
-	} // removeDuplicate
+	}
 	public boolean hasDuplicate (MarshallCard<?> card) { return duplicates != null && duplicates.contains (card); }
 	public boolean hasduplicates () { return duplicates != null && !duplicates.isEmpty (); }
 	public void addDuplicate (MarshallCard<?> card) {
@@ -46,35 +46,35 @@ public abstract class MarshallCard<A extends AngMarshallCard> extends DrawCard<A
 		duplicates.add (card);
 		if (duplicateIds == null) { duplicateIds = new ArrayList<Long> (); }
 		duplicateIds.add (card.getId ());
-	} // addDuplicate
+	}
 	
 	private ArrayList<AngToken> tokens = null;
 	public void addToken (AngToken token, AgotContext context) {
 		if (tokens == null) { tokens = new ArrayList<AngToken> (); }
 		tokens.add (token);
-	} // addToken
+	}
 	public void removeToken (AngToken token, AgotContext context) {
 		tokens.remove (token);
 		if (tokens.isEmpty ()) { tokens = null; }
-	} // removeToken
+	}
 	public boolean hasToken (AngToken token) {
 		return tokens != null && tokens.contains (token);
-	} // hasToken
+	}
 	
 	public MarshallCard (A ang, AgotPlayer owner) {
 		super (ang, owner);
-	} // MarshallCard
+	}
 
 	public boolean isDuplicate (MarshallCard<?> card) {
 		return isUnique () && getTitle ().equals (card.getTitle ());
-	} // isDuplicate
+	}
 	
 	public final boolean isUnique () { return ang.isUnique (); }
 	
 	public abstract void accept (MarshallCardVisitor visitor);
 	
 	public interface MarshallCardVisitor extends AttachmentCardVisitor, LocationCardVisitor, CharacterCardVisitor {
-	} // MarshallCardVisitor
+	}
 	
 	private boolean saved;
 	public void setSaved () { saved = true; }
@@ -83,4 +83,4 @@ public abstract class MarshallCard<A extends AngMarshallCard> extends DrawCard<A
 	
 	public boolean isLimited () { return ang.isLimited (); }
 	
-} // MarshallCard
+}
