@@ -15,7 +15,7 @@ public class MilitartyClaimRequest extends AAgotModelRequest<CharacterCard> {
 
 	public MilitartyClaimRequest(List<CharacterCard> modelChoices, AgotPlayer player, IHasMilitartyClaimRequest parent) {
 		super(
-				AAgotRequest.SELECT_CHARACTER_TO_KILL,
+				AgotRequestType.SELECT_CHARACTER_TO_KILL,
 				modelChoices,
 				player,
 				AgotText.request().selectCharacterToKill(player)
@@ -27,9 +27,5 @@ public class MilitartyClaimRequest extends AAgotModelRequest<CharacterCard> {
 	@Getter private final IHasMilitartyClaimRequest parent;
 	@Override public IAgotFlowStep next(AgotContext context) { return this.parent.after(this, context); }
 	
-	@Override
-	protected AAgotOption modelToOption(String key, CharacterCard model) {
-		return new AgotCardOption(key, model.getId(), "Select");
-	}
 	
 }

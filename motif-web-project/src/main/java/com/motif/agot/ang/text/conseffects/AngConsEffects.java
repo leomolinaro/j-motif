@@ -113,4 +113,4 @@ public class AngConsEffects {
 		@Override public boolean accept (IAngConsEffectVisitor visitor) { return visitor.visit (this); }
 	}
 	
-} // AngConsEffects
+}

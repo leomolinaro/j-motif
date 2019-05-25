@@ -9,20 +9,31 @@ import lombok.Getter;
 
 public abstract class AActivateNextStep<S extends IStep> extends APhaseStep<S> {
 
-	private AgotPlayer activePlayer;
+	@Getter private AgotPlayer activePlayer;
 	
-	@Getter private AgotPlayer nextPlayer;
-	
-	public AActivateNextStep (AgotPlayer activePlayer, AgotGame game) {
-		super (game);
+	public AActivateNextStep(AgotPlayer activePlayer, AgotGame game) {
+		super(game);
 		this.activePlayer = activePlayer;
 	}
 
 	@Override
 	public final IAgotFlowStep stepStart(AgotContext context) {
-		this.nextPlayer = this.game.getNextPlayer(this.activePlayer);
-		if (this.nextPlayer == this.game.getFirstPlayer()) { this.nextPlayer = null; }
-		if (this.nextPlayer != null) { this.game.log().becomesActivePlayer(this.nextPlayer, context); }
+		var prevPlayer = this.activePlayer;
+		if (prevPlayer == null) {
+			this.activePlayer = this.game.getFirstPlayer();
+			this.activePlayer.setActive();
+			this.game.log().becomesActivePlayer(this.activePlayer, context);
+		} else {
+			var nextPlayer = this.game.getNextPlayer(prevPlayer);
+			if (nextPlayer == this.game.getFirstPlayer()) {
+				this.activePlayer = null;
+			} else {
+				nextPlayer.setActive();
+				this.game.log().becomesActivePlayer(nextPlayer, context);
+				this.activePlayer = nextPlayer;
+			}
+			prevPlayer.setInactive();
+		}
 		return null;
 	}
 	

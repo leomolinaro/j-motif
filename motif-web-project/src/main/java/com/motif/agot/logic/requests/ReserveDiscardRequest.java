@@ -15,7 +15,7 @@ public class ReserveDiscardRequest extends AAgotModelRequest<DrawCard<?>> {
 
 	public ReserveDiscardRequest(List<DrawCard<?>> modelChoices, AgotPlayer player, IHasReserveDiscardRequest parent) {
 		super(
-				AAgotRequest.SELECT_CARD_TO_DISCARD,
+				AgotRequestType.SELECT_CARD_TO_DISCARD,
 				modelChoices,
 				player,
 				AgotText.request().selectCardToDiscard(player)
@@ -26,10 +26,5 @@ public class ReserveDiscardRequest extends AAgotModelRequest<DrawCard<?>> {
 	public interface IHasReserveDiscardRequest extends IAgotFlowProcess { public IAgotFlowStep after(ReserveDiscardRequest decision, AgotContext context); }
 	@Getter private final IHasReserveDiscardRequest parent; 
 	@Override public IAgotFlowStep next(AgotContext context) { return this.parent.after(this, context); }
-	
-	@Override
-	protected AAgotOption modelToOption(String key, DrawCard<?> model) {
-		return new AgotCardOption(key, model.getId(), "Select");
-	}
 	
 }

@@ -1,4 +1,4 @@
-package com.motif.shared.endpoint;
+package com.motif.main;
 
 import java.io.IOException;
 
@@ -28,11 +28,11 @@ import com.motif.shared.endpoint.sessions.MotifUser;
 import com.motif.shared.util.DebugUtil;
 
 @ServerEndpoint(
-	value = "/motif/{username}",
+	value = "/motif/websocket/{username}",
 	decoders = MessageDecoder.class,
 	encoders = MessageEncoder.class
-) // @ServerEndpoint
-public class MotifEndpoint {
+)
+public class MotifWebsocketEndpoint {
 	
     private static MotifSessionManager sessionManager = MotifSessionManager.getInstance ();
     private static AgotEndpoint agotEndpoint = AgotEndpoint.getInstance ();
@@ -46,7 +46,7 @@ public class MotifEndpoint {
         message.setSession (mSession);
         message.setType (MessageOut.NOTIFY_OPEN_CONNECTION);        
         sendAll (message);
-    } // onOpen
+    }
  
     @OnMessage
     public void onMessage (Session session, MessageIn message) throws IOException {
@@ -60,8 +60,8 @@ public class MotifEndpoint {
     		case MessageIn.BRIT_INIT_STATE: britEndpoint.initState (mSession); break;
     		case MessageIn.BRIT_START: britEndpoint.start (mSession); break;
     		case MessageIn.BRIT_ACTION_CHOICE: britEndpoint.actionChoice (BritGson.g ().fromJson (message.getData (), BritResponse.class), mSession); break;
-    	} // switch
-    } // onMessage
+    	}
+    }
  
     @OnClose
     public void onClose (Session session) throws IOException {
@@ -71,7 +71,7 @@ public class MotifEndpoint {
         message.setSession (mSession);
         message.setType (MessageOut.NOTIFY_CLOSE_CONNECTION);        
         sendAll (message);
-    } // onClose
+    }
  
     @OnError
     public void onError (Session session, Throwable throwable) {
@@ -82,26 +82,26 @@ public class MotifEndpoint {
         message.setType (MessageOut.NOTIFY_ERROR);
         message.setData (throwable.toString ());
         sendAll (message);
-    } // onError
+    }
 	
 	public static void send (MessageOut message, MotifSession toSession) {
 		try {
 			toSession.getSender ().sendObject (message);
 		} catch (IOException | EncodeException e) {
 			e.printStackTrace ();
-		} // try - catch
-	} // send
+		}
+	}
 	
 	public static void sendAll (MessageOut message) {
     	for (MotifSession session : sessionManager.sessions ()) {
     		send (message, session);    		
-    	} // for
-	} // broadcast
+    	}
+	}
 	
 	public static void send (MessageOut message, MotifUser toUser) {
 		for (MotifSession session : toUser.sessions ()) {
 			send (message, session);
-		} // for
-	} // send
+		}
+	}
     
-} // MotifEndpoint
+}

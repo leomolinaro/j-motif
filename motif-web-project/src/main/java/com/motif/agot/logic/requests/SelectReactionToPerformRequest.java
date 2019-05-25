@@ -15,7 +15,7 @@ public class SelectReactionToPerformRequest extends AAgotModelOptionalRequest<Re
 
 	public SelectReactionToPerformRequest(List<ReactionAct> models, AgotPlayer player, IHasSelectReactionToPerformRequest parent) {
 		super(
-				AAgotRequest.SELECT_REACTION_TO_PERFORM,
+				AgotRequestType.SELECT_REACTION_TO_PERFORM,
 				models,
 				player,
 				AgotText.request().selectReactionToPerform(player)
@@ -26,10 +26,5 @@ public class SelectReactionToPerformRequest extends AAgotModelOptionalRequest<Re
 	public interface IHasSelectReactionToPerformRequest extends IAgotFlowProcess { public IAgotFlowStep after(SelectReactionToPerformRequest decision, AgotContext context); }
 	@Getter private final IHasSelectReactionToPerformRequest parent; 
 	@Override public IAgotFlowStep next(AgotContext context) { return this.parent.after(this, context); }
-	
-	@Override
-	protected AAgotOption modelToOption(String key, ReactionAct model) {
-		return new AgotCardOption(key, model.getTrigCard().getId(), "React");
-	}
 	
 }

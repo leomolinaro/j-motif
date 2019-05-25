@@ -71,9 +71,8 @@ public class ChallengesPhase extends APhase<IChallengesPhaseStep> implements
 
 	@Override
 	public APhaseStep<IChallengesPhaseStep> after(StartChallengesPhaseStep step, AgotContext context) {
-		game.setRemainingChallenges (null);
-		this.activePlayer = this.game.getFirstPlayer();
-		return new ChallengesActionStep(this.game, this);
+		game.setRemainingChallenges(null);
+		return new ActivateNextChallengesStep(null, this.game, this);
 	}
 
 	@Override
@@ -134,12 +133,13 @@ public class ChallengesPhase extends APhase<IChallengesPhaseStep> implements
 	
 	@Override
 	public APhaseStep<IChallengesPhaseStep> after(ActivateNextChallengesStep step, AgotContext context) {
-		var nextPlayer = step.getNextPlayer();
-		if (nextPlayer == null) {
+		var activePlayer = step.getActivePlayer();
+		if (activePlayer == null) {
+			this.activePlayer = null;
 			return new EndChallengesPhaseStep(this.game, this);
 		} else {
+			this.activePlayer = activePlayer;
 			this.game.setRemainingChallenges(null);
-			this.activePlayer = nextPlayer;
 			return new ChallengesActionStep(this.game, this);
 		}
 	}

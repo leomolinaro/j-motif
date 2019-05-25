@@ -69,7 +69,7 @@ public class GameLog {
 	public void duplicates (AgotPlayer player, MarshallCard<?> toMarshall, AgotContext context) { add (context, "{0} duplicates {1}.", player.getName (), toMarshall.getTitle ()); }
 	
 	// CHALLENGES PHASE INFO
-	public void initiatesAchallenge (AgotPlayer attacker, AgotPlayer defender, AngIcon challengeType, AgotContext context) { add (context, "{0} initiates a {1} challenge against {2}.", attacker.getName (), challengeType.getLabel (), defender.getName ()); }
+	public void initiatesAchallenge (AgotPlayer attacker, AgotPlayer defender, AngIcon challengeType, AgotContext context) { add (context, "{0} initiates a {1} challenge against {2}.", attacker.getName (), challengeType.getLabel(), defender.getName ()); }
 	public void declaresAsAttacker (AgotPlayer player, CharacterCard att, AgotContext context) { add (context, "{0} declares {1} as attacker.", player.getName (), att.getTitle ()); }
 	public void charactedIsBypassed (AgotPlayer player, CharacterCard bypassed, AgotContext context) { add (context, "{0} bypassed {1} with stealth.", player.getName (), bypassed.getTitle ()); }
 	public void declaresAsDefender (AgotPlayer player, CharacterCard defender, AgotContext context) { add (context, "{0} declares {1} as defender.", player.getName (), defender.getTitle ()); }

@@ -15,7 +15,7 @@ public class ChooseAChallengeTypeRequest extends AAgotModelOptionalRequest<AngIc
 
 	public ChooseAChallengeTypeRequest(List<AngIcon> modelChoices, AgotPlayer player, IHasChooseAChallengeTypeRequest parent) {
 		super(
-				AAgotRequest.SELECT_CHALLENGE_TO_INITIATE,
+				AgotRequestType.SELECT_CHALLENGE_TO_INITIATE,
 				modelChoices,
 				player,
 				AgotText.request().selectChallengeToInitiate(player)
@@ -26,10 +26,5 @@ public class ChooseAChallengeTypeRequest extends AAgotModelOptionalRequest<AngIc
 	public interface IHasChooseAChallengeTypeRequest extends IAgotFlowProcess { public IAgotFlowStep after(ChooseAChallengeTypeRequest decision, AgotContext context); }
 	@Getter private final IHasChooseAChallengeTypeRequest parent; 
 	@Override public IAgotFlowStep next(AgotContext context) { return this.parent.after(this, context); }
-	
-	@Override
-	protected AAgotOption modelToOption(String key, AngIcon icon) {
-		return new AgotGenericOption(key, icon.getLabel());
-	}
 	
 }

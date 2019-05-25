@@ -33,7 +33,23 @@ import com.motif.agot.ang.text.filters.AngChallengeFilter.ChFB;
 import com.motif.agot.ang.text.filters.AngPlayerFilter.PFB;
 
 public enum CoreSet implements AgotSetCard {
-	A_CLASH_OF_KINGS, A_FEAST_FOR_CROWS, A_GAME_OF_THRONES, A_NOBLE_CAUSE, A_STORM_OF_SWORDS, BUILDING_ORDERS, CALLING_THE_BANNERS, CALM_OVER_WESTEROS,
+   /**
+ 	* A Clash of Kings
+ 	* Neutral.
+ 	* Plot. Income: 4. Initiative: 9. Claim: 1. Reserve: 6. Plot deck limit: 2.
+ 	* Noble.
+ 	* Reaction: After you win a  challenge, move 1 power from the losing opponent's faction card to your own.
+ 	* Core Set #1.
+  	*/A_CLASH_OF_KINGS,
+   /**
+  	* A Feast for Crows
+  	* Neutral.
+  	* Plot. Income: 6. Initiative: 1. Claim: 1. Reserve: 4. Plot deck limit: 1.
+  	* Edict.
+  	* Reaction: After you win dominance, gain 2 power for your faction.
+  	* Core Set #2.
+  	*/A_FEAST_FOR_CROWS,
+  	A_GAME_OF_THRONES, A_NOBLE_CAUSE, A_STORM_OF_SWORDS, BUILDING_ORDERS, CALLING_THE_BANNERS, CALM_OVER_WESTEROS,
 	CONFISCATION, COUNTING_COPPERS, FILTHY_ACCUSATIONS, FORTIFIED_POSITION, HEADS_ON_SPIKES, JOUSTING_CONTEST, MARCHED_TO_THE_WALL, MARCHING_ORDERS, 
 	NAVAL_SUPERIORITY, POWER_BEHIND_THE_THRONE, REBUILDING, REINFORCEMENTS, SNEAK_ATTACK, SUMMONS, SUPPORTING_THE_FAITH, TAXATION, 
 	THE_WINDS_OF_WINTER, WILDFIRE_ASSAULT,
@@ -76,7 +92,8 @@ public enum CoreSet implements AgotSetCard {
 	PLAZA_OF_PUNISHMENT, DOTHRAKI_SEA, ILLYRIOS_ESTATE,
 	HIGHGARDEN, THE_MANDER, ROSE_GARDEN,
 
-	SEAL_OF_THE_HAND, BODYGUARD, LITTLE_BIRD, MILK_OF_THE_POPPY, NOBLE_LINEAGE, SYRIOS_TRAINING,
+	SEAL_OF_THE_HAND, BODYGUARD, LITTLE_BIRD, MILK_OF_THE_POPPY,
+	NOBLE_LINEAGE, SYRIOS_TRAINING,
 	LIGHTBRINGER, THROWING_AXE, WIDOWS_WAIL, DAWN,
 	LONGCLAW, ICE, DROGOS_ARAKH, HEARTSBANE, 
 	
@@ -101,10 +118,10 @@ public enum CoreSet implements AgotSetCard {
 		boolean unique = true;
 		boolean noUniq = false;
 		switch (card) {
-			/*DONE*/case A_CLASH_OF_KINGS: return new AngPlotCard (card, 1, "A Clash of Kings", AngFaction.NEUTRAL, noLoy, 4, 9, 1, 6,
-					TB.i ().traits (AngTrait.NOBLE).reaction (RB.i ().afterYouWinAChallenge (ChFB.i ().power ()).movePowersFromAFactionToAFaction (1, PFB.i ().theLoosingOpponent (), PFB.i ().you ())));
-			/*DONE*/case A_FEAST_FOR_CROWS: return new AngPlotCard (card, 2, "A Feast for Crows", AngFaction.NEUTRAL, noLoy, 6, 1, 1, 4,
-					TB.i ().traits (AngTrait.EDICT).reaction (RB.i ().afterYouWinDominance ().gainPowerForYourFaction (2)));
+			/* DONE */case A_CLASH_OF_KINGS: return new AngPlotCard(card, 1, "A Clash of Kings", AngFaction.NEUTRAL, noLoy, 4, 9, 1, 6,
+				        TB.i().traits(AngTrait.NOBLE).reaction(RB.i().afterYouWinAChallenge(ChFB.i().power()).movePowersFromAFactionToAFaction(1, PFB.i().theLoosingOpponent(), PFB.i().you())));
+			/* DONE */case A_FEAST_FOR_CROWS: return new AngPlotCard(card, 2, "A Feast for Crows", AngFaction.NEUTRAL, noLoy, 6, 1, 1, 4, 
+						TB.i().traits (AngTrait.EDICT).reaction (RB.i ().afterYouWinDominance ().gainPowerForYourFaction (2)));
 			case A_GAME_OF_THRONES: return new AngPlotCard (card, 3, "A Game of Thrones", AngFaction.NEUTRAL, noLoy, 4, 2, 1, 6, TB.i ());
 			case A_NOBLE_CAUSE: return new AngPlotCard (card, 4, "A Noble Cause", AngFaction.NEUTRAL, noLoy, 5, 0, 1, 6, TB.i ());
 			/*DONE*/case A_STORM_OF_SWORDS: return new AngPlotCard (card, 5, "A Storm of Swords", AngFaction.NEUTRAL, noLoy, 3, 8, 1, 5,

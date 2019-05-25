@@ -16,8 +16,8 @@ public class ActivateNextMarshallingStep extends AActivateNextStep<IMarshallingP
 	@Getter private final IHasActivateNextMarshallingStep parent; 
 	@Override public APhaseStep<IMarshallingPhaseStep> next(AgotContext context) { return this.parent.after(this, context); }
 	
-	public ActivateNextMarshallingStep (AgotPlayer activePlayer, AgotGame game, IHasActivateNextMarshallingStep parent) {
-		super (activePlayer, game);
+	public ActivateNextMarshallingStep(AgotPlayer activePlayer, AgotGame game, IHasActivateNextMarshallingStep parent) {
+		super(activePlayer, game);
 		this.parent = parent;
 	}
 

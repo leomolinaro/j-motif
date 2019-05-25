@@ -35,7 +35,7 @@ import lombok.RequiredArgsConstructor;
 public abstract class TrigAbilityAct<T extends AngTrigAbility> extends Act implements IAgotHasTrigAbilityPayCostStep, IAgotHasChooseATargetCardRequest {
 
 	@Getter protected final T trigAbility;
-	public TextCard<?> getTrigCard () { return ac.thisCard; }
+	public TextCard<?> getTrigCard() { return ac.thisCard; }
 	protected final AbilityContext ac;
 	protected final AgotGame game;
 	

@@ -15,7 +15,7 @@ public class ChooseDefenderCharacterRequest extends AAgotModelOptionalRequest<Ch
 
 	public ChooseDefenderCharacterRequest(List<CharacterCard> modelChoices, AgotPlayer player, IHasChooseDefenderCharacterRequest parent) {
 		super(
-				AAgotRequest.SELECT_CHARACTER_TO_DEFEND,
+				AgotRequestType.SELECT_CHARACTER_TO_DEFEND,
 				modelChoices,
 				player,
 				 AgotText.request().selectCharacterToDefend(player)
@@ -26,10 +26,5 @@ public class ChooseDefenderCharacterRequest extends AAgotModelOptionalRequest<Ch
 	public interface IHasChooseDefenderCharacterRequest extends IAgotFlowProcess { public IAgotFlowStep after(ChooseDefenderCharacterRequest decision, AgotContext context); }
 	@Getter private final IHasChooseDefenderCharacterRequest parent;
 	@Override public IAgotFlowStep next(AgotContext context) { return this.parent.after(this, context); }
-	
-	@Override
-	protected AAgotOption modelToOption(String key, CharacterCard model) {
-		return new AgotCardOption(key, model.getId(), "Defend");
-	}
 	
 }

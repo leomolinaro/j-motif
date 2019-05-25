@@ -11,7 +11,8 @@ import com.google.gson.annotations.Expose;
 import com.motif.agot.ang.enums.AngArea;
 import com.motif.agot.ang.enums.AngType;
 import com.motif.agot.endpoint.AgotContext;
-import com.motif.agot.logic.flow.IAgotModel;
+import com.motif.agot.logic.flow.IAgotModelChoice;
+import com.motif.agot.logic.requests.AgotChoice;
 import com.motif.agot.state.cards.AgendaCard;
 import com.motif.agot.state.cards.AttachmentCard;
 import com.motif.agot.state.cards.Card;
@@ -30,7 +31,7 @@ import com.motif.shared.util.StreamUtil;
 
 import lombok.Getter;
 
-public class AgotPlayer implements IAgotModel {
+public class AgotPlayer implements IAgotModelChoice {
 	
 	/********************************************************************************/
 	/****  PLAYER BASE  *************************************************************/
@@ -429,6 +430,14 @@ public class AgotPlayer implements IAgotModel {
 	public void resetLimitedCounter () { marshalledLimited = 0; }
 	
 	/********************************************************************************/
+	/****  ACTIVE FLAG  *************************************************************/
+	/********************************************************************************/
+	
+	@Getter private boolean active = false;
+	public void setActive() { this.active = true; }
+	public void setInactive() { this.active = false; }
+	
+	/********************************************************************************/
 	/****  TO STRING  ***************************************************************/
 	/********************************************************************************/
 	
@@ -453,8 +462,8 @@ public class AgotPlayer implements IAgotModel {
 	@Override public String toString () { return name; }
 	
 	@Override
-	public String getLabel() {
-		return this.name;
+	public AgotChoice getChoice() {
+		return AgotChoice.selectPlayerChoice(this);
 	}
-	
-} // AgotPlayer
+		
+}

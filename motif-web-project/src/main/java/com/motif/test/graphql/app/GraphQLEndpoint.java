@@ -13,8 +13,8 @@ import com.mongodb.client.MongoDatabase;
 import com.motif.test.graphql.model.LinkRepository;
 import com.motif.test.graphql.model.User;
 import com.motif.test.graphql.model.UserRepository;
-import com.motif.test.graphql.service.LinkResolver;
-import com.motif.test.graphql.service.Query;
+import com.motif.test.graphql.service.LinkService;
+import com.motif.test.graphql.service.UserService;
 
 import graphql.ExceptionWhileDataFetching;
 import graphql.GraphQLError;
@@ -34,6 +34,7 @@ public class GraphQLEndpoint extends SimpleGraphQLServlet {
 	private static final UserRepository userRepository;
 	
 	static {
+		System.out.println("CIAO");
         //Change to `new MongoClient("mongodb://<host>:<port>/hackernews")`
         //if you don't have Mongo running locally on port 27017
         @SuppressWarnings("resource")
@@ -47,17 +48,17 @@ public class GraphQLEndpoint extends SimpleGraphQLServlet {
     }
 
     private static GraphQLSchema buildSchema() {
-    	Query query = new Query(linkRepository, userRepository);
-        LinkResolver linkResolver = new LinkResolver(userRepository);
-        //SigninResolver signinResolver = new SigninResolver();
-        //Mutation mutation = new Mutation(linkRepository, userRepository);
+    	var linkService = new LinkService(linkRepository, userRepository);
+    	var userService = new UserService(userRepository);
         return new GraphQLSchemaGenerator()
         		.withResolverBuilders(
         				new AnnotatedResolverBuilder(),
-        				new PublicResolverBuilder("com.motif.test.graphql")
+        				new PublicResolverBuilder("com.motif.test.graphql"),
+        				new PublicResolverBuilder("com.motif.agot.state")
         		)
-                .withOperationsFromSingletons(query)
-                .withOperationsFromSingleton(linkResolver)
+                .withOperationsFromSingletons(linkService)
+                .withOperationsFromSingletons(userService)
+                .withNestedResolverBuilders(new AnnotatedResolverBuilder()) // Only the annotated stuff gets exposed (default is AnnotatedResolverBuilder + BeanResolverBuilder) 
                 //.withNestedResolverBuildersForType(Link.class, new BeanResolverBuilder("com.motif.test.graphql.service"))
                 //.withNestedResolverBuildersForType(Link.class, signinResolver)
                 .generate();

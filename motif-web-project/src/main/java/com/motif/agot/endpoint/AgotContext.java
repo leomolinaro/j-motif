@@ -2,6 +2,7 @@ package com.motif.agot.endpoint;
 
 import com.google.gson.annotations.Expose;
 import com.motif.agot.endpoint.clientstate.AgotReduxActionList;
+import com.motif.agot.state.AgotPlayer;
 import com.motif.shared.endpoint.MotifContext;
 import com.motif.shared.endpoint.sessions.MotifSession;
 
@@ -13,26 +14,28 @@ import lombok.RequiredArgsConstructor;
 public class AgotContext extends MotifContext {
 
 	@Getter private MotifSession session;
+	@Expose @Getter private final String player;
+	@Expose @Getter private final String opponent;
 	
 	private AgotReduxActionList actions;
 	public AgotReduxActionList actions () {
 		if (actions == null) { actions = new AgotReduxActionList (); }
 		return this.actions;
-	} // actions
+	}
 	
 	public static AgotContext create (MotifSession session) {
-		AgotContext context = new AgotContext (
-				session == null ? null : session.getUsername(),
-				session == null ? null : session.getUsername().equals("leo") ? "fede" : "leo");
+		AgotContext context = new AgotContext (session.getUsername(), getOpponent(session.getUsername()));
 		context.session = session;
 		return context;
-	} // createAgotContext
+	}
 	
-	@Expose private final String player;
-	@Expose private final String opponent;
+	public static AgotContext create(AgotPlayer player) {
+		var context = new AgotContext(player.getUsername(), getOpponent(player.getUsername()));
+		return context;
+	}
 	
-	public String getPlayerId() { return session.getUsername(); }
+	private static String getOpponent(String player) {
+		return player.equals("leo") ? "fede" : "leo";
+	}
 	
-	public String getOpponentId() { return session.getUsername().equals("leo") ? "fede" : "leo"; }
-
-} // AgotContext
+}

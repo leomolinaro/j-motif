@@ -16,7 +16,7 @@ public class AttachToRequest extends AAgotModelRequest<MarshallCard<?>> {
 
 	public AttachToRequest(List<MarshallCard<?>> modelChoices, AttachmentCard attachment, AgotPlayer player, IHasAttachToRequest parent) {
 		super(
-				AAgotRequest.SELECT_CARD_TO_ATTACH,
+				AgotRequestType.SELECT_CARD_TO_ATTACH,
 				modelChoices,
 				player,
 				AgotText.request ().selectCardToAttach(player, attachment)
@@ -27,10 +27,5 @@ public class AttachToRequest extends AAgotModelRequest<MarshallCard<?>> {
 	public interface IHasAttachToRequest extends IAgotFlowProcess { public IAgotFlowStep after(AttachToRequest decision, AgotContext context); }
 	@Getter private final IHasAttachToRequest parent;
 	@Override public IAgotFlowStep next(AgotContext context) { return this.parent.after(this, context); }
-	
-	@Override
-	protected AAgotOption modelToOption(String key, MarshallCard<?> model) {
-		return new AgotCardOption(key, model.getId(), "Marshall");
-	}
 	
 }

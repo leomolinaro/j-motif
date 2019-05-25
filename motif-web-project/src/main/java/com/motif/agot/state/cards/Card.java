@@ -5,11 +5,12 @@ import com.motif.agot.ang.cards.AngCard;
 import com.motif.agot.ang.enums.AngFaction;
 import com.motif.agot.ang.enums.AngType;
 import com.motif.agot.endpoint.AgotContext;
-import com.motif.agot.logic.flow.IAgotModel;
+import com.motif.agot.logic.flow.IAgotModelChoice;
+import com.motif.agot.logic.requests.AgotChoice;
 import com.motif.agot.state.AgotPlayer;
 import com.motif.shared.util.SB;
 
-public abstract class Card<A extends AngCard> implements IAgotModel {
+public abstract class Card<A extends AngCard> implements IAgotModelChoice {
 	
 	/********************************************************************************/
 	/****  CARD BASE  ***************************************************************/
@@ -36,7 +37,12 @@ public abstract class Card<A extends AngCard> implements IAgotModel {
 	public boolean isFaction (AngFaction faction) { return ang.isFaction (faction); }
 	public final boolean isType (AngType type) { return ang.isType (type); }
 	
-	@Override public String getLabel () { return getTitle (); }
+	@Override public String toString() { return getTitle (); }
+	
+	@Override
+	public AgotChoice getChoice() {
+		return AgotChoice.selectCardChoice(this);
+	}
 	
 	/********************************************************************************/
 	/****  PLAYER REFERENCES  *******************************************************/
@@ -112,7 +118,5 @@ public abstract class Card<A extends AngCard> implements IAgotModel {
 		s.a (", powers: ").a (power).a (")");
 		return s.toString ();
 	} // toView
-	
-	@Override public String toString () { return ang.toString (); }
 	
 } // Card

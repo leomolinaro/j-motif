@@ -15,7 +15,7 @@ public class InterruptRequest extends AAgotModelOptionalRequest<InterruptAct> {
 
 	public InterruptRequest(List<InterruptAct> modelChoices, AgotPlayer player, IHasInterruptRequest parent) {
 		super(
-				AAgotRequest.SELECT_INTERRUPT_TO_PERFORM,
+				AgotRequestType.SELECT_INTERRUPT_TO_PERFORM,
 				modelChoices,
 				player,
 				AgotText.request().selectInterruptToPerform(player)
@@ -26,10 +26,5 @@ public class InterruptRequest extends AAgotModelOptionalRequest<InterruptAct> {
 	public interface IHasInterruptRequest extends IAgotFlowProcess { public IAgotFlowStep after(InterruptRequest decision, AgotContext context); }
 	@Getter private final IHasInterruptRequest parent; 
 	@Override public IAgotFlowStep next(AgotContext context) { return this.parent.after(this, context); }
-	
-	@Override
-	protected AAgotOption modelToOption(String key, InterruptAct model) {
-		return new AgotCardOption(key, model.getTrigCard().getId(), "Interrupt");
-	}
 	
 }

@@ -4,12 +4,12 @@ import com.motif.agot.endpoint.AgotContext;
 import com.motif.agot.logic.events.AgotEventProcess;
 import com.motif.agot.logic.events.IAgotHasEventProcess;
 import com.motif.agot.logic.flow.IAgotFlowStep;
-import com.motif.agot.logic.flow.IAgotModel;
+import com.motif.agot.logic.flow.IAgotModelChoice;
 
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public abstract class Act implements IAgotHasEventProcess, IAgotModel {
+public abstract class Act implements IAgotHasEventProcess, IAgotModelChoice {
 
 //	protected final AgotGame game;
 	

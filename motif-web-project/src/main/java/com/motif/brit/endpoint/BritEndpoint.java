@@ -8,7 +8,7 @@ import com.motif.brit.logic.play.BritPlay;
 import com.motif.brit.state.BritDatabase;
 import com.motif.brit.state.BritGame;
 import com.motif.brit.state.BritPlayer;
-import com.motif.shared.endpoint.MotifEndpoint;
+import com.motif.main.MotifWebsocketEndpoint;
 import com.motif.shared.endpoint.messages.MessageOut;
 import com.motif.shared.endpoint.messages.MessageOut.MotifApp;
 import com.motif.shared.endpoint.sessions.MotifSession;
@@ -52,7 +52,7 @@ public class BritEndpoint implements IBritSender {
 		}
 		context.actions ().initState (game, context, request); 
 		message.setData (context.actions ());
-		MotifEndpoint.send (message, session);
+		MotifWebsocketEndpoint.send (message, session);
 	}
 	
 	public void start(MotifSession session) {
@@ -81,7 +81,7 @@ public class BritEndpoint implements IBritSender {
 				oppMessage.setSession (context.getSession ());
 				oppMessage.setType (MessageOut.BRIT_REDUX_ACTION_LIST);
 				oppMessage.setData (actions);
-				MotifEndpoint.send (oppMessage, oppUser);
+				MotifWebsocketEndpoint.send (oppMessage, oppUser);
 				actions.removeLast ();
 			}
 		});
@@ -92,7 +92,7 @@ public class BritEndpoint implements IBritSender {
 			message.setSession (context.getSession ());
 			message.setType (MessageOut.BRIT_REDUX_ACTION_LIST);
 			message.setData (actions);
-			MotifEndpoint.send (message, user);
+			MotifWebsocketEndpoint.send (message, user);
 			actions.removeLast ();
 		}
 		

@@ -12,6 +12,8 @@ import com.motif.agot.logic.flow.IAgotFlowStep;
 import com.motif.agot.logic.other.AbilityContext;
 import com.motif.agot.logic.other.FilterMatcher;
 import com.motif.agot.logic.phases.marshalling.IMarshallingPhaseStep;
+import com.motif.agot.logic.requests.AgotChoice;
+import com.motif.agot.logic.requests.AgotChoice.AgotChoiceCardAction;
 import com.motif.agot.logic.visitors.CostPayTester;
 import com.motif.agot.state.AgotGame;
 import com.motif.agot.state.AgotPlayer;
@@ -105,13 +107,12 @@ public class MarshallingAct extends Act implements IPhaseAct, IMarshallingPhaseS
 	} // getDuplicate
 
 	@Override
-	public String getLabel () { return MotifConsole.format ("Marshall {0}", card.getTitle ()); }
+	public String toString() { return MotifConsole.format ("Marshall {0}", card.getTitle ()); }
 
 	@Override
 	public long getCardId() {
 		return this.card.getId();
 	}
-
 	
 //	@SuppressWarnings("unused")
 //	private class CostModifier implements IAngDelayedEffectVisitor {
@@ -130,4 +131,9 @@ public class MarshallingAct extends Act implements IPhaseAct, IMarshallingPhaseS
 //		
 //	} // CostModifier
 
+	@Override
+	public AgotChoice getChoice() {
+		return AgotChoice.selectCardActionChoice(this.card, AgotChoiceCardAction.MARSHALL);
+	}
+	
 }

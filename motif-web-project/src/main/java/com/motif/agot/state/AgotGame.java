@@ -40,6 +40,9 @@ import com.motif.agot.state.cards.PlotCard;
 import com.motif.agot.state.cards.TextCard;
 import com.motif.shared.util.ListUtil;
 
+import io.leangen.graphql.annotations.GraphQLQuery;
+import lombok.Getter;
+
 public class AgotGame {
 	
 	@Expose private HashMap<Long, Card<?>> cardMap = new HashMap<Long, Card<?>> ();
@@ -54,8 +57,8 @@ public class AgotGame {
 	public AgotPlayer getFirstPlayer () { return firstPlayer; }
 	public void setFirstPlayer (AgotPlayer firstPlayer, AgotContext context) {
 		this.firstPlayer = firstPlayer;
-		context.actions ().setFirstPlayer (firstPlayer);
-	} // setFirstPlayer
+		context.actions().setFirstPlayer(firstPlayer);
+	}
 
 	private ArrayList<AgotPlayer> players = new ArrayList<AgotPlayer> ();
 	public Stream<AgotPlayer> players () { return players.stream (); }
@@ -85,8 +88,9 @@ public class AgotGame {
 	
 	public AgotPlayer getNextPlayer (AgotPlayer activePlayer) { return activePlayer.getNextPlayer (); }
 	
+	@Getter(onMethod=@__(@GraphQLQuery(name = "round")))
 	@Expose private String round;
-	public String getRound () { return round; }
+//	public String getRound () { return round; }
 	public void setRound (String round, AgotContext context) { this.round = round; context.actions ().setPhase (round, phase, step); }
 	
 	@Expose private AngPhase phase;

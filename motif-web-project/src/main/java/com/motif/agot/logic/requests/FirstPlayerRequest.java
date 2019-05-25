@@ -14,7 +14,7 @@ public class FirstPlayerRequest extends AAgotModelRequest<AgotPlayer> {
 
 	public FirstPlayerRequest(List<AgotPlayer> modelChoices, AgotPlayer player, IHasFirstPlayerRequest parent) {
 		super(
-				AAgotRequest.SELECT_FIRST_PLAYER,
+				AgotRequestType.SELECT_FIRST_PLAYER,
 				modelChoices,
 				player,
 				AgotText.request().selectFirstPlayer(player)
@@ -25,10 +25,5 @@ public class FirstPlayerRequest extends AAgotModelRequest<AgotPlayer> {
 	public interface IHasFirstPlayerRequest extends IAgotFlowProcess { public IAgotFlowStep after(FirstPlayerRequest decision, AgotContext context); }
 	@Getter private final IHasFirstPlayerRequest parent; 
 	@Override public IAgotFlowStep next(AgotContext context) { return this.parent.after(this, context); }
-	
-	@Override
-	protected AAgotOption modelToOption(String key, AgotPlayer player) {
-		return new AgotGenericOption(key, player.getLabel());
-	}
 	
 }

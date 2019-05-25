@@ -1,19 +1,24 @@
 package com.motif.agot.ang.enums;
 
-import com.motif.agot.logic.flow.IAgotModel;
+import com.motif.agot.logic.flow.IAgotModelChoice;
+import com.motif.agot.logic.requests.AgotChoice;
 
-public enum AngIcon implements IAgotModel {
-	MILITARY ("Military"),
-	POWER ("Power"),
-	INTRIGUE ("Intrigue");
+import lombok.Getter;
 
-	private String label;
+public enum AngIcon implements IAgotModelChoice {
+	MILITARY("military"),
+	POWER("power"),
+	INTRIGUE("intrigue");
+
+	@Getter private final String label;
 	
-	private AngIcon (String label) {
+	private AngIcon(String label) {
 		this.label = label;
 	}
 	
 	@Override
-	public String getLabel () { return label; }
+	public AgotChoice getChoice() {
+		return AgotChoice.selectIconChoice(this);
+	}
 
 }

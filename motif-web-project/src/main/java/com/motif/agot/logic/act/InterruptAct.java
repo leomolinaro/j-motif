@@ -6,6 +6,8 @@ import com.motif.agot.logic.events.AgotEvent;
 import com.motif.agot.logic.flow.IAgotFlowProcess;
 import com.motif.agot.logic.flow.IAgotFlowStep;
 import com.motif.agot.logic.other.AbilityContext;
+import com.motif.agot.logic.requests.AgotChoice;
+import com.motif.agot.logic.requests.AgotChoice.AgotChoiceCardAction;
 import com.motif.agot.logic.visitors.TriggerChecker;
 import com.motif.agot.state.AgotGame;
 import com.motif.agot.state.AgotPlayer;
@@ -30,7 +32,7 @@ public final class InterruptAct extends TrigAbilityAct<AngInterrupt> {
 	@Override public IAgotFlowStep next(AgotContext context) { return this.parent.after(this, context); }
 
 	@Override
-	public String getLabel () { return MotifConsole.format ("Interrupt {0}", ac.thisCard.getTitle ()); }
+	public String toString() { return MotifConsole.format ("Interrupt {0}", ac.thisCard.getTitle ()); }
 
 	@Override
 	public boolean canBeInitiated() {
@@ -44,4 +46,9 @@ public final class InterruptAct extends TrigAbilityAct<AngInterrupt> {
 		return true;
 	}
 
+	@Override
+	public AgotChoice getChoice() {
+		return AgotChoice.selectCardActionChoice(this.getTrigCard(), AgotChoiceCardAction.INTERRUPT);
+	}
+	
 }

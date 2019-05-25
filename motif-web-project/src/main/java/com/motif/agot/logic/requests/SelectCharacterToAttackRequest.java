@@ -15,7 +15,7 @@ public class SelectCharacterToAttackRequest extends AAgotModelRequest<CharacterC
 
 	public SelectCharacterToAttackRequest(List<CharacterCard> modelChoices, AgotPlayer player, IHasSelectCharacterToAttackRequest parent) {
 		super(
-				AAgotRequest.SELECT_CHARACTER_TO_ATTACK,
+				AgotRequestType.SELECT_CHARACTER_TO_ATTACK,
 				modelChoices,
 				player,
 				AgotText.request ().selectCharacterToAttack(player)
@@ -26,10 +26,5 @@ public class SelectCharacterToAttackRequest extends AAgotModelRequest<CharacterC
 	public interface IHasSelectCharacterToAttackRequest extends IAgotFlowProcess { public IAgotFlowStep after(SelectCharacterToAttackRequest decision, AgotContext context); }
 	@Getter private final IHasSelectCharacterToAttackRequest parent;
 	@Override public IAgotFlowStep next(AgotContext context) { return this.parent.after(this, context); }
-	
-	@Override
-	protected AAgotOption modelToOption(String key, CharacterCard model) {
-		return new AgotCardOption(key, model.getId(), "Attack");
-	}
 	
 }

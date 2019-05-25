@@ -6,6 +6,8 @@ import com.motif.agot.logic.events.AgotEvent;
 import com.motif.agot.logic.flow.IAgotFlowProcess;
 import com.motif.agot.logic.flow.IAgotFlowStep;
 import com.motif.agot.logic.other.AbilityContext;
+import com.motif.agot.logic.requests.AgotChoice;
+import com.motif.agot.logic.requests.AgotChoice.AgotChoiceCardAction;
 import com.motif.agot.logic.visitors.TriggerChecker;
 import com.motif.agot.state.AgotGame;
 import com.motif.agot.state.AgotPlayer;
@@ -30,7 +32,7 @@ public final class ReactionAct extends TrigAbilityAct<AngReaction> {
 	} // ReactionStep
 
 	@Override
-	public String getLabel () { return MotifConsole.format ("Reaction {0}", ac.thisCard.getTitle ()); }
+	public String toString() { return MotifConsole.format ("Reaction {0}", ac.thisCard.getTitle ()); }
 
 	@Override
 	public boolean canBeInitiated () {
@@ -38,6 +40,11 @@ public final class ReactionAct extends TrigAbilityAct<AngReaction> {
 		if (!canBeInitiated) { return false; }
 		if (!TriggerChecker.canTrigger (event, trigAbility.getAfter (), ac.thisCard, ac.you, game)) { return false; }
 		return true;
-	} // canBeInitiated
+	}
+	
+	@Override
+	public AgotChoice getChoice() {
+		return AgotChoice.selectCardActionChoice(this.getTrigCard(), AgotChoiceCardAction.REACTION);
+	}
 
 } // ReactionAct

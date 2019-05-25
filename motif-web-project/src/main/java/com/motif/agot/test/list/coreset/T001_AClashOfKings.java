@@ -8,18 +8,35 @@ import com.motif.agot.state.AgotPlayer;
 import com.motif.agot.state.cards.CharacterCard;
 import com.motif.agot.state.cards.FactionCard;
 import com.motif.agot.state.cards.PlotCard;
-import com.motif.agot.state.cards.TextCard;
+import com.motif.agot.test.TPlayer;
 import com.motif.agot.test.Test;
 
+///**
+// *  Neutral.
+// *  Plot. Income: 4. Initiative: 9. Claim: 1. Reserve: 6. Plot deck limit: 2.
+// *  Noble.
+// *  
+// *  Reaction: After you win a POWER challenge, move 1 power from the losing opponent's faction card to your own.
+// *  
+// *   Smirtouille
+// *  Core Set #1.
+// */
+
 /**
- *  Neutral.
- *  Plot. Income: 4. Initiative: 9. Claim: 1. Reserve: 6. Plot deck limit: 2.
- *  Noble.
+ *  <h1>Neutral</h1><h1>Plot</h1>
+ *  <ul>
+ *  	<li>Income: 4</li>
+ *  	<li>Initiative: 9</li>
+ *  	<li>Claim: 1</li>
+ *  	<li>Reserve: 6</li>
+ *  	<li>Plot deck limit: 2</li>
+ *  </ul>
+ *  <b><i>Noble</i></b><br>
  *  
- *  Reaction: After you win a POWER challenge, move 1 power from the losing opponent's faction card to your own.
+ *  <b>Reaction:</b> After you win a POWER challenge, move 1 power from the losing opponent's faction card to your own.
  *  
- *   Smirtouille
- *  Core Set #1.
+ *  <i>Smirtouille</i><br>
+ *  <i>Core Set #1</i>
  */
 public class T001_AClashOfKings extends Test {
 
@@ -31,60 +48,60 @@ public class T001_AClashOfKings extends Test {
 	private CharacterCard handmaiden;
 	private PlotCard aClashOfKings;
 	private CharacterCard bastardInHiding;
-	private AgotPlayer leo;
-	private AgotPlayer fede;
+	private TPlayer leo;
+	private TPlayer fede;
 	
 	@Override
-	public void execute () throws AgotTestException {
-		selectPlot (aClashOfKings, leo);
-		selectPlot (aNobleCause, fede);
-		selectFirstPlayer (fede, leo);
-		endPlotPhase ();
-		endDrawPhase ();
-		marshall (targaryenLoyalist1, fede);
-		marshall (targaryenLoyalist2, fede);
-		marshall (handmaiden, fede);
-		marshall (bastardInHiding, leo);
-		endMarshallingPhase ();
-		initiateChallenge (AngIcon.INTRIGUE, fede);
-		endChallenge (fede);
-		assertEqual (targaryen.getPower (), 1);
-		initiateChallenge (AngIcon.POWER, fede);
-		attack (targaryenLoyalist1, fede);
-		endChallenge (fede);
-		assertEqual (targaryen.getPower (), 2);
-		initiateChallenge (AngIcon.POWER, leo);
-		defend (targaryenLoyalist2, fede);
-		reaction (aClashOfKings, leo);
-		endChallenge (fede);
-		assertEqual (baratheon.getPower (), 2);
-		assertEqual (targaryen.getPower (), 0);
-	} // execute
+	public void execute() throws AgotTestException {
+		leo.selectPlot(aClashOfKings);
+		fede.selectPlot(aNobleCause);
+		leo.selectFirstPlayer(fede);
+		endPlotPhase();
+		endDrawPhase();
+		fede.marshall(targaryenLoyalist1);
+		fede.marshall(targaryenLoyalist2);
+		fede.marshall(handmaiden);
+		leo.marshall(bastardInHiding);
+		endMarshallingPhase();
+		fede.initiateChallenge(AngIcon.INTRIGUE, leo, handmaiden);
+		fede.endChallenge();
+		assertEqual(targaryen.getPower(), 1);
+		fede.initiateChallenge(AngIcon.POWER, leo, targaryenLoyalist1);
+		fede.endChallenge();
+		assertEqual(targaryen.getPower(), 2);
+		leo.initiateChallenge(AngIcon.POWER, fede, bastardInHiding);
+		fede.defend(targaryenLoyalist2);
+		leo.reaction(aClashOfKings);
+		fede.endChallenge();
+		assertEqual(baratheon.getPower(), 2);
+		assertEqual(targaryen.getPower(), 0);
+	}
 
 	@Override
 	protected AgotGame init () {
-		AgotGame game = new AgotGame ();
-		TextCard<?>[] c;
+		var game = new AgotGame();
 
-		leo = game.initPlayer (new AgotPlayer ("leo", "Leo"));
-		fede = game.initPlayer (new AgotPlayer ("fede", "Fede"));
-		
-		targaryen = game.initFaction (fede, AngFaction.TARGARYEN);
-		c = game.initCard (fede, CoreSet.A_NOBLE_CAUSE, 7);
+		var leo = game.initPlayer(new AgotPlayer("leo", "Leo"));
+		var fede = game.initPlayer(new AgotPlayer("fede", "Fede"));
+		this.leo = new TPlayer(leo, this);
+		this.fede = new TPlayer(fede, this);
+
+		targaryen = game.initFaction(fede, AngFaction.TARGARYEN);
+		var c = game.initCard(fede, CoreSet.A_NOBLE_CAUSE, 7);
 		aNobleCause = (PlotCard) c[0];
-		c = game.initCard (fede, CoreSet.TARGARYEN_LOYALIST, 5);
+		c = game.initCard(fede, CoreSet.TARGARYEN_LOYALIST, 5);
 		targaryenLoyalist1 = (CharacterCard) c[0];
 		targaryenLoyalist2 = (CharacterCard) c[1];
-		c = game.initCard (fede, CoreSet.HANDMAIDEN, 4);
+		c = game.initCard(fede, CoreSet.HANDMAIDEN, 4);
 		handmaiden = (CharacterCard) c[0];
 
-		baratheon = game.initFaction (leo, AngFaction.BARATHEON);
-		c = game.initCard (leo, CoreSet.A_CLASH_OF_KINGS, 7);
+		baratheon = game.initFaction(leo, AngFaction.BARATHEON);
+		c = game.initCard(leo, CoreSet.A_CLASH_OF_KINGS, 7);
 		aClashOfKings = (PlotCard) c[0];
-		c = game.initCard (leo, CoreSet.BASTARD_IN_HIDING, 9);
+		c = game.initCard(leo, CoreSet.BASTARD_IN_HIDING, 9);
 		bastardInHiding = (CharacterCard) c[0];
-		
+
 		return game;
-	} // init
+	}
 
 }

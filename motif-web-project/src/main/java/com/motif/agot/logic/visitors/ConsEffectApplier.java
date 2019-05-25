@@ -36,32 +36,32 @@ import com.motif.agot.state.cards.MarshallCard;
 
 public class ConsEffectApplier implements IAngConsEffectVisitor {
 
-	public static void applyAll (IAngConsEffect effect, AbilityContext ac, AgotGame game) {
-		ConsEffectApplier subscriber = new ConsEffectApplier (ac, game, true);
-		effect.accept (subscriber);
-	} // apply
+	public static void applyAll(IAngConsEffect effect, AbilityContext ac, AgotGame game) {
+		var applier = new ConsEffectApplier(ac, game, true);
+		effect.accept(applier);
+	}
 
-	public static void unapplyAll (IAngConsEffect effect, AbilityContext ac, AgotGame game) {
-		ConsEffectApplier subscriber = new ConsEffectApplier (ac, game, false);
-		effect.accept (subscriber);
-	} // unapply
+	public static void unapplyAll(IAngConsEffect effect, AbilityContext ac, AgotGame game) {
+		var unapplier = new ConsEffectApplier(ac, game, false);
+		effect.accept(unapplier);
+	}
 	
 	boolean activate;
 	private AbilityContext ac;
 	private AgotGame game;
 	
-	private ConsEffectApplier (AbilityContext ac, AgotGame game, boolean activate) {
+	private ConsEffectApplier(AbilityContext ac, AgotGame game, boolean activate) {
 		this.ac = ac;
 		this.game = game;
 		this.activate = activate;
-	} // ConsEffects
+	}
 	
-	private MarshallCard<?> getAttached () { return ((AttachmentCard) ac.thisCard).getAttachTo (); }
+	private MarshallCard<?> getAttached() { return ((AttachmentCard) ac.thisCard).getAttachTo (); }
 	
-	private boolean applyGainsAnIcon (AngIcon icon, CharacterCard card) { if (activate) { card.addIcon (icon); } else { card.removeIcon (icon); } return true; }
-	@Override public boolean visit (AngAttachedGainsAnIcon consEffect) { return applyGainsAnIcon (consEffect.getIcon (), (CharacterCard) getAttached ()); }
-	@Override public boolean visit (AngThisGainsAnIcon consEffect) { return applyGainsAnIcon (consEffect.getIcon (), (CharacterCard) ac.thisCard); }
-	@Override public boolean visit (AngThatGainsAnIcon consEffect) { return applyGainsAnIcon (consEffect.getIcon (), (CharacterCard) ac.thatCard); }
+	private boolean applyGainsAnIcon(AngIcon icon, CharacterCard card) { if (activate) { card.addIcon(icon); } else { card.removeIcon(icon); } return true; }
+	@Override public boolean visit(AngAttachedGainsAnIcon consEffect) { return applyGainsAnIcon(consEffect.getIcon(), (CharacterCard) getAttached()); }
+	@Override public boolean visit(AngThisGainsAnIcon consEffect) { return applyGainsAnIcon(consEffect.getIcon(), (CharacterCard) ac.thisCard); }
+	@Override public boolean visit(AngThatGainsAnIcon consEffect) { return applyGainsAnIcon(consEffect.getIcon(), (CharacterCard) ac.thatCard); }
 	
 	public static boolean applyGainsAKeyword (AngTextKeyword keyword, CharacterCard card, boolean activate) { if (activate) { card.addKeyword (keyword); } else { card.removeKeyword (keyword); } return true; }
 	@Override public boolean visit (AngAttachedGainsAKeyword consEffect) { return applyGainsAKeyword (consEffect.getKeyword (), (CharacterCard) getAttached (), activate); }

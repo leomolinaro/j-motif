@@ -15,7 +15,7 @@ public class ChoosePlotRequest extends AAgotModelRequest<PlotCard> {
 
 	public ChoosePlotRequest(List<PlotCard> modelChoices, AgotPlayer player, IHasChoosePlotRequest parent) {
 		super(
-				AAgotRequest.SELECT_PLOT_TO_REVEAL,
+				AgotRequestType.SELECT_PLOT_TO_REVEAL,
 				modelChoices,
 				player,
 				AgotText.request().selectPlotToReveal(player)
@@ -26,10 +26,5 @@ public class ChoosePlotRequest extends AAgotModelRequest<PlotCard> {
 	public interface IHasChoosePlotRequest extends IAgotFlowProcess { public IAgotFlowStep after(ChoosePlotRequest choosePlotRequest, AgotContext context); }
 	@Getter private final IHasChoosePlotRequest parent;
 	@Override public IAgotFlowStep next(AgotContext context) { return this.parent.after(this, context); }
-	
-	@Override
-	protected AAgotOption modelToOption(String key, PlotCard model) {
-		return new AgotCardOption(key, model.getId(), "Select");
-	}
 	
 }

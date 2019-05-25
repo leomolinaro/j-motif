@@ -6,6 +6,8 @@ import com.motif.agot.ang.text.AngAction.AngActionType;
 import com.motif.agot.endpoint.AgotContext;
 import com.motif.agot.logic.flow.IAgotFlowStep;
 import com.motif.agot.logic.other.AbilityContext;
+import com.motif.agot.logic.requests.AgotChoice;
+import com.motif.agot.logic.requests.AgotChoice.AgotChoiceCardAction;
 import com.motif.agot.state.AgotGame;
 import com.motif.agot.state.AgotPlayer;
 import com.motif.agot.state.cards.TextCard;
@@ -30,7 +32,7 @@ public final class ActionAct extends TrigAbilityAct<AngAction> implements IPhase
 	}
 
 	@Override
-	public String getLabel () { return MotifConsole.format ("Action {0}", ac.thisCard.getTitle ()); }
+	public String toString() { return MotifConsole.format ("Action {0}", ac.thisCard.getTitle ()); }
 
 	@Override
 	public boolean canBeInitiated () {
@@ -53,6 +55,11 @@ public final class ActionAct extends TrigAbilityAct<AngAction> implements IPhase
 	@Override
 	public long getCardId() {
 		return this.getTrigCard().getId();
+	}
+
+	@Override
+	public AgotChoice getChoice() {
+		return AgotChoice.selectCardActionChoice(this.getTrigCard(), AgotChoiceCardAction.ACTION);
 	}
 
 }

@@ -38,10 +38,10 @@ public class MarshallingPhase extends APhase<IMarshallingPhaseStep> implements
 
 	@Override
 	public AStartPhaseStep<IMarshallingPhaseStep> startPhaseStep() { return new StartMarhallingPhaseStep(this.game, this); }
-
+	
 	@Override
 	public APhaseStep<IMarshallingPhaseStep> after(StartMarhallingPhaseStep step, AgotContext context) {
-		return new CollectIncomeStep(this.game.getFirstPlayer (), this.game, this);
+		return new ActivateNextMarshallingStep(null, this.game, this);
 	}
 	
 	@Override
@@ -56,11 +56,11 @@ public class MarshallingPhase extends APhase<IMarshallingPhaseStep> implements
 	
 	@Override
 	public APhaseStep<IMarshallingPhaseStep> after(ActivateNextMarshallingStep step, AgotContext context) {
-		AgotPlayer nextPlayer = step.getNextPlayer();
-		if (nextPlayer == null) {
+		AgotPlayer activePlayer = step.getActivePlayer();
+		if (activePlayer == null) {
 			return new EndMarshallingPhaseStep(this.game, this);
 		} else {
-			return new CollectIncomeStep(nextPlayer, this.game, this);
+			return new CollectIncomeStep(activePlayer, this.game, this);
 		}
 	}
 	

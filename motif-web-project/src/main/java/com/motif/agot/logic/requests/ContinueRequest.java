@@ -1,7 +1,6 @@
 package com.motif.agot.logic.requests;
 
 import com.motif.agot.endpoint.AgotContext;
-import com.motif.agot.logic.flow.AgotResponse;
 import com.motif.agot.logic.flow.IAgotFlowProcess;
 import com.motif.agot.logic.flow.IAgotFlowStep;
 import com.motif.agot.state.AgotPlayer;
@@ -14,12 +13,12 @@ public class ContinueRequest extends AAgotRequest {
 	
 	public ContinueRequest(String instruction, AgotPlayer player, IHasContinueRequest parent) {
 		super(
-				AAgotModelRequest.CONTINUE,
+				AgotRequestType.CONTINUE,
 				player,
 				instruction
 		);
 		this.parent = parent;
-		this.options.add(new AgotGenericOption(CONTINUE_KEY, "Continue"));
+		this.addChoice(AgotChoice.continueChoice());
 	}
 	
 	public interface IHasContinueRequest extends IAgotFlowProcess { public IAgotFlowStep after(ContinueRequest continueDecision, AgotContext context); }
@@ -27,12 +26,8 @@ public class ContinueRequest extends AAgotRequest {
 	@Override public IAgotFlowStep next(AgotContext context) { return this.parent.after(this, context); }
 	
 	@Override
-	public void response(AgotResponse response, AgotContext context) {
+	protected boolean accept(AgotChoice choice, AgotContext context) {
+		return choice.equals(AgotChoice.continueChoice());
 	}
 	
-	@Override
-	public boolean isValidResponse(AgotResponse response) {
-		return response.getKey().equals(CONTINUE_KEY);
-	}
-
 }

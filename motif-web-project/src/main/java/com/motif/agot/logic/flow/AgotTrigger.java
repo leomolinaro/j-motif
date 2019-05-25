@@ -13,23 +13,25 @@ public class AgotTrigger {
 		this.sender = sender;
 	}
 
-	@Getter private IAgotFlowRequest pendingDecision;
-	public boolean hasPendingDecision() { return this.pendingDecision != null; }
+	@Getter private IAgotFlowRequest pendingRequest;
+	public boolean hasPendingRequest() { return this.pendingRequest != null; }
 	
 	private void request(IAgotFlowRequest decision, AgotContext context) {
-		this.pendingDecision = decision;
-		sender.send(pendingDecision, context);
+		this.pendingRequest = decision;
+		sender.send(pendingRequest, context);
 	}
 	
-	public void receive(AgotResponse response, AgotContext context) {
-		if (this.pendingDecision.isValidResponse(response)) {
-			IAgotFlowRequest decision = this.pendingDecision;
-			decision.response(response, context);
-			this.pendingDecision = null;
-			IAgotFlowStep nextStep = decision.next(context);
-			execute(nextStep, decision.getParent(), context);
+	public boolean receive(AgotResponse response, AgotContext context) {
+		var request = this.pendingRequest;
+		if (request.accept(response, context)) {
+			this.pendingRequest = null;
+			var nextStep = request.next(context);
+			execute(nextStep, request.getParent(), context);
+			return true;
 		} else {
-			sender.send(this.pendingDecision, context);
+			request.setRepeated();
+			this.sender.send(request, context);
+			return false;
 		}
 	}
 	

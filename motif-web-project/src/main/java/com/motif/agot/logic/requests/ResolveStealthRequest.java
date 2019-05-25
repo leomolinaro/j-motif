@@ -15,7 +15,7 @@ public class ResolveStealthRequest extends AAgotModelOptionalRequest<CharacterCa
 
 	public ResolveStealthRequest(List<CharacterCard> modelChoices, AgotPlayer player, IHasResolveStealthRequest parent) {
 		super(
-				AAgotRequest.SELECT_CHARACTER_TO_BYPASS,
+				AgotRequestType.SELECT_CHARACTER_TO_BYPASS,
 				modelChoices,
 				player,
 				AgotText.request().selectCharacterToBypass(player)
@@ -27,9 +27,5 @@ public class ResolveStealthRequest extends AAgotModelOptionalRequest<CharacterCa
 	@Getter private final IHasResolveStealthRequest parent;
 	@Override public IAgotFlowStep next(AgotContext context) { return this.parent.after(this, context); }
 	
-	@Override
-	protected AAgotOption modelToOption(String key, CharacterCard model) {
-		return new AgotCardOption(key, model.getId(), "Select");
-	}
 	
 }

@@ -9,13 +9,15 @@ import com.motif.agot.logic.flow.AgotTrigger;
 import com.motif.agot.logic.flow.IAgotFlowRequest;
 import com.motif.agot.state.AgotGame;
 import com.motif.agot.state.AgotPlayer;
-import com.motif.shared.endpoint.MotifEndpoint;
+import com.motif.main.MotifWebsocketEndpoint;
 import com.motif.shared.endpoint.messages.MessageOut;
 import com.motif.shared.endpoint.messages.MessageOut.MotifApp;
 import com.motif.shared.endpoint.sessions.MotifSession;
 import com.motif.shared.endpoint.sessions.MotifSessionManager;
 import com.motif.shared.endpoint.sessions.MotifUser;
 import com.motif.shared.exceptions.MotifUnexpectedError;
+
+import io.leangen.graphql.annotations.GraphQLQuery;
 
 public class AgotEndpoint implements IAgotSender {
 
@@ -143,25 +145,25 @@ public class AgotEndpoint implements IAgotSender {
 		
 		return game;
 		
-	} // init	
+	}
 
 	public void initState (MotifSession session) {
-		AgotContext context = AgotContext.create (session);
+		var context = AgotContext.create (session);
 		if (game == null) { game = init (); } 
-		MessageOut message = new MessageOut (MotifApp.AGOT);
+		var message = new MessageOut (MotifApp.AGOT);
 		message.setSession (session);
 		message.setType (MessageOut.AGOT_REDUX_ACTION_LIST);
 		IAgotFlowRequest request = null;
-		if (trigger != null && trigger.hasPendingDecision()) {
-			var pendingRequest = trigger.getPendingDecision();
-			if (context.getPlayerId ().equals (pendingRequest.getPlayer ().getUsername())) {
+		if (trigger != null && trigger.hasPendingRequest()) {
+			var pendingRequest = trigger.getPendingRequest();
+			if (context.getPlayer().equals(pendingRequest.getPlayer().getUsername())) {
 				request = pendingRequest;
-			} // if			
-		} // if
+			}
+		}
 		context.actions ().initState (game, context, request); 
 		message.setData (context.actions ());
-		MotifEndpoint.send (message, session);
-	} // initState
+		MotifWebsocketEndpoint.send (message, session);
+	}
 	
 	public void start (MotifSession session) {
 		AgotContext context = AgotContext.create (session);
@@ -169,8 +171,8 @@ public class AgotEndpoint implements IAgotSender {
 			gameStarted = true;
 			trigger = new AgotTrigger (this);
 			trigger.start (new AgotPlay (game), context);
-		} // if
-	} // start
+		}
+	}
 
 	public void actionChoice (AgotResponse response, MotifSession session) throws MotifUnexpectedError {
 		AgotContext context = AgotContext.create (session);
@@ -191,7 +193,7 @@ public class AgotEndpoint implements IAgotSender {
 			oppMessage.setSession (context.getSession ());
 			oppMessage.setType (MessageOut.AGOT_REDUX_ACTION_LIST);
 			oppMessage.setData (actions);
-			MotifEndpoint.send (oppMessage, oppUser);
+			MotifWebsocketEndpoint.send (oppMessage, oppUser);
 			actions.removeLast ();
 		} // if
 		
@@ -201,10 +203,15 @@ public class AgotEndpoint implements IAgotSender {
 			message.setSession (context.getSession ());
 			message.setType (MessageOut.AGOT_REDUX_ACTION_LIST);
 			message.setData (actions);
-			MotifEndpoint.send (message, user);
+			MotifWebsocketEndpoint.send (message, user);
 			actions.removeLast ();
 		} // if
 		
 	} // send
 
-} // AgotEndpoint
+	@GraphQLQuery
+	public AgotGame game() {
+		return this.game;
+	}
+	
+}

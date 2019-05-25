@@ -5,11 +5,11 @@ import com.motif.agot.state.AgotPlayer;
 
 public interface IAgotFlowRequest extends IAgotFlowStep {
 
-	// public AgotRequest<?> request(AgotContext context);
-	public void response(AgotResponse response, AgotContext context);
-
-	public boolean isValidResponse(AgotResponse response);
+	public boolean accept(AgotResponse response, AgotContext context);
 
 	public AgotPlayer getPlayer();
+	
+	public boolean isRepeated();
+	public void setRepeated();
 	
 }
