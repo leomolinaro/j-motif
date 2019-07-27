@@ -50,17 +50,17 @@ public class MarshallEvent extends AgotEvent implements IHasAttachToRequest {
 					);
 				case CHARACTER:
 					EnterGameProcedure.play ((CharacterCard) this.marshalledCard, this.player, this.game, context);
-					game.log ().marshalls (this.player, this.marshalledCard, context);
+					game.logManager ().marshalls (this.player, this.marshalledCard, context);
 					return null;
 				case LOCATION:
 					EnterGameProcedure.play ((LocationCard) this.marshalledCard, this.player, this.game, context);
-					game.log ().marshalls (this.player, this.marshalledCard, context);
+					game.logManager ().marshalls (this.player, this.marshalledCard, context);
 					return null;
 				default: return null;
 			}
 		} else {
 			this.player.playAsDuplicate(this.marshalledCard, this.duplicateTo, context);
-			this.game.log ().duplicates(this.player, this.marshalledCard, context);
+			this.game.logManager ().duplicates(this.player, this.marshalledCard, context);
 			return null;
 		}
 	}
@@ -72,7 +72,7 @@ public class MarshallEvent extends AgotEvent implements IHasAttachToRequest {
 		var attachment = (AttachmentCard) this.marshalledCard;
 		var attachTo = decision.getChoosenModel();
 		EnterGameProcedure.play(attachment, attachTo, this.player, this.game, context);
-		game.log ().marhallsAttachedTo (this.player, attachment, attachTo, context);
+		game.logManager ().marhallsAttachedTo (this.player, attachment, attachTo, context);
 		return null;
 	}
 	

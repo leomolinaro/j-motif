@@ -23,7 +23,7 @@ public class GainNPowerOnEvent extends AgotEvent {
 	@Override
 	public IAgotFlowStep start(AgotContext context) {
 		this.card.gainPower(this.n, context);
-		this.game.log().gainPower(this.card, this.n, context);
+		this.game.logManager().gainPower(this.card, this.n, context);
 		return null;
 	}
 

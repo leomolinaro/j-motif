@@ -33,7 +33,7 @@ public class ReserveStep extends APhaseStep<ITaxationPhaseStep> implements IHasR
 
 	@Override
 	protected IAgotFlowStep stepStart(AgotContext context) {
-		this.player = this.game.getFirstPlayer();
+		this.player = this.game.firstPlayer();
 		var handSize = this.player.handSize();
 		var reserve = this.player.getReserve();
 		this.numToDiscard = Integer.max(handSize - reserve, 0);
@@ -45,7 +45,7 @@ public class ReserveStep extends APhaseStep<ITaxationPhaseStep> implements IHasR
 			return new ReserveDiscardRequest(this.player.hand().collect(Collectors.toList()), this.player, this);
 		} else {
 			this.player = this.player.getNextPlayer();
-			if (this.player == this.game.getFirstPlayer()) {
+			if (this.player == this.game.firstPlayer()) {
 				return null;							
 			} else {
 				var handSize = this.player.handSize();
@@ -60,7 +60,7 @@ public class ReserveStep extends APhaseStep<ITaxationPhaseStep> implements IHasR
 	public IAgotFlowStep after(ReserveDiscardRequest decision, AgotContext context) {
 		var toDiscard = decision.getChoosenModel();
 		this.player.discardFromHand(toDiscard, context);
-		this.game.log().discards(this.player, toDiscard, context);
+		this.game.logManager().discards(this.player, toDiscard, context);
 		this.numToDiscard--;
 		return this.next();
 	}

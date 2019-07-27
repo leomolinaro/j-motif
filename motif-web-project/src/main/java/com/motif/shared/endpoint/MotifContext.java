@@ -1,5 +1,12 @@
 package com.motif.shared.endpoint;
 
-public abstract class MotifContext {
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
-} // Context
+@RequiredArgsConstructor
+public class MotifContext {
+
+	@Getter
+	public final MotifUser user;
+	
+}

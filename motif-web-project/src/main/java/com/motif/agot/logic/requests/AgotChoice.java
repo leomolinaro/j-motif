@@ -54,15 +54,15 @@ public class AgotChoice {
 	}
 
 	public static AgotChoice selectPlayerChoice(AgotPlayer player) {
-		return new AgotChoice(AgotChoiceType.SELECT_PLAYER).sPlayer(player.getUsername());
+		return new AgotChoice(AgotChoiceType.SELECT_PLAYER).sPlayer(player.id());
 	}
 
 	public static AgotChoice selectCardChoice(Card<?> card) {
-		return new AgotChoice(AgotChoiceType.SELECT_CARD).sCardId(card.getId());
+		return new AgotChoice(AgotChoiceType.SELECT_CARD).sCardId(card.id());
 	}
 	
 	public static AgotChoice selectCardActionChoice(Card<?> card, AgotChoiceCardAction cardAction) {
-		return new AgotChoice(AgotChoiceType.SELECT_CARD_ACTION).sCardId(card.getId()).sCardAction(cardAction);
+		return new AgotChoice(AgotChoiceType.SELECT_CARD_ACTION).sCardId(card.id()).sCardAction(cardAction);
 	}
 	
 	public static AgotChoice selectIconChoice(AngIcon icon) {
@@ -103,6 +103,4 @@ public class AgotChoice {
 		        + " " + cardAction + " " + icon + " " + player;
 	}
 
-	
-	
 }

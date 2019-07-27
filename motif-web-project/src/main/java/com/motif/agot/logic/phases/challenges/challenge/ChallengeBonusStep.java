@@ -32,7 +32,7 @@ public class ChallengeBonusStep extends APhaseStep<IChallengesPhaseStep> {
 	public IAgotFlowStep stepStart(AgotContext context) {
 		if (this.data.attackWins() && this.data.unopposed()) {
 			this.data.attacker().gainPowerOnTheFactionCard(context);
-			this.game.log().gainsPowerForUnopposed(this.data.attacker(), context);
+			this.game.logManager().gainsPowerForUnopposed(this.data.attacker(), context);
 		}
 		return null;
 	}

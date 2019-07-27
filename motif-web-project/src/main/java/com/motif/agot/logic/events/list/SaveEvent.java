@@ -19,7 +19,7 @@ public class SaveEvent extends AgotEvent {
 	@Override
 	public IAgotFlowStep start(AgotContext context) {
 		this.card.setSaved();
-		this.game.log().savesCard(this.card, context);
+		this.game.logManager().savesCard(this.card, context);
 		return null;
 	}
 

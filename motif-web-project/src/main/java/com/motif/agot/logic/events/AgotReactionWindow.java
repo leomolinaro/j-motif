@@ -35,7 +35,7 @@ public class AgotReactionWindow implements IHasSelectReactionToPerformRequest, I
 	
 	@Override
 	public IAgotFlowStep start(AgotContext context) {
-		this.player = this.game.getFirstPlayer();
+		this.player = this.game.firstPlayer();
 		var availableReactions = getAvailableReactions();
 		return new SelectReactionToPerformRequest(availableReactions, this.player, this);
 	}
@@ -44,7 +44,7 @@ public class AgotReactionWindow implements IHasSelectReactionToPerformRequest, I
 		return this.player.interactingCards()
 		.filter(card -> card.hasReaction())
         .filter(card -> {
-        	var reactionsDone = this.reactionsDoneByCard.get (card.getId ());
+        	var reactionsDone = this.reactionsDoneByCard.get (card.id());
 			var reaction = card.getReaction ();
 			return reactionsDone == null || !reactionsDone.contains (reaction);
         })
@@ -69,10 +69,10 @@ public class AgotReactionWindow implements IHasSelectReactionToPerformRequest, I
 			var reactionAct = decision.getChoosenModel();
 			var reactingCard = reactionAct.getTrigCard();
 			var interrupt = reactionAct.getTrigAbility();
-			var reactionsDone = this.reactionsDoneByCard.get(reactingCard.getId());
+			var reactionsDone = this.reactionsDoneByCard.get(reactingCard.id());
 			if (reactionsDone == null) {
 				reactionsDone = new HashSet<AngReaction>();
-				this.reactionsDoneByCard.put(reactingCard.getId(), reactionsDone);
+				this.reactionsDoneByCard.put(reactingCard.id(), reactionsDone);
 			}
 			reactionsDone.add(interrupt);
 			this.nPasses = 0;

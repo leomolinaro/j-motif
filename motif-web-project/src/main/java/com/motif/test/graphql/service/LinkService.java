@@ -43,4 +43,17 @@ public class LinkService {
         return newLink;
     }
     
+//    @GraphQLSubscription
+//    public Publisher<Integer> tick() {
+//        Observable<Integer> observable = Observable.create(emitter -> {
+//            emitter.onNext(1);
+//            Thread.sleep(1000);
+//            emitter.onNext(2);
+//            Thread.sleep(1000);
+//            emitter.onComplete();
+//        });
+//
+//        return observable.toFlowable(BackpressureStrategy.BUFFER);
+//    }
+    
 }

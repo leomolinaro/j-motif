@@ -20,9 +20,9 @@ public class DiscardNPowerFromEvent extends AgotEvent {
 
 	@Override
 	public IAgotFlowStep start(AgotContext context) {
-		var toDiscard = Math.max(this.card.getPower(), this.n);
+		var toDiscard = Math.max(this.card.power(), this.n);
 		this.card.losePower(toDiscard, context);
-		this.game.log().losePower(this.card, toDiscard, context);
+		this.game.logManager().losePower(this.card, toDiscard, context);
 		return null;
 	}
 

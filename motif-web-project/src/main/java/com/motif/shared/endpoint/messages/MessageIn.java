@@ -17,7 +17,7 @@ public class MessageIn extends Message {
 	
 	@Override
 	public String toString () {
-		return "Message [session=" + session + ", data=" + data + ", type=" + type + "]";
+		return "Message [data=" + data + ", type=" + type + "]";
 	} // toString
 	
 } // MessageIn

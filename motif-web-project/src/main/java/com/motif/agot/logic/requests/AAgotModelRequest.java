@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import com.motif.agot.endpoint.AgotContext;
+import com.motif.agot.logic.flow.AgotResponse;
 import com.motif.agot.logic.flow.IAgotModelChoice;
 import com.motif.agot.state.AgotPlayer;
 
@@ -32,6 +33,11 @@ public abstract class AAgotModelRequest<M extends IAgotModelChoice> extends AAgo
 		.findFirst()
 		.get();
 		return true;
+	}
+	
+	@Override
+	public AgotResponse getAutoResponse() {
+		return null;
 	}
 	
 }

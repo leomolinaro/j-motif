@@ -48,17 +48,17 @@ public class RevealPlotStep extends APhaseStep<IPlotPhaseStep> implements IHasFi
 			public int compare(AgotPlayer p1, AgotPlayer p2) {
 				int comparison = Integer.compare(p1.getInitiative(), p2.getInitiative());
 				if (comparison < 0) {
-					game.log().hasMoreInitiativeThan(p2, p1, context);
+					game.logManager().hasMoreInitiativeThan(p2, p1, context);
 				} else if (comparison > 0) {
-					game.log().hasMoreInitiativeThan(p1, p2, context);
+					game.logManager().hasMoreInitiativeThan(p1, p2, context);
 				} else {
 					comparison = -1 * Integer.compare(p1.getPower(), p2.getPower());
 					if (comparison < 0) {
-						game.log().hasTheSameInitiativeButLessPowerThan(p2, p1, context);
+						game.logManager().hasTheSameInitiativeButLessPowerThan(p2, p1, context);
 					} else if (comparison > 0) {
-						game.log().hasTheSameInitiativeButLessPowerThan(p1, p2, context);
+						game.logManager().hasTheSameInitiativeButLessPowerThan(p1, p2, context);
 					} else {
-						game.log().hasTheSameInitiativeAndTheSamePowerOf(p1, p2, context);
+						game.logManager().hasTheSameInitiativeAndTheSamePowerOf(p1, p2, context);
 					}
 				}
 				return comparison;
@@ -68,12 +68,12 @@ public class RevealPlotStep extends APhaseStep<IPlotPhaseStep> implements IHasFi
 		AgotPlayer initiativeWinner;
 		if (initiativeWinners.size() > 1) {
 			initiativeWinner = RandomUtil.getFrom(initiativeWinners);
-			game.log().initiativeTieBrokenByRandomlySelect(initiativeWinner, context);
+			game.logManager().initiativeTieBrokenByRandomlySelect(initiativeWinner, context);
 		} else {
 			initiativeWinner = initiativeWinners.get(0);
 		}
 
-		game.log().winsInitiative(initiativeWinner, context);
+		game.logManager().winsInitiative(initiativeWinner, context);
 
 		return new FirstPlayerRequest(this.game.players().collect(Collectors.toList()), initiativeWinner, this);
 	}
@@ -82,7 +82,7 @@ public class RevealPlotStep extends APhaseStep<IPlotPhaseStep> implements IHasFi
 	public IAgotFlowStep after(FirstPlayerRequest firstPlayerRequest, AgotContext context) {
 		var firstPlayer = firstPlayerRequest.getChoosenModel();
 		game.setFirstPlayer(firstPlayer, context);
-		game.log().becomesFirstPlayer(firstPlayer, context);
+		game.logManager().becomesFirstPlayer(firstPlayer, context);
 		return null;
 	}
 

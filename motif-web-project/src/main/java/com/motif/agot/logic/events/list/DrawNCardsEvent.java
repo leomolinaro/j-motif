@@ -24,7 +24,7 @@ public class DrawNCardsEvent extends AgotEvent {
 		for (int i = 0; i < nCards; i++) {
 			this.player.draw(context);
 		}
-		this.game.log().drawsNCards(this.player, nCards, context);
+		this.game.logManager().drawsNCards(this.player, nCards, context);
 		return null;
 	}
 

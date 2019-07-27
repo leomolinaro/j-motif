@@ -41,7 +41,7 @@ public class EndChallengeStep extends APhaseStep<IChallengesPhaseStep> implement
 	
 	@Override
 	public IAgotFlowStep after(AgotEventProcess eventProcess, AgotContext context) {
-		return new ContinueRequest(AgotText.request().endChallenge(this.data.attacker()), this.game.getFirstPlayer(), this);
+		return new ContinueRequest(AgotText.request().endChallenge(this.data.attacker()), this.game.firstPlayer(), this);
 	}
 
 	@Override

@@ -16,10 +16,11 @@ public abstract class MarshallCard<A extends AngMarshallCard> extends DrawCard<A
 
 	private ArrayList<AttachmentCard> attachments = null;
 	@Expose private ArrayList<Long> attachmentIds = null;
+	@Override public ArrayList<Long> attachmentIds() { return this.attachmentIds; }
 	public Stream<AttachmentCard> attachments () { return attachments == null ? Stream.empty () : attachments.stream (); }
 	public void removeAttachment (AttachmentCard card) {
 		attachments.remove (card);
-		attachmentIds.remove (card.getId ());
+		attachmentIds.remove (card.id());
 		if (attachments.isEmpty ()) { attachments = null; attachmentIds = null; }
 	}
 	public boolean hasAttachment (AttachmentCard card) { return attachments != null && attachments.contains (card); }
@@ -28,15 +29,16 @@ public abstract class MarshallCard<A extends AngMarshallCard> extends DrawCard<A
 		if (attachments == null) { attachments = new ArrayList<AttachmentCard> (); }
 		attachments.add (card);
 		if (attachmentIds == null) { attachmentIds = new ArrayList<Long> (); }
-		attachmentIds.add (card.getId ());
+		attachmentIds.add (card.id());
 	}
 
 	private ArrayList<MarshallCard<?>> duplicates = null;
 	@Expose private ArrayList<Long> duplicateIds = null;
+	@Override public ArrayList<Long> duplicateIds() { return this.duplicateIds; }
 	public Stream<MarshallCard<?>> duplicates () { return duplicates == null ? Stream.empty () : duplicates.stream (); }
 	public void removeDuplicate (MarshallCard<?> card) {
 		duplicates.remove (card);
-		duplicateIds.remove (card.getId ());
+		duplicateIds.remove (card.id());
 		if (duplicates.isEmpty ()) { duplicates = null; duplicateIds = null; }
 	}
 	public boolean hasDuplicate (MarshallCard<?> card) { return duplicates != null && duplicates.contains (card); }
@@ -45,7 +47,7 @@ public abstract class MarshallCard<A extends AngMarshallCard> extends DrawCard<A
 		if (duplicates == null) { duplicates = new ArrayList<MarshallCard<?>> (); }
 		duplicates.add (card);
 		if (duplicateIds == null) { duplicateIds = new ArrayList<Long> (); }
-		duplicateIds.add (card.getId ());
+		duplicateIds.add (card.id());
 	}
 	
 	private ArrayList<AngToken> tokens = null;

@@ -11,5 +11,7 @@ public interface IAgotFlowRequest extends IAgotFlowStep {
 	
 	public boolean isRepeated();
 	public void setRepeated();
+
+	public AgotResponse getAutoResponse();
 	
 }

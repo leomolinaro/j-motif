@@ -24,29 +24,33 @@ import com.motif.agot.state.cards.LocationCard;
 import com.motif.agot.state.cards.MarshallCard;
 import com.motif.agot.state.cards.PlotCard;
 import com.motif.agot.state.cards.TextCard;
+import com.motif.shared.endpoint.MotifUser;
+import com.motif.shared.game.MotifPlayer;
 import com.motif.shared.util.ListUtil;
 import com.motif.shared.util.ModelPile;
 import com.motif.shared.util.SB;
 import com.motif.shared.util.StreamUtil;
 
+import io.leangen.graphql.annotations.GraphQLQuery;
 import lombok.Getter;
 
-public class AgotPlayer implements IAgotModelChoice {
+public class AgotPlayer extends MotifPlayer implements IAgotModelChoice {
 	
 	/********************************************************************************/
 	/****  PLAYER BASE  *************************************************************/
 	/********************************************************************************/
 	
-	public AgotPlayer (String username, String name) {
-		this.username = username;
-		this.name = name;
-	} // Player
+	public AgotPlayer(String id, String playerName, MotifUser user) {
+		super(user);
+		this.id = id;
+		this.name = playerName;
+	}
 
-	@Expose private String username;
-	public String getUsername () { return username; }
+	@Expose private String id;
+	@GraphQLQuery public String id() { return id; }
 	
 	@Expose private String name;
-	public String getName () { return name; }
+	public String getName() { return name; }
 	
 	private AgotPlayer nextPlayer;
 	public void setNextPlayer (AgotPlayer nextPlayer) { this.nextPlayer = nextPlayer; }
@@ -80,12 +84,12 @@ public class AgotPlayer implements IAgotModelChoice {
 	private transient FactionCard faction;
 	@Expose private long factionId;
 	public FactionCard getFaction () { return faction; }
-	public void setFaction (FactionCard factionCard) { this.faction = factionCard; this.factionId = factionCard.getId (); }
+	public void setFaction (FactionCard factionCard) { this.faction = factionCard; this.factionId = factionCard.id(); }
 	
 	private AgendaCard agenda;
 	@Expose private Long agendaId = null;
 	public AgendaCard getAgenda () { return agenda; }
-	public void setAgenda (AgendaCard agendaCard) { this.agenda = agendaCard; this.agendaId = agendaCard == null ? null : agendaCard.getId (); }
+	public void setAgenda (AgendaCard agendaCard) { this.agenda = agendaCard; this.agendaId = agendaCard == null ? null : agendaCard.id (); }
 	public boolean hasAgenda () { return agenda != null; }
 	
 	private ModelPile<DrawCard<?>> drawDeck = new ModelPile<DrawCard<?>> ();
@@ -101,24 +105,24 @@ public class AgotPlayer implements IAgotModelChoice {
 	private ModelPile<DrawCard<?>> discardPile = new ModelPile<DrawCard<?>> ();
 	@Expose private ModelPile<Long> discardPileIds = new ModelPile<Long> ();
 	public Stream<DrawCard<?>> discardPile () { return discardPile.stream (); }
-	private void discardPilePutTop (DrawCard<?> card) { discardPile.putTop (card); discardPileIds.putTop (card.getId ()); }
+	private void discardPilePutTop (DrawCard<?> card) { discardPile.putTop (card); discardPileIds.putTop (card.id ()); }
 
 	private ModelPile<CharacterCard> deadPile = new ModelPile<CharacterCard> ();
 	@Expose private ModelPile<Long> deadPileIds = new ModelPile<Long> ();
 	public Stream<CharacterCard> deadPile () { return deadPile.stream (); }
-	private void deadPilePutTop (CharacterCard card) { deadPile.putTop (card); deadPileIds.putTop (card.getId ()); }
+	private void deadPilePutTop (CharacterCard card) { deadPile.putTop (card); deadPileIds.putTop (card.id ()); }
 	
 	private ArrayList<PlotCard> plotDeck = new ArrayList<PlotCard> ();
 	@Expose private ArrayList<Long> plotDeckIds = new ArrayList<Long> ();
-	public void addPlotCard (PlotCard card) { plotDeck.add (card); plotDeckIds.add (card.getId ()); }
+	public void addPlotCard (PlotCard card) { plotDeck.add (card); plotDeckIds.add (card.id ()); }
 	public Stream<PlotCard> plotDeck () { return plotDeck.stream (); }
 	public boolean emptyPlotDeck () { return plotDeck.isEmpty (); }
-	private void plotDeckAdd (PlotCard card) { plotDeck.add (card); plotDeckIds.add (card.getId ()); }
-	private void plotDeckRemove (PlotCard card) { plotDeck.remove (card); plotDeckIds.remove (card.getId ()); }
+	private void plotDeckAdd (PlotCard card) { plotDeck.add (card); plotDeckIds.add (card.id ()); }
+	private void plotDeckRemove (PlotCard card) { plotDeck.remove (card); plotDeckIds.remove (card.id ()); }
 	
 	private PlotCard revealedPlot = null;
 	@Expose private Long revealedPlotId = null;
-	private void setRevealedPlot (PlotCard card) { revealedPlot = card; revealedPlotId = card == null ? null : card.getId (); }
+	private void setRevealedPlot (PlotCard card) { revealedPlot = card; revealedPlotId = card == null ? null : card.id (); }
 	public PlotCard revealedPlot () { return revealedPlot; }
 	public int getInitiative () {  return revealedPlot.getInitiative (); }
 	public int getIncome () { return revealedPlot.getIncome (); }
@@ -127,7 +131,7 @@ public class AgotPlayer implements IAgotModelChoice {
 	private ModelPile<PlotCard> usedPlotPile = new ModelPile<PlotCard> ();
 	@Expose private ModelPile<Long> usedPlotPileIds = new ModelPile<Long> ();
 	public Stream<PlotCard> usedPlotPile () { return usedPlotPile.stream (); }
-	private void usedPlotPilePutTop (PlotCard card) { usedPlotPile.putTop (card); usedPlotPileIds.putTop (card.getId ()); }
+	private void usedPlotPilePutTop (PlotCard card) { usedPlotPile.putTop (card); usedPlotPileIds.putTop (card.id ()); }
 	private PlotCard usedPlotPileRemoveTop () { usedPlotPileIds.removeLast (); return usedPlotPile.removeLast (); }
 	
 	private LinkedList<DrawCard<?>> hand = new LinkedList<DrawCard<?>> ();
@@ -135,8 +139,8 @@ public class AgotPlayer implements IAgotModelChoice {
 	public Stream<DrawCard<?>> hand () { return hand.stream (); }
 	public boolean hasInHand (DrawCard<?> card) { return hand.contains (card); }
 	public int handSize () { return hand.size (); }
-	private void handAdd (DrawCard<?> card) { hand.add (card); handIds.add (card.getId ()); }
-	private void handRemove (DrawCard<?> card) { hand.remove (card); handIds.remove (card.getId ()); }
+	private void handAdd (DrawCard<?> card) { hand.add (card); handIds.add (card.id ()); }
+	private void handRemove (DrawCard<?> card) { hand.remove (card); handIds.remove (card.id ()); }
 	
 	private LinkedList<CharacterCard> characters = new LinkedList<CharacterCard> ();
 	@Expose private LinkedList<Long> charactersIds = new LinkedList<Long> ();
@@ -145,16 +149,16 @@ public class AgotPlayer implements IAgotModelChoice {
 	public boolean hasCharacter (CharacterCard card) { return characters.contains (card); }
 	public boolean hasCharacters () { return !characters.isEmpty (); }
 	public int charactersSize () { return characters.size (); }
-	private void charactersAdd (CharacterCard card) { characters.add (card); charactersIds.add (card.getId ()); }
-	private void charactersRemove (CharacterCard card) { characters.remove (card); charactersIds.remove (card.getId ()); }
+	private void charactersAdd (CharacterCard card) { characters.add (card); charactersIds.add (card.id ()); }
+	private void charactersRemove (CharacterCard card) { characters.remove (card); charactersIds.remove (card.id ()); }
 	
 	private LinkedList<LocationCard> locations = new LinkedList<LocationCard> ();
 	@Expose private LinkedList<Long> locationsIds = new LinkedList<Long> ();
 	public Stream<LocationCard> locations () { return locations.stream (); }
 	public boolean hasLocation (LocationCard card) { return locations.contains (card); }
 	public boolean hasLocations () { return !locations.isEmpty (); }
-	private void locationsAdd (LocationCard card) { locations.add (card); locationsIds.add (card.getId ()); }
-	private void locationsRemove (LocationCard card) { locations.remove (card); locationsIds.remove (card.getId ()); }
+	private void locationsAdd (LocationCard card) { locations.add (card); locationsIds.add (card.id ()); }
+	private void locationsRemove (LocationCard card) { locations.remove (card); locationsIds.remove (card.id ()); }
 	
 	private LinkedList<AttachmentCard> attachments = new LinkedList<AttachmentCard> ();
 	public Stream<AttachmentCard> attachments () { return attachments.stream (); }
@@ -384,8 +388,8 @@ public class AgotPlayer implements IAgotModelChoice {
 	/********************************************************************************/
 	
 	public int getPower () {
-		int power = faction.getPower ();
-		power += characters ().collect (Collectors.summingInt (cha -> cha.getPower ()));
+		int power = faction.power ();
+		power += characters ().collect (Collectors.summingInt (cha -> cha.power ()));
 		return power;
 	} // getPower
 	
@@ -444,7 +448,7 @@ public class AgotPlayer implements IAgotModelChoice {
 	public String toView (int t) {
 		int tt = t + 1;
 		SB s = new SB ();
-		s.t (t).a (name, "(", username, ")").n ();
+		s.t (t).a (name, "(", id, ")").n ();
 		s.t (t).a ("Gold: ", gold).n ();
 		s.t (t).a ("Faction card").n ();
 		s.t (tt).a (faction.toView ()).n ();

@@ -27,7 +27,7 @@ public class TributeStep extends APhaseStep<ITaxationPhaseStep> {
 	protected IAgotFlowStep stepStart(AgotContext context) {
 		this.game.forEachPlayer (player -> {
 			int unspent = player.resetGold (context);
-			this.game.log ().tributeDiscardGold (player, unspent, context);			
+			this.game.logManager ().tributeDiscardGold (player, unspent, context);			
 		});
 		return null;
 	}

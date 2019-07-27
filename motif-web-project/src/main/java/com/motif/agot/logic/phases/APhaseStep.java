@@ -22,7 +22,7 @@ public abstract class APhaseStep<S extends IStep> implements IAgotFlowProcess {
 		MotifConsole.println(stepTitle);
 		MotifConsole.println("----------------------------------------------------------------------------------");
 		game.setStep(stepTitle, context);
-		game.log().step(stepTitle, context);
+		game.logManager().step(stepTitle, context);
 		return stepStart(context);
 	} // start
 

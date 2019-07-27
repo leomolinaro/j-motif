@@ -3,8 +3,12 @@ package com.motif.brit.logic.flow;
 import com.google.gson.JsonElement;
 import com.google.gson.annotations.Expose;
 
+import lombok.Getter;
+
 public class BritResponse {
 
+	@Expose @Getter private String playerId;
+	
 	@Expose private String key;
 	public String getKey () { return key; }
 	

@@ -28,7 +28,7 @@ public class DrawCardsStep extends APhaseStep<IDrawPhaseStep> {
 		game.forEachPlayer (player -> {
 			int nCards = Math.min (player.drawDeckSize (), 2);
 			for (int i = 0; i < nCards; i++) { player.draw (context); }
-			game.log ().drawDrawsCards (player, nCards, context);			
+			game.logManager ().drawDrawsCards (player, nCards, context);			
 		});
 		return null;
 	}

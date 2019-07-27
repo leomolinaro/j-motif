@@ -16,17 +16,12 @@ public class AgotTrigger {
 	@Getter private IAgotFlowRequest pendingRequest;
 	public boolean hasPendingRequest() { return this.pendingRequest != null; }
 	
-	private void request(IAgotFlowRequest decision, AgotContext context) {
-		this.pendingRequest = decision;
-		sender.send(pendingRequest, context);
-	}
-	
 	public boolean receive(AgotResponse response, AgotContext context) {
 		var request = this.pendingRequest;
 		if (request.accept(response, context)) {
 			this.pendingRequest = null;
 			var nextStep = request.next(context);
-			execute(nextStep, request.getParent(), context);
+			continueProcess(nextStep, request.getParent(), context);
 			return true;
 		} else {
 			request.setRepeated();
@@ -36,27 +31,37 @@ public class AgotTrigger {
 	}
 	
 	public void start(IAgotFlowProcess process, AgotContext context) {
-		IAgotFlowStep subStep = process.start(context);
-		execute(subStep, process, context);
-	}
-
-	private void end(IAgotFlowProcess process, AgotContext context) {
-		IAgotFlowStep nextStep = process.next(context);
-		IAgotFlowProcess parentProcess = process.getParent();
-		if (parentProcess != null) {
-			execute(nextStep, parentProcess, context);
-		}
+		var flowStep = process.start(context);
+		continueProcess(flowStep, process, context);
 	}
 	
-	private void execute(IAgotFlowStep flowStep, IAgotFlowProcess parentProcess, AgotContext context) {
-		if (flowStep == null) {
-			end(parentProcess, context);
-		} else {
-			if (flowStep instanceof IAgotFlowProcess) {
-				start((IAgotFlowProcess) flowStep, context);
+	private void continueProcess(IAgotFlowStep flowStep, IAgotFlowProcess parentProcess, AgotContext context) {
+		var sendRequest = false;
+		var endFlow = false;
+		do {
+			if (flowStep == null) {
+				flowStep = parentProcess.next(context);
+				parentProcess = parentProcess.getParent();
+				if (parentProcess == null) {
+					endFlow = true;
+				}
+			} else if (flowStep instanceof IAgotFlowProcess) {
+				parentProcess = (IAgotFlowProcess) flowStep;
+				flowStep = parentProcess.start(context);
 			} else {
-				request((IAgotFlowRequest) flowStep, context);
+				var request = (IAgotFlowRequest) flowStep;
+				var autoResponse = request.getAutoResponse();
+				if (autoResponse == null) {
+					sendRequest = true;
+				} else {
+					request.accept(autoResponse, context);
+					flowStep = request.next(context);
+				}
 			}
+		} while (!sendRequest && !endFlow);
+		if (sendRequest) {
+			this.pendingRequest = (IAgotFlowRequest) flowStep;
+			this.sender.send(this.pendingRequest, context);
 		}
 	}
 

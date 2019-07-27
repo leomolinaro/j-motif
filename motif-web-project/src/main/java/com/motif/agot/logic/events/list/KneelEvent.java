@@ -19,7 +19,7 @@ public class KneelEvent extends AgotEvent {
 	@Override
 	public IAgotFlowStep start(AgotContext context) {
 		this.card.kneel(context);
-		this.game.log().kneelsCard(this.card, context);
+		this.game.logManager().kneelsCard(this.card, context);
 		return null;
 	}
 

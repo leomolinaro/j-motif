@@ -10,7 +10,9 @@ import com.motif.agot.logic.requests.AgotChoice;
 import com.motif.agot.state.AgotPlayer;
 import com.motif.shared.util.SB;
 
-public abstract class Card<A extends AngCard> implements IAgotModelChoice {
+import io.leangen.graphql.annotations.GraphQLQuery;
+
+public abstract class Card<A extends AngCard> implements IAgotModelChoice, ICard {
 	
 	/********************************************************************************/
 	/****  CARD BASE  ***************************************************************/
@@ -27,10 +29,12 @@ public abstract class Card<A extends AngCard> implements IAgotModelChoice {
 	} // Card
 	
 	@Expose protected long id;
-	public long getId () { return id; }
+	public long id() { return id; }
 
-	protected A ang;
 	@Expose private String imageSource;
+	public String imageSource() { return this.imageSource; }
+	
+	protected A ang;
 	public A getAngCard () { return ang; }
 	public final String getTitle () { return ang.getTitle (); }
 	public final AngType getType () { return ang.getType (); }
@@ -61,33 +65,34 @@ public abstract class Card<A extends AngCard> implements IAgotModelChoice {
 	/********************************************************************************/
 	
 	@Expose private boolean kneeling = false;
+	@GraphQLQuery public boolean kneeling() { return this.kneeling; }
 	public boolean isStanding () { return !kneeling; }
 	public boolean isKneeling () { return kneeling; }
 	
 	private void setKneeling (boolean kneeling, AgotContext context) {
 		this.kneeling = kneeling;
 		context.actions ().setCardKneeling (kneeling, this);
-	} // setKneeling
+	}
 	
 	public void kneel (AgotContext context) {
 		setKneeling (true, context);
-	} // kneel
+	}
 	
 	public void stand (AgotContext context) {
 		setKneeling (false, context);
-	} // stand
+	}
 	
 	/********************************************************************************/
 	/****  POWER  *******************************************************************/
 	/********************************************************************************/
 	
 	@Expose private int power = 0;
-	public int getPower () { return power; }
+	@GraphQLQuery public int power() { return power; }
 	
-	private void setPower (int power, AgotContext context) {
+	private void setPower(int power, AgotContext context) {
 		this.power = power;
 		context.actions ().setCardPower (power, this);
-	} // setPower
+	}
 	
 	public void gainPower (AgotContext context) { gainPower (1, context); }
 	public void gainPower (int powerToGain, AgotContext context) { setPower (power + powerToGain, context); }
@@ -98,15 +103,16 @@ public abstract class Card<A extends AngCard> implements IAgotModelChoice {
 	/********************************************************************************/
 	
 	@Expose private boolean revealed = true;
-	public boolean isRevealed () { return revealed; }
+	@GraphQLQuery public boolean revealed() { return revealed; }
+	public boolean isRevealed() { return revealed; }
 	
-	private void setRevealed (boolean revealed, AgotContext context) {
+	private void setRevealed(boolean revealed, AgotContext context) {
 		this.revealed = revealed;
-		context.actions ().setCardRevealed (revealed, this);
-	} // setPower
+		context.actions().setCardRevealed(revealed, this);
+	}
 	
-	public void hide (AgotContext context) { setRevealed (false, context); }
-	public void reveal (AgotContext context) { setRevealed (true, context); }
+	public void hide(AgotContext context) { setRevealed(false, context); }
+	public void reveal(AgotContext context) { setRevealed(true, context); }
 	
 	/********************************************************************************/
 	/****  TO STRING  ***************************************************************/

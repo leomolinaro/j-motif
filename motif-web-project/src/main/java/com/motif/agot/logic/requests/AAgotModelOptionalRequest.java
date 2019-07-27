@@ -3,6 +3,7 @@ package com.motif.agot.logic.requests;
 import java.util.List;
 
 import com.motif.agot.endpoint.AgotContext;
+import com.motif.agot.logic.flow.AgotResponse;
 import com.motif.agot.logic.flow.IAgotModelChoice;
 import com.motif.agot.state.AgotPlayer;
 
@@ -12,9 +13,13 @@ public abstract class AAgotModelOptionalRequest<M extends IAgotModelChoice> exte
 
 	public AAgotModelOptionalRequest(AgotRequestType type, List<M> modelChoices, AgotPlayer player, String instruction) {
 		super(type, modelChoices, player, instruction);
-		this.addChoice(AgotChoice.passChoice());
+		var passChoice = AgotChoice.passChoice();
+		this.autoChoice = modelChoices.isEmpty() ? passChoice : null;
+		this.addChoice(passChoice);
 	}
 
+	private final AgotChoice autoChoice;
+	
 	@Getter private boolean hasPassed;
 	
 	@Override
@@ -25,6 +30,11 @@ public abstract class AAgotModelOptionalRequest<M extends IAgotModelChoice> exte
 			super.accept(choice, context);
 		}
 		return true;
+	}
+	
+	@Override
+	public AgotResponse getAutoResponse() {
+		return this.autoChoice == null ? null : new AgotResponse(this.getPlayer().id(), this.autoChoice);
 	}
 
 }

@@ -2,7 +2,7 @@ package com.motif.agot.test.list.coreset;
 
 import com.motif.agot.ang.enums.AngFaction;
 import com.motif.agot.ang.enums.AngIcon;
-import com.motif.agot.ang.sets.CoreSet;
+import com.motif.agot.ang.sets.AgotCardSeed;
 import com.motif.agot.state.AgotGame;
 import com.motif.agot.state.AgotPlayer;
 import com.motif.agot.state.cards.AttachmentCard;
@@ -41,13 +41,13 @@ public class T036_NobleLigeage extends Test {
 		endMarshallingPhase();
 		fede.initiateChallenge(AngIcon.POWER, leo, targaryenLoyalist1);
 		fede.endChallenge();
-		assertEqual(targaryen.getPower(), 1);
+		assertEqual(targaryen.power(), 1);
 		leo.initiateChallenge(AngIcon.POWER, fede, fieryFollowers);
 		fede.defend(targaryenLoyalist2);
 		endChallengesPhase();
 		endDominancePhase();
-		assertEqual(baratheon.getPower(), 1);
-		assertEqual(targaryen.getPower(), 0);
+		assertEqual(baratheon.power(), 1);
+		assertEqual(targaryen.power(), 0);
 	}
 
 	@Override
@@ -55,24 +55,24 @@ public class T036_NobleLigeage extends Test {
 		AgotGame game = new AgotGame();
 		TextCard<?>[] c;
 
-		var leo = game.initPlayer(new AgotPlayer("leo", "Leo"));
-		var fede = game.initPlayer(new AgotPlayer("fede", "Fede"));
+		var leo = game.initPlayer(new AgotPlayer("leo", "Leo", this.testUser));
+		var fede = game.initPlayer(new AgotPlayer("fede", "Fede", this.testUser));
 		this.leo = new TPlayer(leo, this);
 		this.fede = new TPlayer(fede, this);
 
 		targaryen = game.initFaction(fede, AngFaction.TARGARYEN);
-		c = game.initCard(fede, CoreSet.A_NOBLE_CAUSE, 7);
+		c = game.initCard(fede, AgotCardSeed.A_NOBLE_CAUSE_Core, 7);
 		aNobleCause = (PlotCard) c[0];
-		c = game.initCard(fede, CoreSet.TARGARYEN_LOYALIST, 9);
+		c = game.initCard(fede, AgotCardSeed.TARGARYEN_LOYALIST_Core, 9);
 		targaryenLoyalist1 = (CharacterCard) c[0];
 		targaryenLoyalist2 = (CharacterCard) c[1];
 
 		baratheon = game.initFaction(leo, AngFaction.BARATHEON);
-		c = game.initCard(leo, CoreSet.A_FEAST_FOR_CROWS, 7);
+		c = game.initCard(leo, AgotCardSeed.A_FEAST_FOR_CROWS_Core, 7);
 		aFeastForCrows = (PlotCard) c[0];
-		c = game.initCard(leo, CoreSet.FIERY_FOLLOWERS, 8);
+		c = game.initCard(leo, AgotCardSeed.FIERY_FOLLOWERS_Core, 8);
 		fieryFollowers = (CharacterCard) c[0];
-		nobleLineage = (AttachmentCard) game.initCard(leo, CoreSet.NOBLE_LINEAGE, 1)[0];
+		nobleLineage = (AttachmentCard) game.initCard(leo, AgotCardSeed.NOBLE_LINEAGE_Core, 1)[0];
 
 		return game;
 	}

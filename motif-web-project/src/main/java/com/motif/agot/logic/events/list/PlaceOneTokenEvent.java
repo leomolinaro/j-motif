@@ -22,7 +22,7 @@ public class PlaceOneTokenEvent extends AgotEvent {
 	@Override
 	public IAgotFlowStep start (AgotContext context) {
 		card.addToken (token, context);
-		game.log ().placeOneToken (token, card, context);
+		game.logManager ().placeOneToken (token, card, context);
 		return null;
 	}
 

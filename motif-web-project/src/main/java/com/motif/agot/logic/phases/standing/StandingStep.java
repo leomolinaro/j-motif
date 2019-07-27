@@ -38,7 +38,7 @@ public class StandingStep extends APhaseStep<IStandingPhaseStep> {
 			});
 		});
 		for (Card<?> standingCard : standingCards) {
-			this.game.log ().standingStandsCard (standingCard.getController (), standingCard, context);
+			this.game.logManager ().standingStandsCard (standingCard.getController (), standingCard, context);
 		}
 		return null;
 	}

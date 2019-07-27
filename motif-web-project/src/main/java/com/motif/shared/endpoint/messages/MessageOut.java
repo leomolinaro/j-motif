@@ -1,9 +1,16 @@
 package com.motif.shared.endpoint.messages;
 
 import com.google.gson.annotations.Expose;
+import com.motif.shared.endpoint.MotifUser;
+
+import lombok.Getter;
+import lombok.Setter;
 
 public class MessageOut extends Message {
 
+	@Expose @Getter @Setter
+	protected MotifUser user;
+	
 	public static final String NOTIFY_OPEN_CONNECTION = "[Motif] Notify Open Connection";
 	public static final String ECHO_MESSAGE = "[Motif] Echo Message";
 	public static final String NOTIFY_ERROR = "[Motif] Notify Error";
@@ -26,7 +33,7 @@ public class MessageOut extends Message {
 	
 	@Override
 	public String toString () {
-		return "Message [session=" + session + ", data=" + data + ", type=" + type + "]";
+		return "Message [data=" + data + ", type=" + type + "]";
 	} // toString
 	
 } // MessageOut

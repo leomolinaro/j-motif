@@ -85,7 +85,7 @@ public class EffectChangeTester implements IAngEffectVisitor {
 	
 	@Override public boolean visit (AngKillThat effect) { return ((CharacterCard) ac.thatCard).isKillable (); }
 
-	@Override public boolean visit (AngDiscardNPowerFromThat effect) { return ac.thatCard.getPower () > 0; }
+	@Override public boolean visit (AngDiscardNPowerFromThat effect) { return ac.thatCard.power () > 0; }
 
 	@Override public boolean visit (AngGainNPowerOnThis effect) { return true; }
 	@Override public boolean visit (AngGainNPowerOnYourFaction effect) { return true; }

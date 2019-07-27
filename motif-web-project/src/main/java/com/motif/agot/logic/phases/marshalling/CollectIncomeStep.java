@@ -35,7 +35,7 @@ public class CollectIncomeStep extends APhaseStep<IMarshallingPhaseStep> {
 		income += this.activePlayer.inPlayTextCards()
 				.collect(Collectors.summingInt (card -> card.getGoldModifier()));
 		this.activePlayer.gainGold(income, context);
-		this.game.log().collectsGold(this.activePlayer, income, context);
+		this.game.logManager().collectsGold(this.activePlayer, income, context);
 		return null;
 	}
 

@@ -21,7 +21,7 @@ public class StandEvent extends AgotEvent {
 	@Override
 	public IAgotFlowStep start(AgotContext context) {
 		card.stand(context);
-		game.log().standsCard(card, context);
+		game.logManager().standsCard(card, context);
 		return null;
 	}
 	

@@ -11,6 +11,7 @@ public class TestRunner {
 		new T001_AClashOfKings().run();
 		new T002_AFeastForCrows().run();
 		new T036_NobleLigeage().run();
+		System.out.println("Test completed successfully!");
 	}
 
 }

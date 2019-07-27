@@ -3,6 +3,7 @@ package com.motif.agot.state;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 
+import com.google.gson.annotations.Expose;
 import com.motif.agot.ang.enums.AngIcon;
 import com.motif.agot.ang.enums.AngToken;
 import com.motif.agot.endpoint.AgotContext;
@@ -12,40 +13,45 @@ import com.motif.agot.state.cards.DrawCard;
 import com.motif.agot.state.cards.MarshallCard;
 import com.motif.agot.state.cards.TextCard;
 
+import io.leangen.graphql.annotations.GraphQLQuery;
+
 public class GameLog {
 
 	private enum GameLogRowType {
 		EVENT, ROUND, PHASE, STEP;
-	} // GameLogRowType
+	}
 	
 	public class GameLogRow {
-		@SuppressWarnings("unused")
-		private String message;
-		@SuppressWarnings("unused")
-		private GameLogRowType type;
+		
+		@Expose private String message;
+		@GraphQLQuery public String message() { return this.message; }
+		
+		@Expose private GameLogRowType type;
+		@GraphQLQuery public GameLogRowType type() { return this.type; }
+		
 		public GameLogRow (String message, GameLogRowType type) {
 			this.message = message;
 			this.type = type;
-		} // GameLogRow
-	} // GameLogRow
+		}
+		
+	}
 	
 	private ArrayList<GameLogRow> logRows;
 	
-	public GameLog (ArrayList<GameLogRow> logRows) {
+	public GameLog(ArrayList<GameLogRow> logRows) {
 		this.logRows = logRows;
-	} // GameLog
+	}
 
-	private void add (AgotContext context, GameLogRowType type, String text, Object...args) {
-		String message = new MessageFormat (text).format (args);
-		GameLogRow logRow = new GameLogRow (message, type);
-		logRows.add (logRow);
-		System.out.println (message);
-		context.actions ().addLog (logRow);
-	} // add
+	private void add(AgotContext context, GameLogRowType type, String text, Object... args) {
+		var message = new MessageFormat(text).format(args);
+		var logRow = new GameLogRow(message, type);
+		this.logRows.add(logRow);
+		context.actions().addLog(logRow);
+	}
 
 	private void add (AgotContext context, String text, Object...args) {
 		add (context, GameLogRowType.EVENT, text, args);
-	} // add
+	}
 	
 	public void round (String round, AgotContext context) { add (context, GameLogRowType.ROUND, round); }
 	public void phase (String phase, AgotContext context) { add (context, GameLogRowType.PHASE, phase); }

@@ -35,7 +35,7 @@ public class AgotInterruptWindow implements IHasInterruptRequest, IHasInterruptA
 	
 	@Override
 	public IAgotFlowStep start(AgotContext context) {
-		this.player = this.game.getFirstPlayer();
+		this.player = this.game.firstPlayer();
 		var availableInterrupts = getAvailableInterrupts();
 		return new InterruptRequest(availableInterrupts, this.player, this);			
 	}
@@ -43,7 +43,7 @@ public class AgotInterruptWindow implements IHasInterruptRequest, IHasInterruptA
 	private List<InterruptAct> getAvailableInterrupts() {
 		return this.player.interactingCards().filter(card -> card.hasInterrupt())
         .filter(card -> {
-	        var interruptsDone = this.interruptsDoneByCard.get(card.getId());
+	        var interruptsDone = this.interruptsDoneByCard.get(card.id());
 	        var interrupt = card.getInterrupt();
 	        return interruptsDone == null || !interruptsDone.contains(interrupt);
         })
@@ -68,10 +68,10 @@ public class AgotInterruptWindow implements IHasInterruptRequest, IHasInterruptA
 			var interruptAct = decision.getChoosenModel();
 			var interruptingCard = interruptAct.getTrigCard();
 			var interrupt = interruptAct.getTrigAbility();
-			var interruptsDone = this.interruptsDoneByCard.get(interruptingCard.getId());
+			var interruptsDone = this.interruptsDoneByCard.get(interruptingCard.id());
 			if (interruptsDone == null) {
 				interruptsDone = new HashSet<AngInterrupt>();
-				this.interruptsDoneByCard.put(interruptingCard.getId(), interruptsDone);
+				this.interruptsDoneByCard.put(interruptingCard.id(), interruptsDone);
 			}
 			interruptsDone.add(interrupt);
 			this.nPasses = 0;

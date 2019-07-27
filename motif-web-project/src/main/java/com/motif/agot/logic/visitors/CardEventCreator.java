@@ -164,7 +164,7 @@ public class CardEventCreator implements IAngEffectVisitor, IAngCostVisitor {
 		AgotPlayer toPlayer = game.players ()
 		.filter (p -> FilterMatcher.doesMatch (p, ac.you, toFilter, game))
 		.findFirst ().get ();
-		int nPower = Math.min (effect.getN (), fromPlayer.getFaction ().getPower ());
+		int nPower = Math.min (effect.getN (), fromPlayer.getFaction ().power ());
 		event = new MoveNPowerEvent (nPower, fromPlayer.getFaction (), toPlayer.getFaction (), game);
 		return true;
 	} // visit

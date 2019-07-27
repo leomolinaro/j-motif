@@ -4,10 +4,13 @@ import com.google.gson.annotations.Expose;
 import com.motif.agot.logic.requests.AgotChoice;
 
 import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 
+@RequiredArgsConstructor
 public class AgotResponse {
 
-	@Expose @Getter @Setter private AgotChoice choice;
+	@Expose @Getter private final String playerId;
+	
+	@Expose @Getter private final AgotChoice choice;
 
 }

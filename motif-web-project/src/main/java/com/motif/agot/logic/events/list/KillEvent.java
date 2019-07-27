@@ -27,7 +27,7 @@ public class KillEvent extends AgotEvent {
 			this.card.unsetSaved();
 		} else {
 			ExitGameProcedure.killCharacter(this.card, this.game, context);
-			this.game.log().killsCharacter(this.card, context);
+			this.game.logManager().killsCharacter(this.card, context);
 		}
 		return null;
 	}

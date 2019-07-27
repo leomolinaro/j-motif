@@ -75,7 +75,7 @@ public class ConsCondTester implements IAngWhileConditionVisitor, IAngIfConditio
 
 	@Override
 	public boolean visit (AngYouAreTheFirstPlayer whileCond) {
-		return game.getFirstPlayer () == ac.you;
+		return game.firstPlayer () == ac.you;
 	} // visit
 
 	@Override

@@ -21,6 +21,7 @@ import com.motif.agot.state.cards.CharacterCard;
 import com.motif.agot.state.cards.MarshallCard;
 import com.motif.agot.state.cards.PlotCard;
 import com.motif.agot.state.cards.TextCard;
+import com.motif.shared.endpoint.MotifUser;
 
 public abstract class Test {
 
@@ -34,7 +35,7 @@ public abstract class Test {
 			}
 		};
 		this.trigger = new AgotTrigger(sender);
-		var context = AgotContext.create(this.game.players().findFirst().get());
+		var context = new AgotContext(this.game.players().findFirst().get());
 		this.trigger.start(new AgotPlay(this.game), context);
 		execute();
 	}
@@ -42,14 +43,15 @@ public abstract class Test {
 	protected abstract AgotGame init ();
 	protected abstract void execute () throws AgotTestException;
 
+	protected MotifUser testUser = new MotifUser("test");
+	
 	private AgotGame game;
 	private AAgotRequest pendingRequest;
 	private AgotTrigger trigger;
 	
 	private void chooseOrPass(AgotChoice choice, AgotPlayer player) {
-		var response = new AgotResponse();
-		response.setChoice(choice);
-		var context = AgotContext.create(player); 
+		var response = new AgotResponse(player.id(), choice);
+		var context = new AgotContext(player); 
 		var accepted = this.trigger.receive(response, context);
 		while(!accepted) {
 			pass(this.pendingRequest.getPlayer());
@@ -59,19 +61,18 @@ public abstract class Test {
 	
 	private void pass(AgotPlayer player) {
 		var choice = AgotChoice.passChoice().sRequestType(this.pendingRequest.getType());
-		var response = new AgotResponse();
-		response.setChoice(choice);
-		var context = AgotContext.create(player); 
+		var response = new AgotResponse(player.id(), choice);
+		var context = new AgotContext(player); 
 		this.trigger.receive(response, context);
 	}
 	
-	protected void endPlotPhase() { endPhase(AngPhase.PLOT, this.game.getFirstPlayer()); }
-	protected void endDrawPhase() { endPhase(AngPhase.DRAW, this.game.getFirstPlayer()); }
-	protected void endMarshallingPhase() { endPhase(AngPhase.MARSHALLING, this.game.getFirstPlayer()); }
-	protected void endChallengesPhase() { endPhase(AngPhase.CHALLENGES, this.game.getFirstPlayer()); }
-	protected void endDominancePhase() { endPhase(AngPhase.DOMINANCE, this.game.getFirstPlayer()); }
-	protected void endStandingPhase() { endPhase(AngPhase.STANDING, this.game.getFirstPlayer()); }
-	protected void endTaxationPhase() { endPhase(AngPhase.TAXATION, this.game.getFirstPlayer()); }
+	protected void endPlotPhase() { endPhase(AngPhase.PLOT, this.game.firstPlayer()); }
+	protected void endDrawPhase() { endPhase(AngPhase.DRAW, this.game.firstPlayer()); }
+	protected void endMarshallingPhase() { endPhase(AngPhase.MARSHALLING, this.game.firstPlayer()); }
+	protected void endChallengesPhase() { endPhase(AngPhase.CHALLENGES, this.game.firstPlayer()); }
+	protected void endDominancePhase() { endPhase(AngPhase.DOMINANCE, this.game.firstPlayer()); }
+	protected void endStandingPhase() { endPhase(AngPhase.STANDING, this.game.firstPlayer()); }
+	protected void endTaxationPhase() { endPhase(AngPhase.TAXATION, this.game.firstPlayer()); }
 	
 	protected void endChallenge(AgotPlayer player) {
 		continueGame(player);

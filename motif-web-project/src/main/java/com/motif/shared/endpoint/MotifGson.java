@@ -13,8 +13,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
-import com.motif.shared.endpoint.sessions.MotifSession;
-import com.motif.shared.endpoint.sessions.MotifUser;
+import com.motif.ws.MotifSession;
 
 public class MotifGson {
 

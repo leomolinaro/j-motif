@@ -21,7 +21,7 @@ public class PayNGoldEvent extends AgotEvent {
 	@Override
 	public IAgotFlowStep start (AgotContext context) {
 		player.payGold (n, context);
-		game.log ().paysNGold (player, n, context);
+		game.logManager ().paysNGold (player, n, context);
 		return null;
 	}
 	

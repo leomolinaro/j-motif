@@ -10,17 +10,18 @@ import org.bson.types.ObjectId;
 import com.google.gson.annotations.Expose;
 import com.motif.brit.ang.enums.AngPhase;
 import com.motif.brit.endpoint.BritContext;
+import com.motif.shared.game.MotifGame;
 
 import lombok.Getter;
 import lombok.Setter;
 
-public class BritGame {
+public class BritGame extends MotifGame<BritPlayer> {
 	
 	@Getter @Setter private ObjectId id;
 	
 	@Expose private HashMap<String, BritPlayer> playerMap = new HashMap<>();
 	public BritPlayer getPlayer(String playerId) { return this.playerMap.get(playerId); }
-	public void initPlayer(BritPlayer player) { playerMap.put(player.getId(), player); }
+	public void initPlayer(BritPlayer player) { playerMap.put(player.id(), player); }
 	public Stream<BritPlayer> players() { return playerMap.values().stream(); }
 	public Stream<BritPlayer> opponents(BritPlayer player) { return players().filter(p -> p != player); }
 	

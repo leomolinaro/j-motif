@@ -6,7 +6,7 @@ import com.motif.agot.ang.enums.AngFaction;
 import com.motif.agot.ang.enums.AngKeyword;
 import com.motif.agot.ang.enums.AngTrait;
 import com.motif.agot.ang.enums.AngType;
-import com.motif.agot.ang.sets.AgotSetCard;
+import com.motif.agot.ang.sets.AgotPack;
 import com.motif.agot.ang.text.AngAction;
 import com.motif.agot.ang.text.AngConsAbility;
 import com.motif.agot.ang.text.AngInterrupt;
@@ -16,19 +16,16 @@ import com.motif.agot.ang.text.filters.AngCardFilter;
 
 public abstract class AngTextCard extends AngCard {
 
-	private static String buildImageSource (AgotSetCard setCard, int setId) {		
-		String setSource = "";
-		switch (setCard.getCardSet ()) {
+	private static String buildImageSource (AgotPack pack, int setId) {		
+		var setSource = "";
+		switch (pack) {
 			case CORE_SET: setSource = "GT01";break;
 			default: break;
 		} // switch
-		StringBuilder s = new StringBuilder ("http://lcg-cdn.fantasyflightgames.com/got2nd/");
+		var s = new StringBuilder ("http://lcg-cdn.fantasyflightgames.com/got2nd/");
 		s.append (setSource).append ("_").append (setId).append (".jpg");
 		return s.toString ();
 	} // buildImageSource
-	
-//	private AgotSet set;
-//	private int setId;
 	
 	private AngText text;
 	public AngAction getAction () { return text.getAction (); }
@@ -49,10 +46,8 @@ public abstract class AngTextCard extends AngCard {
 	public boolean hasConsAbilities () { return text.hasConsAbilities (); }
 	public Stream<AngConsAbility> consAbilities () { return text.consAbilities (); }
 	
-	public AngTextCard (AgotSetCard setCard, int setId, String title, AngType type, AngFaction faction, AngText text) {
-		super (title, type, faction, buildImageSource (setCard, setId));
-//		this.set = set;
-//		this.setId = setId;
+	public AngTextCard (AgotPack pack, int setId, String title, AngType type, AngFaction faction, AngText text) {
+		super (title, type, faction, buildImageSource (pack, setId));
 		this.text = text;
 	} // AngTextCard
 

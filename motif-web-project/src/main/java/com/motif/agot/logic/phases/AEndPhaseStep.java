@@ -28,7 +28,7 @@ public abstract class AEndPhaseStep<S extends IStep> extends APhaseStep<S> imple
 
 	@Override
 	public IAgotFlowStep after(AgotEventProcess round, AgotContext context) {
-		var firstPlayer = this.game.getFirstPlayer();
+		var firstPlayer = this.game.firstPlayer();
 		return new ContinueRequest(AgotText.request().endPhase(phase, firstPlayer), firstPlayer, this);
 	}
 

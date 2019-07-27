@@ -56,7 +56,7 @@ public class DefendingChallengeStep extends APhaseStep<IChallengesPhaseStep> imp
 		if (decision.isHasPassed()) {
 			this.challenge.defenders().forEach(def -> {
 				def.kneel(context);
-				this.game.log().declaresAsDefender(this.challenge.defender, def, context);			
+				this.game.logManager().declaresAsDefender(this.challenge.defender, def, context);			
 			});
 			return null;
 		} else {

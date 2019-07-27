@@ -1,8 +1,9 @@
-package com.motif.shared.endpoint.sessions;
+package com.motif.ws;
 
 import javax.websocket.RemoteEndpoint.Basic;
 
 import com.google.gson.annotations.Expose;
+import com.motif.shared.endpoint.MotifUser;
 
 import javax.websocket.Session;
 
@@ -16,7 +17,7 @@ public class MotifSession {
 	public MotifUser getUser () { return user; }
 	public String getUsername () { return user.getUsername (); }
 	
-	public MotifSession (Session session, MotifUser user) {
+	protected MotifSession (Session session, MotifUser user) {
 		this.session = session;
 		this.user = user;
 	} // MotifSession

@@ -44,14 +44,14 @@ public class DetermineWinnerStep extends APhaseStep<IChallengesPhaseStep> implem
 			this.data.setDefenseLoses();
 			if (this.data.defStr == 0 && this.data.attStr > 0) {
 				this.data.setUnopposed();
-				this.game.log().winsTheChallengeUnopposed(this.data.attacker(), context);				
+				this.game.logManager().winsTheChallengeUnopposed(this.data.attacker(), context);				
 			} else {
-				this.game.log().winsTheChallenge(this.data.attacker(), context);				
+				this.game.logManager().winsTheChallenge(this.data.attacker(), context);				
 			}
 		} else if (attStr < defStr && defStr > 0 && this.data.defenders().findAny().isPresent()) {
 			this.data.setDefenseWins();
 			this.data.setAttackLoses();
-			this.game.log().winsTheChallenge(this.data.defender, context);
+			this.game.logManager().winsTheChallenge(this.data.defender, context);
 		}
 		var event = new DetermineAChallengeEvent(this.data, this.game);
 		return new AgotEventProcess(event, this.game, this);

@@ -1,7 +1,8 @@
 package com.motif.shared.util;
 
+import com.motif.shared.endpoint.MotifUser;
 import com.motif.shared.endpoint.messages.Message;
-import com.motif.shared.endpoint.sessions.MotifSession;
+import com.motif.ws.MotifSession;
 
 public class DebugUtil {
 
@@ -18,8 +19,8 @@ public class DebugUtil {
 		throwable.printStackTrace ();
 	} // onError
 	
-	public static void onMessage (Message message) {
-		print ("onMessage " + message.getSession ().getUsername () + " " + message.getSession ().getId ());
+	public static void onMessage(Message message, MotifUser user) {
+		print ("onMessage " + user.getUsername ());
 		print ("	" + message);
 	} // onMessage
 	

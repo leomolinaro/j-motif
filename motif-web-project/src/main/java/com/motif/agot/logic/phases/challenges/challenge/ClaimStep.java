@@ -52,7 +52,7 @@ public class ClaimStep extends APhaseStep<IChallengesPhaseStep> implements IHasM
 					var lostCards = new ArrayList<DrawCard<?>> (); 
 					for (var i = 0; i < nCards; i++) { lostCards.add (this.data.defender.randomDiscardFromHand(context)); }
 					for (var lostCard : lostCards) {
-						this.game.log().discards(this.data.defender, lostCard, context);
+						this.game.logManager().discards(this.data.defender, lostCard, context);
 					}
 					return null;
 				case MILITARY:
@@ -65,11 +65,11 @@ public class ClaimStep extends APhaseStep<IChallengesPhaseStep> implements IHasM
 					}
 				case POWER:
 					var defFacCard = this.data.defender.getFaction();
-					var lostPower = Math.min(defFacCard.getPower(), claim);
+					var lostPower = Math.min(defFacCard.power(), claim);
 					defFacCard.losePower(lostPower, context);
 					this.data.attacker.gainPowerOnTheFactionCard(lostPower, context);
-					this.game.log().losesPowerTokens (this.data.defender, lostPower, context);
-					this.game.log().gainsPowerTokens(this.data.attacker, lostPower, context);
+					this.game.logManager().losesPowerTokens (this.data.defender, lostPower, context);
+					this.game.logManager().gainsPowerTokens(this.data.attacker, lostPower, context);
 					return null;
 				default: return null;
 			}

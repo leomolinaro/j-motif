@@ -26,7 +26,7 @@ public abstract class APhase<S extends IStep> implements IAgotFlowProcess {
 		MotifConsole.println(phaseTitle);
 		MotifConsole.println("==================================================================================");
 		game.setPhase(phase, context);
-		game.log().phase(phaseTitle, context);
+		game.logManager().phase(phaseTitle, context);
 		return startPhaseStep();
 	} // start
 

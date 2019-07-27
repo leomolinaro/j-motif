@@ -1,0 +1,22 @@
+schema {
+    query: AgotEndpoint
+}
+
+type AgotEndpoint {
+    game: AgotGame
+}
+
+type AgotGame {
+    #cardMap: { [id: number]: Card },
+    #playerMap: { [username: string]: Player },
+    round: String,
+    phase: String
+    #step: String,
+    #log: LogRow[],
+    #firstPlayer: String
+}
+
+#type LogRow {
+#    message: String,
+#    type: String
+#}

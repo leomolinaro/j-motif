@@ -54,7 +54,7 @@ public final class ActionAct extends TrigAbilityAct<AngAction> implements IPhase
 
 	@Override
 	public long getCardId() {
-		return this.getTrigCard().getId();
+		return this.getTrigCard().id();
 	}
 
 	@Override

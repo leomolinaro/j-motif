@@ -1,6 +1,7 @@
 package com.motif.agot.logic.requests;
 
 import com.motif.agot.endpoint.AgotContext;
+import com.motif.agot.logic.flow.AgotResponse;
 import com.motif.agot.logic.flow.IAgotFlowProcess;
 import com.motif.agot.logic.flow.IAgotFlowStep;
 import com.motif.agot.state.AgotPlayer;
@@ -28,6 +29,11 @@ public class ContinueRequest extends AAgotRequest {
 	@Override
 	protected boolean accept(AgotChoice choice, AgotContext context) {
 		return choice.equals(AgotChoice.continueChoice());
+	}
+	
+	@Override
+	public AgotResponse getAutoResponse() {
+		return null;
 	}
 	
 }

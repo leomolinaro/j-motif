@@ -20,9 +20,9 @@ public class WinDominanceEvent extends AgotEvent {
 
 	@Override
 	public IAgotFlowStep start(AgotContext context) {
-		this.game.log().winsDominance(this.winner, context);
+		this.game.logManager().winsDominance(this.winner, context);
 		this.winner.gainPowerOnTheFactionCard(context);
-		this.game.log().dominanceGainPower(this.winner, context);
+		this.game.logManager().dominanceGainPower(this.winner, context);
 		return null;
 	}
 

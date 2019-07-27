@@ -40,7 +40,7 @@ public class ExitGameProcedure {
 	
 	private static void resetCard (MarshallCard<?> card, AgotGame game, AgotContext context) {
 		if (card.isKneeling ()) { card.stand (context); }
-		if (card.getPower () > 0) { card.losePower (card.getPower (), context); }
+		if (card.power () > 0) { card.losePower (card.power (), context); }
 		if (card.hasConsAbilities ()) {
 			card.consAbilities ().forEach (consAbility -> ConsAbilities.unsubscribe (consAbility, card, game));
 		} // if

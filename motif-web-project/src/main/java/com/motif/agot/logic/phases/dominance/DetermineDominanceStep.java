@@ -39,18 +39,18 @@ public class DetermineDominanceStep extends APhaseStep<IDominancePhaseStep> impl
 			public int compare(AgotPlayer p1, AgotPlayer p2) {
 				var comparison = Integer.compare(p1.getDominance(), p2.getDominance());
 				if (comparison < 0) {
-					DetermineDominanceStep.this.game.log().hasMoreDominanceThan(p2, p1, context);
+					DetermineDominanceStep.this.game.logManager().hasMoreDominanceThan(p2, p1, context);
 				} else if (comparison > 0) {
-					DetermineDominanceStep.this.game.log().hasMoreDominanceThan(p1, p2, context);
+					DetermineDominanceStep.this.game.logManager().hasMoreDominanceThan(p1, p2, context);
 				} else {
-					DetermineDominanceStep.this.game.log().haveTheSameDominance(p1, p2, context);
+					DetermineDominanceStep.this.game.logManager().haveTheSameDominance(p1, p2, context);
 				}
 				return comparison;
 			}
 		});
 
 		if (dominanceWinners.size() > 1) {
-			this.game.log().dominanceTie(context);
+			this.game.logManager().dominanceTie(context);
 			return null;
 		} else {
 			AgotPlayer dominanceWinner = dominanceWinners.get(0);

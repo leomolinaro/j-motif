@@ -128,13 +128,13 @@ public class InitiateChallengeStep extends APhaseStep<IChallengesPhaseStep> impl
 	public IAgotFlowStep after(ChooseOptionalAttackerRequest decision, AgotContext context) {
 		if (decision.isHasPassed()) {
 			var challenge = new Challenge(this.challengeType, this.activePlayer, this.defender, this.attackers, this.bypassed);
-			this.game.log().initiatesAchallenge(challenge.attacker(), challenge.defender(), challenge.type(), context);
+			this.game.logManager().initiatesAchallenge(challenge.attacker(), challenge.defender(), challenge.type(), context);
 			challenge.attackers().forEach (att -> {
 				att.kneel(context);
-				this.game.log().declaresAsAttacker(challenge.attacker(), att, context);
+				this.game.logManager().declaresAsAttacker(challenge.attacker(), att, context);
 			});
 			challenge.bypassed().forEach(bypassed -> {
-				this.game.log().charactedIsBypassed(challenge.attacker(), bypassed, context);
+				this.game.logManager().charactedIsBypassed(challenge.attacker(), bypassed, context);
 			});
 			this.challenge = challenge;
 			this.game.setChallenge(challenge);

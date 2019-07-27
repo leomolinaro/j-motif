@@ -27,7 +27,7 @@ public class DiscardFromPlayEvent extends AgotEvent {
 			card.unsetSaved();
 		} else {
 			ExitGameProcedure.discardCard(card, game, context);
-			game.log().discardsCard(card, context);
+			game.logManager().discardsCard(card, context);
 		}
 		return null;
 	}

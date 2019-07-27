@@ -13,18 +13,19 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import com.motif.brit.state.BritArea;
+import com.motif.brit.state.BritArea.BritAreaType;
 import com.motif.brit.state.BritBorder;
+import com.motif.brit.state.BritBorder.BritBorderType;
 import com.motif.brit.state.BritGame;
 import com.motif.brit.state.BritInfantry;
 import com.motif.brit.state.BritLandArea;
 import com.motif.brit.state.BritNation;
+import com.motif.brit.state.BritNation.BritColor;
 import com.motif.brit.state.BritPlayer;
 import com.motif.brit.state.BritSeaArea;
 import com.motif.brit.state.BritTimelineElement;
 import com.motif.brit.state.BritUnit;
-import com.motif.brit.state.BritArea.BritAreaType;
-import com.motif.brit.state.BritBorder.BritBorderType;
-import com.motif.brit.state.BritNation.BritColor;
+import com.motif.shared.endpoint.MotifUser;
 
 public class BritInitializer {
 
@@ -36,13 +37,13 @@ public class BritInitializer {
 	private BritArea pennines, cumbria, lothian, galloway, dunedin, strathclyde, dalriada, alban, mar, moray, skye, caithness, orkneys, hebrides;
 	private BritArea icelandic_sea, north_sea, frisian_sea, english_channel, irish_sea, atlantic_ocean;
 	
-	public BritGame init () {
+	public BritGame init (MotifUser user) {
 		BritGame game = null;
 		
-		BritPlayer leo = new BritPlayer ("leo", "Leo");
-		BritPlayer nico = new BritPlayer ("nico", "Nico");
-		BritPlayer rob = new BritPlayer ("rob", "Rob");
-		BritPlayer salv = new BritPlayer ("salv", "Salv");
+		BritPlayer leo = new BritPlayer ("leo", "Leo", user);
+		BritPlayer nico = new BritPlayer ("nico", "Nico", user);
+		BritPlayer rob = new BritPlayer ("rob", "Rob", user);
+		BritPlayer salv = new BritPlayer ("salv", "Salv", user);
 		
 		game = new BritGame ();
 		game.initPlayer (leo);

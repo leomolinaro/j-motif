@@ -21,7 +21,7 @@ public class GainNGoldEvent extends AgotEvent {
 	@Override
 	public IAgotFlowStep start(AgotContext context) {
 		this.player.gainGold(this.goldGained, context);
-		this.game.log().gainsNGolds(this.player, this.goldGained, context);
+		this.game.logManager().gainsNGolds(this.player, this.goldGained, context);
 		return null;
 	}
 

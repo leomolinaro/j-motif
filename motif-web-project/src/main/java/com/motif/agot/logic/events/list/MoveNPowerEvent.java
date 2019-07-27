@@ -25,9 +25,9 @@ public class MoveNPowerEvent extends AgotEvent {
 	@Override
 	public IAgotFlowStep start(AgotContext context) {
 		this.fromCard.losePower(this.nPower, context);
-		this.game.log().losePower(this.fromCard, this.nPower, context);
+		this.game.logManager().losePower(this.fromCard, this.nPower, context);
 		this.toCard.gainPower(this.nPower, context);
-		this.game.log().gainPower(this.toCard, this.nPower, context);
+		this.game.logManager().gainPower(this.toCard, this.nPower, context);
 		return null;
 	}
 

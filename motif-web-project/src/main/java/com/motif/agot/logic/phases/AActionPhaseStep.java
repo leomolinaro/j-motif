@@ -27,7 +27,7 @@ public abstract class AActionPhaseStep<S extends IStep, A extends IPhaseAct> ext
 
 	@Override
 	public final SelectActionToPerformRequest<A> stepStart(AgotContext context) {
-		this.player = this.game.getFirstPlayer();
+		this.player = this.game.firstPlayer();
 		var availableActions = this.getAvailableActions();
 		return new SelectActionToPerformRequest<A>(availableActions, this.player, this);
 	}

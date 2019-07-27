@@ -20,16 +20,16 @@ public abstract class AActivateNextStep<S extends IStep> extends APhaseStep<S> {
 	public final IAgotFlowStep stepStart(AgotContext context) {
 		var prevPlayer = this.activePlayer;
 		if (prevPlayer == null) {
-			this.activePlayer = this.game.getFirstPlayer();
+			this.activePlayer = this.game.firstPlayer();
 			this.activePlayer.setActive();
-			this.game.log().becomesActivePlayer(this.activePlayer, context);
+			this.game.logManager().becomesActivePlayer(this.activePlayer, context);
 		} else {
 			var nextPlayer = this.game.getNextPlayer(prevPlayer);
-			if (nextPlayer == this.game.getFirstPlayer()) {
+			if (nextPlayer == this.game.firstPlayer()) {
 				this.activePlayer = null;
 			} else {
 				nextPlayer.setActive();
-				this.game.log().becomesActivePlayer(nextPlayer, context);
+				this.game.logManager().becomesActivePlayer(nextPlayer, context);
 				this.activePlayer = nextPlayer;
 			}
 			prevPlayer.setInactive();

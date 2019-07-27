@@ -52,7 +52,7 @@ public class AgotRound implements
 		MotifConsole.println(roundTitle);
 		MotifConsole.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
 		game.setRound(getRoundTitle(), context);
-		game.log().round(roundTitle, context);
+		game.logManager().round(roundTitle, context);
 		return new PlotPhase(game, this);
 	}
 

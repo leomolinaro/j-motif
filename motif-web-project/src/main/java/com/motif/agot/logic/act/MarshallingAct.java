@@ -111,7 +111,7 @@ public class MarshallingAct extends Act implements IPhaseAct, IMarshallingPhaseS
 
 	@Override
 	public long getCardId() {
-		return this.card.getId();
+		return this.card.id();
 	}
 	
 //	@SuppressWarnings("unused")
