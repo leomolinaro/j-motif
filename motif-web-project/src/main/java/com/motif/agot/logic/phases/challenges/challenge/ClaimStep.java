@@ -64,8 +64,8 @@ public class ClaimStep extends APhaseStep<IChallengesPhaseStep> implements IHasM
 						return null;
 					}
 				case POWER:
-					var defFacCard = this.data.defender.getFaction();
-					var lostPower = Math.min(defFacCard.power(), claim);
+					var defFacCard = this.data.defender.faction ();
+					var lostPower = Math.min(defFacCard.power (), claim);
 					defFacCard.losePower(lostPower, context);
 					this.data.attacker.gainPowerOnTheFactionCard(lostPower, context);
 					this.game.logManager().losesPowerTokens (this.data.defender, lostPower, context);

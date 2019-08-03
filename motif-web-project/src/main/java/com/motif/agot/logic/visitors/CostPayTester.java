@@ -34,7 +34,7 @@ public class CostPayTester implements IAngCostVisitor {
 		this.game = game;
 	} // CheckCostPayer
 
-	@Override public boolean visit (AngPayNGold cost) { return (you.getGold () >= cost.getNGold ()); }
+	@Override public boolean visit (AngPayNGold cost) { return (you.gold () >= cost.getNGold ()); }
 
 	@Override public boolean visit (AngKneelThis cost) { return thisCard.isStanding (); }
 

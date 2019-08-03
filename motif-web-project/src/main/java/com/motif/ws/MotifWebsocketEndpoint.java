@@ -64,50 +64,50 @@ public class MotifWebsocketEndpoint {
     	}
     }
  
-    @OnClose
-    public void onClose (Session session) throws IOException {
-    	MotifSession mSession = sessionManager.removeSession (session);
-    	DebugUtil.onClose (mSession);
-    	MessageOut message = new MessageOut (MotifApp.MOTIF);
-        message.setUser(mSession.getUser());
-        message.setType (MessageOut.NOTIFY_CLOSE_CONNECTION);        
-        sendAll (message);
-    }
+	@OnClose
+	public void onClose (Session session) throws IOException {
+		MotifSession mSession = sessionManager.removeSession (session);
+		DebugUtil.onClose (mSession);
+		MessageOut message = new MessageOut (MotifApp.MOTIF);
+		message.setUser (mSession.getUser ());
+		message.setType (MessageOut.NOTIFY_CLOSE_CONNECTION);
+		sendAll (message);
+	}
  
-    @OnError
-    public void onError (Session session, Throwable throwable) {
-    	MotifSession mSession = sessionManager.getSession (session.getId ());
-    	DebugUtil.onError (mSession, throwable); 
-    	MessageOut message = new MessageOut (MotifApp.MOTIF);
-        message.setUser (mSession.getUser());
-        message.setType (MessageOut.NOTIFY_ERROR);
-        message.setData (throwable.toString ());
-        sendAll (message);
-    }
+	@OnError
+	public void onError (Session session, Throwable throwable) {
+		MotifSession mSession = sessionManager.getSession (session.getId ());
+		DebugUtil.onError (mSession, throwable);
+		MessageOut message = new MessageOut (MotifApp.MOTIF);
+		message.setUser (mSession.getUser ());
+		message.setType (MessageOut.NOTIFY_ERROR);
+		message.setData (throwable.toString ());
+		sendAll (message);
+	}
 	
-	public static void send(MessageOut message, MotifSession toSession) {
+	public static void send (MessageOut message, MotifSession toSession) {
 		try {
-			toSession.getSender().sendObject(message);
+			toSession.getSender ().sendObject (message);
 		} catch (IOException | EncodeException e) {
-			e.printStackTrace();
+			e.printStackTrace ();
 		}
 	}
 	
-	public static void sendAll(MessageOut message) {
-		for (MotifSession session : sessionManager.sessions()) {
-			send(message, session);
+	public static void sendAll (MessageOut message) {
+		for (var session : sessionManager.sessions ()) {
+			send (message, session);
 		}
 	}
-	
-	public static void send(MessageOut message, Collection<MotifUser> toUsers) {
+
+	public static void send (MessageOut message, Collection<MotifUser> toUsers) {
 		for (var toUser : toUsers) {
-			send(message, toUser);
+			send (message, toUser);
 		}
 	}
-	
-	public static void send(MessageOut message, MotifUser toUser) {
-		for (MotifSession session : toUser.sessions()) {
-			send(message, session);
+
+	public static void send (MessageOut message, MotifUser toUser) {
+		for (var session : toUser.sessions ()) {
+			send (message, session);
 		}
 	}
     

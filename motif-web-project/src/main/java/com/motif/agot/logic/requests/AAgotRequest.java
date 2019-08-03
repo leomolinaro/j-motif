@@ -9,7 +9,7 @@ import com.motif.agot.logic.flow.AgotResponse;
 import com.motif.agot.logic.flow.IAgotFlowRequest;
 import com.motif.agot.state.AgotPlayer;
 
-import lombok.Getter;
+import io.leangen.graphql.annotations.GraphQLQuery;
 
 public abstract class AAgotRequest implements IAgotFlowRequest {
 
@@ -31,10 +31,15 @@ public abstract class AAgotRequest implements IAgotFlowRequest {
 		CONTINUE
 	}
 	
-	@Getter @Expose private final AgotRequestType type;
-	@Getter private final AgotPlayer player;
+	@Expose private final AgotRequestType type;
+	@GraphQLQuery (name = "type") public AgotRequestType getType () { return this.type; }
+	
+	private final AgotPlayer player;
+	@GraphQLQuery (name = "player") public AgotPlayer getPlayer () { return this.player; }
 	@Expose private final String playerId;
+	
 	@Expose private final String instruction;
+	@GraphQLQuery (name = "instruction") public String getInstruction () { return this.instruction; }
 	
 	public AAgotRequest(AgotRequestType type, AgotPlayer player, String instruction) {
 		this.type = type;
@@ -44,12 +49,14 @@ public abstract class AAgotRequest implements IAgotFlowRequest {
 	}
 	
 	@Expose private final List<AgotChoice> choices = new ArrayList<>();
+	@GraphQLQuery (name = "choices") public List<AgotChoice> getChoices () { return this.choices; }
 	protected void addChoice(AgotChoice choice) {
 		choice.setRequestType(this.type);
 		this.choices.add(choice);
 	}
 	
-	@Getter @Expose private boolean repeated;
+	@Expose private boolean repeated;
+	@GraphQLQuery (name = "repeated") public boolean isRepeated () { return this.repeated; }
 	@Override public void setRepeated() { this.repeated = true; }
 	
 	@Override public String toString () {

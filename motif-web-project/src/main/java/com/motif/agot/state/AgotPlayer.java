@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.google.gson.annotations.Expose;
+import com.motif.agot.ang.cards.AngDrawCard;
 import com.motif.agot.ang.enums.AngArea;
 import com.motif.agot.ang.enums.AngType;
 import com.motif.agot.endpoint.AgotContext;
@@ -47,10 +48,10 @@ public class AgotPlayer extends MotifPlayer implements IAgotModelChoice {
 	}
 
 	@Expose private String id;
-	@GraphQLQuery public String id() { return id; }
+	@GraphQLQuery public String id () { return id; }
 	
 	@Expose private String name;
-	public String getName() { return name; }
+	@GraphQLQuery public String name () { return name; }
 	
 	private AgotPlayer nextPlayer;
 	public void setNextPlayer (AgotPlayer nextPlayer) { this.nextPlayer = nextPlayer; }
@@ -61,7 +62,7 @@ public class AgotPlayer extends MotifPlayer implements IAgotModelChoice {
 	/********************************************************************************/
 	
 	@Expose private int gold = 0;
-	public int getGold () { return gold; }
+	@GraphQLQuery public int gold () { return gold; }
 	public void gainGold (int goldGained, AgotContext context) {
 		this.gold += goldGained;
 		context.actions ().setGold (this.gold, this);
@@ -83,12 +84,12 @@ public class AgotPlayer extends MotifPlayer implements IAgotModelChoice {
 	
 	private transient FactionCard faction;
 	@Expose private long factionId;
-	public FactionCard getFaction () { return faction; }
+	@GraphQLQuery public FactionCard faction () { return faction; }
 	public void setFaction (FactionCard factionCard) { this.faction = factionCard; this.factionId = factionCard.id(); }
 	
 	private AgendaCard agenda;
 	@Expose private Long agendaId = null;
-	public AgendaCard getAgenda () { return agenda; }
+	@GraphQLQuery public AgendaCard agenda () { return agenda; }
 	public void setAgenda (AgendaCard agendaCard) { this.agenda = agendaCard; this.agendaId = agendaCard == null ? null : agendaCard.id (); }
 	public boolean hasAgenda () { return agenda != null; }
 	
@@ -99,23 +100,23 @@ public class AgotPlayer extends MotifPlayer implements IAgotModelChoice {
 	public int drawDeckSize () { return drawDeck.size (); }
 	public boolean canDraw () { return !drawDeckEmpty; }
 	public boolean hasInDeck (DrawCard<?> card) { return drawDeck != null && drawDeck.contains (card); }
-	public boolean getDrawDeckEmpty () { return drawDeckEmpty; }
+	@GraphQLQuery public boolean drawDeckEmpty () { return drawDeckEmpty; }
 	private DrawCard<?> drawDeckRemoveTop () { DrawCard<?> card = drawDeck.removeLast (); if (drawDeck.isEmpty ()) { drawDeckEmpty = true; } return card; }
 	
 	private ModelPile<DrawCard<?>> discardPile = new ModelPile<DrawCard<?>> ();
 	@Expose private ModelPile<Long> discardPileIds = new ModelPile<Long> ();
-	public Stream<DrawCard<?>> discardPile () { return discardPile.stream (); }
+	@GraphQLQuery public Stream<DrawCard<? extends AngDrawCard>> discardPile () { return discardPile.stream (); }
 	private void discardPilePutTop (DrawCard<?> card) { discardPile.putTop (card); discardPileIds.putTop (card.id ()); }
 
 	private ModelPile<CharacterCard> deadPile = new ModelPile<CharacterCard> ();
 	@Expose private ModelPile<Long> deadPileIds = new ModelPile<Long> ();
-	public Stream<CharacterCard> deadPile () { return deadPile.stream (); }
+	@GraphQLQuery public Stream<CharacterCard> deadPile () { return deadPile.stream (); }
 	private void deadPilePutTop (CharacterCard card) { deadPile.putTop (card); deadPileIds.putTop (card.id ()); }
 	
 	private ArrayList<PlotCard> plotDeck = new ArrayList<PlotCard> ();
 	@Expose private ArrayList<Long> plotDeckIds = new ArrayList<Long> ();
 	public void addPlotCard (PlotCard card) { plotDeck.add (card); plotDeckIds.add (card.id ()); }
-	public Stream<PlotCard> plotDeck () { return plotDeck.stream (); }
+	@GraphQLQuery public Stream<PlotCard> plotDeck () { return plotDeck.stream (); }
 	public boolean emptyPlotDeck () { return plotDeck.isEmpty (); }
 	private void plotDeckAdd (PlotCard card) { plotDeck.add (card); plotDeckIds.add (card.id ()); }
 	private void plotDeckRemove (PlotCard card) { plotDeck.remove (card); plotDeckIds.remove (card.id ()); }
@@ -123,20 +124,20 @@ public class AgotPlayer extends MotifPlayer implements IAgotModelChoice {
 	private PlotCard revealedPlot = null;
 	@Expose private Long revealedPlotId = null;
 	private void setRevealedPlot (PlotCard card) { revealedPlot = card; revealedPlotId = card == null ? null : card.id (); }
-	public PlotCard revealedPlot () { return revealedPlot; }
+	@GraphQLQuery public PlotCard revealedPlot () { return revealedPlot; }
 	public int getInitiative () {  return revealedPlot.getInitiative (); }
 	public int getIncome () { return revealedPlot.getIncome (); }
 	public int getReserve () { return revealedPlot.getReserve (); }
 	
 	private ModelPile<PlotCard> usedPlotPile = new ModelPile<PlotCard> ();
 	@Expose private ModelPile<Long> usedPlotPileIds = new ModelPile<Long> ();
-	public Stream<PlotCard> usedPlotPile () { return usedPlotPile.stream (); }
+	@GraphQLQuery public Stream<PlotCard> usedPlotPile () { return usedPlotPile.stream (); }
 	private void usedPlotPilePutTop (PlotCard card) { usedPlotPile.putTop (card); usedPlotPileIds.putTop (card.id ()); }
 	private PlotCard usedPlotPileRemoveTop () { usedPlotPileIds.removeLast (); return usedPlotPile.removeLast (); }
 	
 	private LinkedList<DrawCard<?>> hand = new LinkedList<DrawCard<?>> ();
 	@Expose private LinkedList<Long> handIds = new LinkedList<Long> ();
-	public Stream<DrawCard<?>> hand () { return hand.stream (); }
+	@GraphQLQuery public Stream<DrawCard<? extends AngDrawCard>> hand () { return hand.stream (); }
 	public boolean hasInHand (DrawCard<?> card) { return hand.contains (card); }
 	public int handSize () { return hand.size (); }
 	private void handAdd (DrawCard<?> card) { hand.add (card); handIds.add (card.id ()); }
@@ -144,7 +145,7 @@ public class AgotPlayer extends MotifPlayer implements IAgotModelChoice {
 	
 	private LinkedList<CharacterCard> characters = new LinkedList<CharacterCard> ();
 	@Expose private LinkedList<Long> charactersIds = new LinkedList<Long> ();
-	public Stream<CharacterCard> characters () { return characters.stream (); }
+	@GraphQLQuery public Stream<CharacterCard> characters () { return characters.stream (); }
 	public void forEachCharacter (Consumer<? super CharacterCard> action) { characters ().forEach (action); }
 	public boolean hasCharacter (CharacterCard card) { return characters.contains (card); }
 	public boolean hasCharacters () { return !characters.isEmpty (); }
@@ -154,7 +155,7 @@ public class AgotPlayer extends MotifPlayer implements IAgotModelChoice {
 	
 	private LinkedList<LocationCard> locations = new LinkedList<LocationCard> ();
 	@Expose private LinkedList<Long> locationsIds = new LinkedList<Long> ();
-	public Stream<LocationCard> locations () { return locations.stream (); }
+	@GraphQLQuery public Stream<LocationCard> locations () { return locations.stream (); }
 	public boolean hasLocation (LocationCard card) { return locations.contains (card); }
 	public boolean hasLocations () { return !locations.isEmpty (); }
 	private void locationsAdd (LocationCard card) { locations.add (card); locationsIds.add (card.id ()); }
@@ -410,7 +411,7 @@ public class AgotPlayer extends MotifPlayer implements IAgotModelChoice {
 	} // factionCardIsStanding
 	
 	public int getDominance () {
-		int dominance = getGold ();
+		int dominance = gold ();
 		dominance += characters ()
 				.filter (CharacterCard::isStanding)
 				.collect (Collectors.summingInt (cha -> cha.getStrength ()));

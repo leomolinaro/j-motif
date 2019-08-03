@@ -121,14 +121,14 @@ public class CardEventCreator implements IAngEffectVisitor, IAngCostVisitor {
 	@Override public boolean visit (AngKneelThis effect) { event = new KneelEvent (ac.thisCard, game); return true; }
 	@Override public boolean visit (AngKneelThat effect) { event = new KneelEvent (ac.thatCard, game); return true; }
 	@Override public boolean visit (AngKneelAttached effect) { event = new KneelEvent (((AttachmentCard) ac.thisCard).getAttachTo (), game); return true; }
-	@Override public boolean visit (AngKneelYourFactionCard instant) { event = new KneelEvent (ac.you.getFaction (), game); return true; }
+	@Override public boolean visit (AngKneelYourFactionCard instant) { event = new KneelEvent (ac.you.faction (), game); return true; }
 	@Override public boolean visit (AngKneelEach effect) { return visit (effect, c -> new KneelEvent (c, game)); }
 	@Override public boolean visit (AngKillThat effect) { event = new KillEvent ((CharacterCard) ac.thatCard, game); return true; }
 	@Override public boolean visit (AngDiscardNPowerFromThat effect) { event = new DiscardNPowerFromEvent (effect.getN (), ac.thatCard, game); return true; }
 	@Override public boolean visit (AngDiscardFromPlayThat effect) { event = new DiscardFromPlayEvent ((MarshallCard<?>) ac.thatCard, game); return true; }
 	@Override public boolean visit (AngDiscardFromPlayEach effect) { return visit (effect, c -> new DiscardFromPlayEvent ((MarshallCard<?>) c, game)); }
 	@Override public boolean visit (AngGainNPowerOnThis effect) { event = new GainNPowerOnEvent (effect.getN (), ac.thisCard, game); return true; }
-	@Override public boolean visit (AngGainNPowerOnYourFaction effect) { event = new GainNPowerOnEvent (effect.getN (), ac.you.getFaction (), game); return true; }
+	@Override public boolean visit (AngGainNPowerOnYourFaction effect) { event = new GainNPowerOnEvent (effect.getN (), ac.you.faction (), game); return true; }
 	@Override public boolean visit (AngReturnThisToYourHand effect) { event = new ReturnToYourHandEvent ((DrawCard<?>) ac.thisCard, game); return true; }
 	@Override public boolean visit (AngLastingEffect effect) { event = new ApplyLastingEffectEvent (effect, ac, game); return true; }
 	@Override public boolean visit (AngPlaceOneTokenOnThis effect) { event = new PlaceOneTokenEvent (effect.getToken (), (MarshallCard<?>) ac.thisCard, game); return true; }
@@ -164,8 +164,8 @@ public class CardEventCreator implements IAngEffectVisitor, IAngCostVisitor {
 		AgotPlayer toPlayer = game.players ()
 		.filter (p -> FilterMatcher.doesMatch (p, ac.you, toFilter, game))
 		.findFirst ().get ();
-		int nPower = Math.min (effect.getN (), fromPlayer.getFaction ().power ());
-		event = new MoveNPowerEvent (nPower, fromPlayer.getFaction (), toPlayer.getFaction (), game);
+		int nPower = Math.min (effect.getN (), fromPlayer.faction ().power ());
+		event = new MoveNPowerEvent (nPower, fromPlayer.faction (), toPlayer.faction (), game);
 		return true;
 	} // visit
 

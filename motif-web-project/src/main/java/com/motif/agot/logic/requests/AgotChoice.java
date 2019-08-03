@@ -6,6 +6,7 @@ import com.motif.agot.logic.requests.AAgotRequest.AgotRequestType;
 import com.motif.agot.state.AgotPlayer;
 import com.motif.agot.state.cards.Card;
 
+import io.leangen.graphql.annotations.GraphQLQuery;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -28,7 +29,9 @@ public class AgotChoice {
 		INTERRUPT
 	}
 	
-	@Expose @Getter @Setter private AgotRequestType requestType;
+	@Expose @Setter private AgotRequestType requestType;
+	@GraphQLQuery (name = "requestType") public AgotRequestType getRequestType () { return this.requestType; }
+	
 	public AgotChoice sRequestType(AgotRequestType requestType) { this.requestType = requestType; return this; }
 	@Expose @Getter private AgotChoiceType choiceType;
 

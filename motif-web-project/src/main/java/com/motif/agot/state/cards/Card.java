@@ -29,10 +29,10 @@ public abstract class Card<A extends AngCard> implements IAgotModelChoice, ICard
 	} // Card
 	
 	@Expose protected long id;
-	public long id() { return id; }
+	@GraphQLQuery public long id() { return id; }
 
 	@Expose private String imageSource;
-	public String imageSource() { return this.imageSource; }
+	@GraphQLQuery public String imageSource() { return this.imageSource; }
 	
 	protected A ang;
 	public A getAngCard () { return ang; }

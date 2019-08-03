@@ -44,7 +44,6 @@ import com.motif.shared.game.MotifGame;
 import com.motif.shared.util.ListUtil;
 
 import io.leangen.graphql.annotations.GraphQLQuery;
-import lombok.Getter;
 
 public class AgotGame extends MotifGame<AgotPlayer> {
 	
@@ -57,7 +56,7 @@ public class AgotGame extends MotifGame<AgotPlayer> {
 	public AgotPlayer getPlayer(String username) { return this.playerMap.get(username); }
 	
 	private AgotPlayer firstPlayer;
-	public AgotPlayer firstPlayer() { return firstPlayer; }
+	@GraphQLQuery public AgotPlayer firstPlayer() { return firstPlayer; }
 	public void setFirstPlayer (AgotPlayer firstPlayer, AgotContext context) {
 		this.firstPlayer = firstPlayer;
 		context.actions().setFirstPlayer(firstPlayer);
@@ -295,7 +294,8 @@ public class AgotGame extends MotifGame<AgotPlayer> {
 		@Override public void visit (AngCharacterCard ang) { card = new CharacterCard (ang, player); }
 	} // CardInitializer
 
-	@Expose @Getter private boolean started = false;
+	@Expose private boolean started = false;
+	@GraphQLQuery public boolean started() { return this.started; }
 	public void setStarted(boolean started, AgotContext context) {
 		this.started = started;
 		context.actions().setGameStarted(started);

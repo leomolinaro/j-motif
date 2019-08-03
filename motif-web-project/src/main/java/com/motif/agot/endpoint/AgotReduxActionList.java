@@ -1,7 +1,6 @@
 package com.motif.agot.endpoint;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import com.google.gson.annotations.Expose;
 import com.motif.agot.ang.enums.AngArea;
@@ -53,7 +52,7 @@ public class AgotReduxActionList {
 	public void addDuplicate(Card<?> card, Card<?> duplicateTo) { actions.add(new AgotReduxAction<>(ADD_DUPLICATE, new AddDuplicateData(card, duplicateTo))); }
 	public void addLog(GameLogRow logRow) { actions.add(new AgotReduxAction<>(ADD_LOG, new AddLogData(logRow))); }
 	public void emptyDrawDeck(AgotPlayer player) { actions.add(new AgotReduxAction<>(EMPTY_DRAW_DECK, new EmptyDrawDeckData(player))); }
-	public void initState(AgotGame game, List<String> userPlayerIds, IAgotFlowRequest request) { actions.add(new AgotReduxAction<>(INIT_STATE, new InitStateData(game, userPlayerIds, request))); }
+	public void initState(AgotGame game, IAgotFlowRequest request) { actions.add(new AgotReduxAction<>(INIT_STATE, new InitStateData(game, request))); }
 	public void removeAttachment(Card<?> card, Card<?> fromCard) { actions.add(new AgotReduxAction<>(REMOVE_ATTACHMENT, new RemoveAttachmentData(card, fromCard))); }
 	public void removeCard(Card<?> card, AgotPlayer fromPlayer, AngArea fromArea) { actions.add(new AgotReduxAction<>(REMOVE_CARD, new RemoveCardData(card, fromPlayer, fromArea))); }
 	public void removeDuplicate(Card<?> card, Card<?> fromCard) { actions.add(new AgotReduxAction<>(REMOVE_DUPLICATE, new RemoveDuplicateData(card, fromCard))); }
@@ -113,16 +112,14 @@ public class AgotReduxActionList {
 		
 		private static class AgotState {
 			@Expose private AgotGame game;
-			@Expose private List<String> userPlayerIds;
 			@Expose private IAgotFlowRequest request;
 		}
 		
 		@Expose private AgotState state = new AgotState ();
 		
-		public InitStateData (AgotGame game, List<String> userPlayerIds, IAgotFlowRequest request) {
+		public InitStateData (AgotGame game, IAgotFlowRequest request) {
 			super ();
 			state.game = game;
-			state.userPlayerIds = userPlayerIds;
 			state.request = request;
 		}
 		
