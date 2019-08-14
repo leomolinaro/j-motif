@@ -1,6 +1,7 @@
 package com.motif.shared.endpoint;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -32,13 +33,20 @@ public class MotifGraphqlUtil {
 		return flux;
 	} // subscribe
 	
-	public static <T> void publish (T element, Map<String, List<FluxSink<T>>> sinksByUser, MotifUser...users) {
+	public static <T> void publish (T element, Map<String, List<FluxSink<T>>> sinksByUser, Collection<MotifUser> users) {
 		for (var user : users) {
 			var sinks = sinksByUser.get (user.getUsername ());
 			if (sinks != null) {
 				sinks.forEach (sink -> sink.next (element));
 			} // if
 		} // for
+	} // publish
+	
+	public static <T> void publish (T element, Map<String, List<FluxSink<T>>> sinksByUser, MotifUser user) {
+		var sinks = sinksByUser.get (user.getUsername ());
+		if (sinks != null) {
+			sinks.forEach (sink -> sink.next (element));
+		} // if
 	} // publish
 	
 } // MotifGraphqlUtil

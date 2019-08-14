@@ -13,7 +13,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
-import com.motif.ws.MotifSession;
 
 public class MotifGson {
 
@@ -32,7 +31,6 @@ public class MotifGson {
 	
 	protected void registerTypeAdapters (GsonBuilder gsonBuilder) {
 		gsonBuilder.registerTypeAdapter (MotifUser.class, new MotifUserSerializer ());
-		gsonBuilder.registerTypeAdapter (MotifSession.class, new MotifSessionSerializer ());
 	} // registerTypeAdapters
 
 	protected Gson gson;
@@ -49,16 +47,4 @@ public class MotifGson {
 		
 	} // MotifUserSerializer
 
-	private static class MotifSessionSerializer implements JsonSerializer<MotifSession> {
-		
-		@Override
-		public JsonElement serialize (MotifSession session, Type arg1, JsonSerializationContext context) {
-			JsonObject jSession = new JsonObject ();
-			jSession.addProperty ("id", session.getId ());
-			jSession.add ("user", context.serialize (session.getUser ()));
-			return jSession;
-		} // serialize
-		
-	} // MotifUserSerializer
-	
 } // AgotGson

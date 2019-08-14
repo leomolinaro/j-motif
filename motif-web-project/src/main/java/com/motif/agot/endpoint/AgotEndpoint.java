@@ -9,9 +9,6 @@ import java.util.stream.Collectors;
 import org.reactivestreams.Publisher;
 
 import com.motif.agot.ang.deck.InputPlayer;
-import com.motif.agot.endpoint.test.A;
-import com.motif.agot.endpoint.test.B;
-import com.motif.agot.endpoint.test.IA;
 import com.motif.agot.logic.AgotPlay;
 import com.motif.agot.logic.flow.AgotResponse;
 import com.motif.agot.logic.flow.AgotTrigger;
@@ -21,12 +18,9 @@ import com.motif.agot.state.AgotGame;
 import com.motif.agot.state.AgotPlayer;
 import com.motif.shared.endpoint.MotifContext;
 import com.motif.shared.endpoint.MotifGraphqlUtil;
+import com.motif.shared.endpoint.MotifAuthManager;
 import com.motif.shared.endpoint.MotifToken;
-import com.motif.shared.endpoint.messages.MessageOut;
-import com.motif.shared.endpoint.messages.MessageOut.MotifApp;
 import com.motif.shared.exceptions.MotifUnexpectedError;
-import com.motif.ws.MotifSessionManager;
-import com.motif.ws.MotifWebsocketEndpoint;
 
 import io.leangen.graphql.annotations.GraphQLMutation;
 import io.leangen.graphql.annotations.GraphQLQuery;
@@ -50,7 +44,7 @@ public class AgotEndpoint implements IAgotSender {
 	
 	@GraphQLMutation
 	public AgotGame createGame (ArrayList<InputPlayer> inputPlayers, MotifToken token) {
-		var user = MotifSessionManager.getInstance ().getUserByToken (token);
+		var user = MotifAuthManager.getInstance ().getUserByToken (token);
 		var context = new MotifContext (user);
 		var game = new AgotGame ();
 		for (var inputPlayer : inputPlayers) {
@@ -72,7 +66,7 @@ public class AgotEndpoint implements IAgotSender {
 	
 	@GraphQLQuery
 	public AAgotRequest request (MotifToken token) {
-		var user = MotifSessionManager.getInstance ().getUserByToken (token);
+		var user = MotifAuthManager.getInstance ().getUserByToken (token);
 		if (this.trigger != null && this.trigger.hasPendingRequest()) {
 			var pendingRequest = this.trigger.getPendingRequest();
 			if (user.getUsername().equals(pendingRequest.getPlayer().getUser().getUsername())) {
@@ -84,38 +78,47 @@ public class AgotEndpoint implements IAgotSender {
 	
 	@GraphQLSubscription (name = "request")
 	public Publisher<AAgotRequest> subscribeRequests (MotifToken token) {
-		var user = MotifSessionManager.getInstance ().getUserByToken (token);
+		var user = MotifAuthManager.getInstance ().getUserByToken (token);
 		var pub = MotifGraphqlUtil.subscribe (this.requestSinksByUser, user);
 		return pub;
 	} // subscribeRequests
 	
 	@GraphQLSubscription (name = "changes")
 	public Publisher<AgotReduxActionList> subscribeChanges (MotifToken token) {
-		var user = MotifSessionManager.getInstance ().getUserByToken (token);
+		var user = MotifAuthManager.getInstance ().getUserByToken (token);
 		var pub = MotifGraphqlUtil.subscribe (this.changesSinksByUser, user);
 		return pub;
 	} // subscribeChanges
 	
-	public void initState (MotifContext context) {
-		if (game == null) { return; }
-		var message = new MessageOut(MotifApp.AGOT);
-		message.setUser(context.getUser());
-		message.setType(MessageOut.AGOT_REDUX_ACTION_LIST);
-		var actions = new AgotReduxActionList();
-		actions.initGame(game); 
-		message.setData(actions);
-		MotifWebsocketEndpoint.send(message, context.getUser());
-	}
+//	public void initState (MotifContext context) {
+//		if (game == null) { return; }
+//		var message = new MessageOut(MotifApp.AGOT);
+//		message.setUser(context.getUser());
+//		message.setType(MessageOut.AGOT_REDUX_ACTION_LIST);
+//		var actions = new AgotReduxActionList();
+//		actions.initGame(game); 
+//		message.setData(actions);
+//		MotifWebsocketEndpoint.send(message, context.getUser());
+//	}
 	
-	public void start (MotifContext context) {
-		if (!this.game.started()) {
-			var playContext = new AgotContext(this.game.getAnyPlayerByUser(context.getUser()));
-			this.game.setStarted(true, playContext);
-			this.trigger = new AgotTrigger(this);
-			this.trigger.start(new AgotPlay(this.game), playContext);
+	@GraphQLMutation
+	public void startGame (MotifToken token) {
+		var user = MotifAuthManager.getInstance ().getUserByToken (token);
+		if (!this.game.started ()) {
+			var playContext = new AgotContext (this.game.getAnyPlayerByUser (user));
+			this.game.setStarted (true, playContext);
+			this.trigger = new AgotTrigger (this);
+			this.trigger.start (new AgotPlay (this.game), playContext);
 		}
 	}
 
+	@GraphQLMutation
+	public void chooseAction (AgotResponse response, MotifToken token) {
+		var player = this.game.getPlayer (response.getPlayerId ());
+		var playContext = new AgotContext (player);
+		this.trigger.receive (response, playContext);
+	} // chooseAction
+	
 	public void actionChoice (AgotResponse response, MotifContext context) throws MotifUnexpectedError {
 		var player = this.game.getPlayer(response.getPlayerId());
 		var playContext = new AgotContext(player);
@@ -126,7 +129,7 @@ public class AgotEndpoint implements IAgotSender {
 	public void send (IAgotFlowRequest request, AgotContext context) {
 		var player = request.getPlayer();
 		var user = player.getUser();
-		var sourceUser = context.getPlayer().getUser();
+//		var sourceUser = context.getPlayer().getUser();
 		var actions = context.actions();
 		
 //		var oppUsers = this.game.players()
@@ -146,22 +149,16 @@ public class AgotEndpoint implements IAgotSender {
 		var users = this.game.players ()
 				.map (p -> p.getUser ())
 				.collect (Collectors.toSet ());
-		var message = new MessageOut (MotifApp.AGOT);
-		message.setUser (sourceUser);
-		message.setType (MessageOut.AGOT_REDUX_ACTION_LIST);
-		message.setData (actions);
-		MotifWebsocketEndpoint.send (message, users);
+//		var message = new MessageOut (MotifApp.AGOT);
+//		message.setUser (sourceUser);
+//		message.setType (MessageOut.AGOT_REDUX_ACTION_LIST);
+//		message.setData (actions);
+//		MotifWebsocketEndpoint.send (message, users);
 		
 		// .getActions ().stream ().map (a -> a.toString ()).collect (Collectors.toList ())
-		MotifGraphqlUtil.publish (actions, this.changesSinksByUser, user);
+		MotifGraphqlUtil.publish (actions, this.changesSinksByUser, users);
 		MotifGraphqlUtil.publish ((AAgotRequest) request, this.requestSinksByUser, user);
 		
 	}
 
-	@GraphQLQuery(name = "dummy")
-    public List<IA> dummy() {
-        return List.of (new A (), new B ());
-    }
-	
-	
 }

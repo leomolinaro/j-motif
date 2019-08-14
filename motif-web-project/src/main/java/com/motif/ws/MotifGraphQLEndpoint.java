@@ -38,18 +38,6 @@ import graphql.servlet.core.internal.SubscriptionProtocolHandler;
 import graphql.servlet.core.internal.WsSessionSubscriptions;
 import graphql.servlet.input.GraphQLInvocationInputFactory;
 
-//import graphql.servlet.GraphQLInvocationInputFactory;
-//import graphql.servlet.GraphQLObjectMapper;
-//import graphql.servlet.GraphQLQueryInvoker;
-//import graphql.servlet.GraphQLWebsocketServlet;
-//import graphql.servlet.SubscriptionConnectionListener;
-//import graphql.servlet.internal.ApolloSubscriptionProtocolFactory;
-//import graphql.servlet.internal.FallbackSubscriptionProtocolFactory;
-//import graphql.servlet.internal.SubscriptionHandlerInput;
-//import graphql.servlet.internal.SubscriptionProtocolFactory;
-//import graphql.servlet.internal.SubscriptionProtocolHandler;
-//import graphql.servlet.internal.WsSessionSubscriptions;
-
 @ServerEndpoint(
 	value = "/motif/graphql-ws",
 	configurator = MotifGraphQLEndpoint.class
@@ -64,7 +52,6 @@ public class MotifGraphQLEndpoint extends Configurator {
 				null
 		);
 	}
-	
 	
 	private static final Logger log = LoggerFactory.getLogger(GraphQLWebsocketServlet.class);
 

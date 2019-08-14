@@ -30,23 +30,4 @@ public class MotifGraphQLServlet extends GraphQLHttpServlet {
 		super.doOptions (req, resp);
 	}
     
-//	@Override
-//	protected GraphQLContext createContext(Optional<HttpServletRequest> request, Optional<HttpServletResponse> response) {
-//		User user = request
-//	        .map(req -> req.getHeader("Authorization"))
-//	        .filter(id -> !id.isEmpty())
-//	        .map(id -> id.replace("Bearer ", ""))
-//	        .map(userRepository::findById)
-//	        .orElse(null);
-//	    return new AuthContext(user, request, response);
-//	}
-    
-//	@Override
-//	protected List<GraphQLError> filterGraphQLErrors(List<GraphQLError> errors) {
-//	    return errors.stream()
-//            .filter(e -> e instanceof ExceptionWhileDataFetching || super.isClientError(e))
-//            .map(e -> e instanceof ExceptionWhileDataFetching ? new SanitizedError((ExceptionWhileDataFetching) e) : e)
-//            .collect(Collectors.toList());
-//	}
-
 }

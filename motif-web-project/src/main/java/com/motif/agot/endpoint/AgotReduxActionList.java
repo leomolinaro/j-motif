@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import com.google.gson.annotations.Expose;
 import com.motif.agot.ang.enums.AngArea;
 import com.motif.agot.ang.enums.AngPhase;
-import com.motif.agot.state.AgotGame;
 import com.motif.agot.state.AgotPlayer;
 import com.motif.agot.state.GameLog.GameLogRow;
 import com.motif.agot.state.cards.Card;
@@ -18,63 +17,61 @@ import lombok.RequiredArgsConstructor;
 
 public class AgotReduxActionList {
 
-//	@GraphQLInterface (name = "AgotReduxActionData", implementationAutoDiscovery = true)
 	@GraphQLUnion (name = "AgotReduxActionData", possibleTypeAutoDiscovery = true)
 	public interface AgotReduxActionData extends MotifReduxActionData {
-//		@GraphQLQuery public default long iii () { return 0; }
-	}
+	} // AgotReduxActionData
 	
-	public class AgotReduxAction<D extends AgotReduxActionData> extends MotifReduxAction<D> {
+	public class AgotReduxAction<D extends AgotReduxActionData> extends MotifReduxAction<AgotReduxActionType, D> {
 		
-		public AgotReduxAction(String type, D data) {
+		public AgotReduxAction(AgotReduxActionType type, D data) {
 			super(type, data);
-		}
+		} // AgotReduxAction
 		
 		@GraphQLQuery (name = "type")
-		public String getType () { return this.type; }
+		public AgotReduxActionType getType () { return this.type; }
 		
 		@GraphQLQuery (name = "payload")
 		public D getPayload () { return this.payload; }
 		
 	} // AgotReduxAction
 	
-	public static final String ADD_ATTACHMENT = "ADD_ATTACHMENT";
-	public static final String ADD_CARD = "ADD_CARD";
-	public static final String ADD_DUPLICATE = "ADD_DUPLICATE";
-	public static final String ADD_LOG = "ADD_LOG";
-	public static final String EMPTY_DRAW_DECK = "EMPTY_DRAW_DECK";
-	public static final String INIT_GAME = "INIT_GAME";
-	public static final String REMOVE_ATTACHMENT = "REMOVE_ATTACHMENT";
-	public static final String REMOVE_CARD = "REMOVE_CARD";
-	public static final String REMOVE_DUPLICATE = "REMOVE_DUPLICATE";
-	public static final String SET_CARD_KNEELING = "SET_CARD_KNEELING";
-	public static final String SET_CARD_POWER = "SET_CARD_POWER";
-	public static final String SET_CARD_REVEALED = "SET_CARD_REVEALED";
-	public static final String SET_FIRST_PLAYER = "SET_FIRST_PLAYER";
-	public static final String SET_GAME_STARTED = "SET_GAME_STARTED";
-	public static final String SET_GOLD = "SET_GOLD";
-	public static final String SET_PHASE = "SET_PHASE";
-
+	public enum AgotReduxActionType {
+		ADD_ATTACHMENT,
+		ADD_CARD,
+		ADD_DUPLICATE,
+		ADD_LOG,
+		EMPTY_DRAW_DECK,
+		REMOVE_ATTACHMENT,
+		REMOVE_CARD,
+		REMOVE_DUPLICATE,
+		SET_CARD_KNEELING,
+		SET_CARD_POWER,
+		SET_CARD_REVEALED,
+		SET_FIRST_PLAYER,
+		SET_GAME_STARTED,
+		SET_GOLD,
+		SET_PHASE
+	} // AgotReduxActionType
+	
 	@Expose private ArrayList<AgotReduxAction<AgotReduxActionData>> actions = new ArrayList<AgotReduxAction<AgotReduxActionData>> ();
 	@GraphQLQuery (name = "actions") public ArrayList<AgotReduxAction<AgotReduxActionData>> getActions () { return this.actions; }
 	
-	public void addAttachment(Card<?> card, Card<?> attachTo) { actions.add(new AgotReduxAction<>(ADD_ATTACHMENT, new AddAttachmentData(card, attachTo))); }
+	public void addAttachment(Card<?> card, Card<?> attachTo) { actions.add(new AgotReduxAction<>(AgotReduxActionType.ADD_ATTACHMENT, new AddAttachmentData(card, attachTo))); }
 	public void addCard(Card<?> card, AgotPlayer toPlayer, AngArea toArea) { addCard (card, toPlayer, toArea, AngArea.END_LIST); }
-	public void addCard(Card<?> card, AgotPlayer toPlayer, AngArea toArea, int index) { actions.add(new AgotReduxAction<>(ADD_CARD, new AddCardData(card, toPlayer, toArea, index))); }
-	public void addDuplicate(Card<?> card, Card<?> duplicateTo) { actions.add(new AgotReduxAction<>(ADD_DUPLICATE, new AddDuplicateData(card, duplicateTo))); }
-	public void addLog(GameLogRow logRow) { actions.add(new AgotReduxAction<>(ADD_LOG, new AddLogData(logRow))); }
-	public void emptyDrawDeck(AgotPlayer player) { actions.add(new AgotReduxAction<>(EMPTY_DRAW_DECK, new EmptyDrawDeckData(player))); }
-	public void initGame(AgotGame game) { actions.add(new AgotReduxAction<>(INIT_GAME, new InitGameData(game))); }
-	public void removeAttachment(Card<?> card, Card<?> fromCard) { actions.add(new AgotReduxAction<>(REMOVE_ATTACHMENT, new RemoveAttachmentData(card, fromCard))); }
-	public void removeCard(Card<?> card, AgotPlayer fromPlayer, AngArea fromArea) { actions.add(new AgotReduxAction<>(REMOVE_CARD, new RemoveCardData(card, fromPlayer, fromArea))); }
-	public void removeDuplicate(Card<?> card, Card<?> fromCard) { actions.add(new AgotReduxAction<>(REMOVE_DUPLICATE, new RemoveDuplicateData(card, fromCard))); }
-	public void setCardKneeling(boolean kneeling, Card<?> card) { actions.add(new AgotReduxAction<>(SET_CARD_KNEELING, new SetCardKneelingData(kneeling, card))); }
-	public void setCardPower(int power, Card<?> card) { actions.add(new AgotReduxAction<>(SET_CARD_POWER, new SetCardPowerData(power, card))); }
-	public void setCardRevealed(boolean revealed, Card<?> card) { actions.add(new AgotReduxAction<>(SET_CARD_REVEALED, new SetCardRevealedData(revealed, card))); }
-	public void setFirstPlayer(AgotPlayer firstPlayer) { actions.add(new AgotReduxAction<>(SET_FIRST_PLAYER, new SetFirstPlayerData(firstPlayer))); }
-	public void setGameStarted(boolean started) { actions.add(new AgotReduxAction<>(SET_GAME_STARTED, new SetGameStarted(started))); }
-	public void setGold(int gold, AgotPlayer player) { actions.add(new AgotReduxAction<>(SET_GOLD, new SetGoldData(gold, player))); }
-	public void setPhase(String round, AngPhase phase, String step) { actions.add(new AgotReduxAction<>(SET_PHASE, new SetPhaseData(round, phase, step))); }
+	public void addCard(Card<?> card, AgotPlayer toPlayer, AngArea toArea, int index) { actions.add(new AgotReduxAction<>(AgotReduxActionType.ADD_CARD, new AddCardData(card, toPlayer, toArea, index))); }
+	public void addDuplicate(Card<?> card, Card<?> duplicateTo) { actions.add(new AgotReduxAction<>(AgotReduxActionType.ADD_DUPLICATE, new AddDuplicateData(card, duplicateTo))); }
+	public void addLog(GameLogRow logRow) { actions.add(new AgotReduxAction<>(AgotReduxActionType.ADD_LOG, new AddLogData(logRow))); }
+	public void emptyDrawDeck(AgotPlayer player) { actions.add(new AgotReduxAction<>(AgotReduxActionType.EMPTY_DRAW_DECK, new EmptyDrawDeckData(player))); }
+	public void removeAttachment(Card<?> card, Card<?> fromCard) { actions.add(new AgotReduxAction<>(AgotReduxActionType.REMOVE_ATTACHMENT, new RemoveAttachmentData(card, fromCard))); }
+	public void removeCard(Card<?> card, AgotPlayer fromPlayer, AngArea fromArea) { actions.add(new AgotReduxAction<>(AgotReduxActionType.REMOVE_CARD, new RemoveCardData(card, fromPlayer, fromArea))); }
+	public void removeDuplicate(Card<?> card, Card<?> fromCard) { actions.add(new AgotReduxAction<>(AgotReduxActionType.REMOVE_DUPLICATE, new RemoveDuplicateData(card, fromCard))); }
+	public void setCardKneeling(boolean kneeling, Card<?> card) { actions.add(new AgotReduxAction<>(AgotReduxActionType.SET_CARD_KNEELING, new SetCardKneelingData(kneeling, card))); }
+	public void setCardPower(int power, Card<?> card) { actions.add(new AgotReduxAction<>(AgotReduxActionType.SET_CARD_POWER, new SetCardPowerData(power, card))); }
+	public void setCardRevealed(boolean revealed, Card<?> card) { actions.add(new AgotReduxAction<>(AgotReduxActionType.SET_CARD_REVEALED, new SetCardRevealedData(revealed, card))); }
+	public void setFirstPlayer(AgotPlayer firstPlayer) { actions.add(new AgotReduxAction<>(AgotReduxActionType.SET_FIRST_PLAYER, new SetFirstPlayerData(firstPlayer))); }
+	public void setGameStarted(boolean started) { actions.add(new AgotReduxAction<>(AgotReduxActionType.SET_GAME_STARTED, new SetGameStartedData(started))); }
+	public void setGold(int gold, AgotPlayer player) { actions.add(new AgotReduxAction<>(AgotReduxActionType.SET_GOLD, new SetGoldData(gold, player))); }
+	public void setPhase(String round, AngPhase phase, String step) { actions.add(new AgotReduxAction<>(AgotReduxActionType.SET_PHASE, new SetPhaseData(round, phase, step))); }
 	
 	public class AddCardData implements AgotReduxActionData {
 		
@@ -120,14 +117,6 @@ public class AgotReduxActionList {
 		} // EmptyDrawDeckData
 		
 	} // EmptyDrawDeckData
-	
-	@RequiredArgsConstructor
-	public static class InitGameData implements AgotReduxActionData {
-		
-		@Expose private final AgotGame game;
-		@GraphQLQuery public AgotGame game () { return this.game; }
-		
-	} // InitGameData
 	
 	public static class RemoveCardData implements AgotReduxActionData {
 		
@@ -298,9 +287,9 @@ public class AgotReduxActionList {
 	} // AddDuplicateData
 	
 	@RequiredArgsConstructor
-	public static class SetGameStarted implements AgotReduxActionData {
+	public static class SetGameStartedData implements AgotReduxActionData {
 		@Expose private final boolean started;
 		@GraphQLQuery public boolean started () { return this.started; }
-	}
+	} // SetGameStartedData
 	
-}
+} // AgotReduxActionList

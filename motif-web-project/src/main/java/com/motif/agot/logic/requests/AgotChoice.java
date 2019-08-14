@@ -11,6 +11,8 @@ import lombok.Setter;
 
 public class AgotChoice {
 
+	public AgotChoice () {}
+	
 	public enum AgotChoiceType {
 		SELECT_CARD,
 		SELECT_CARD_ACTION,

@@ -22,7 +22,7 @@ public class BritReduxActionList {
 	private static class BritReduxActionData implements MotifReduxActionData {
 	}
 	
-	private static class BritReduxAction<D extends BritReduxActionData> extends MotifReduxAction<D> {
+	private static class BritReduxAction<D extends BritReduxActionData> extends MotifReduxAction<String, D> {
 		public BritReduxAction(String type, D data) {
 			super(type, data);
 		}
