@@ -7,7 +7,6 @@ import com.motif.agot.state.AgotPlayer;
 import com.motif.agot.state.cards.Card;
 
 import io.leangen.graphql.annotations.GraphQLQuery;
-import lombok.Getter;
 import lombok.Setter;
 
 public class AgotChoice {
@@ -31,17 +30,25 @@ public class AgotChoice {
 	
 	@Expose @Setter private AgotRequestType requestType;
 	@GraphQLQuery (name = "requestType") public AgotRequestType getRequestType () { return this.requestType; }
-	
 	public AgotChoice sRequestType(AgotRequestType requestType) { this.requestType = requestType; return this; }
-	@Expose @Getter private AgotChoiceType choiceType;
+	
+	@Expose private AgotChoiceType choiceType;
+	@GraphQLQuery (name = "choiceType") public AgotChoiceType getChoiceType () { return this.choiceType; }
 
-	@Expose @Getter private Long cardId;
+	@Expose private Long cardId;
+	@GraphQLQuery (name = "cardId") public Long getCardId () { return this.cardId; }
 	private AgotChoice sCardId(long cardId) { this.cardId = cardId; return this; }
-	@Expose @Getter private AgotChoiceCardAction cardAction;
+	
+	@Expose private AgotChoiceCardAction cardAction;
+	@GraphQLQuery (name = "cardAction") public AgotChoiceCardAction getCardAction () { return this.cardAction; }
 	private AgotChoice sCardAction(AgotChoiceCardAction cardAction) { this.cardAction = cardAction; return this; }
-	@Expose @Getter private AngIcon icon;
+	
+	@Expose private AngIcon icon;
+	@GraphQLQuery (name = "icon") public AngIcon getIcon () { return this.icon; }
 	private AgotChoice sIcon(AngIcon icon) { this.icon = icon; return this; }
-	@Expose @Getter private String player;
+	
+	@Expose private String player;
+	@GraphQLQuery (name = "player") public String getPlayer () { return this.player; }
 	private AgotChoice sPlayer(String player) { this.player = player; return this; }
 	
 	private AgotChoice(AgotChoiceType choiceType) {

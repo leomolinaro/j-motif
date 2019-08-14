@@ -11,10 +11,10 @@ import com.motif.agot.endpoint.AgotEndpoint;
 import graphql.ExceptionWhileDataFetching;
 import graphql.GraphQLError;
 import graphql.schema.GraphQLSchema;
-import graphql.servlet.GraphQLConfiguration;
-import graphql.servlet.GraphQLErrorHandler;
-import graphql.servlet.GraphQLObjectMapper;
-import graphql.servlet.GraphQLServletListener;
+import graphql.servlet.config.GraphQLConfiguration;
+import graphql.servlet.core.GraphQLErrorHandler;
+import graphql.servlet.core.GraphQLObjectMapper;
+import graphql.servlet.core.GraphQLServletListener;
 import io.leangen.graphql.GraphQLSchemaGenerator;
 import io.leangen.graphql.metadata.strategy.query.AnnotatedResolverBuilder;
 import io.leangen.graphql.metadata.strategy.value.jackson.JacksonValueMapperFactory;
@@ -34,6 +34,7 @@ public class MotifGraphQLConfigurator {
 		    var listener = new MotifGraphQLServletListener ();
 		    
 			var graphqlSchema = buildSchema ();
+			graphqlSchema.getAllTypesAsList ().forEach (t -> System.out.println (t.getName ()));
 			
 			configuration = GraphQLConfiguration
 					.with (graphqlSchema)
@@ -95,20 +96,65 @@ public class MotifGraphQLConfigurator {
 		resp.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization, Content-Length, X-Requested-With");
 	}
 	
-	private static GraphQLSchema buildSchema() {
-        return new GraphQLSchemaGenerator()
-        		.withResolverBuilders(
-        				new AnnotatedResolverBuilder()//,
+	private static GraphQLSchema buildSchema () {
+        return new GraphQLSchemaGenerator ()
+//        		.withBasePackages ("com.motif.agot")
+        		.withResolverBuilders (
+        				new AnnotatedResolverBuilder ()
         				//new PublicResolverBuilder("com.motif.test.graphql"),
         				//new PublicResolverBuilder("com.motif.agot")
         		)
-                .withOperationsFromSingletons(agotEndpoint)
+                .withOperationsFromSingletons (agotEndpoint)
                 //.withOperationsFromSingletons(userService)
                 //.withValueMapperFactory(new JacksonValueMapperFactory())
-                .withNestedResolverBuilders(new AnnotatedResolverBuilder()) // Only the annotated stuff gets exposed (default is AnnotatedResolverBuilder + BeanResolverBuilder) 
+                
+                .withNestedResolverBuilders(new AnnotatedResolverBuilder()) // Only the annotated stuff gets exposed (default is AnnotatedResolverBuilder + BeanResolverBuilder)
+                
+//                .withInterfaceMappingStrategy (new SuperTypeBasedInterfaceStrategy ())
+                
+//                .withAbstractInputTypeResolution ()
+                
+//                .withTypeTransformer(new DefaultTypeTransformer(true, true))
+                
+//                .withOperationBuilder (new DefaultOperationBuilder(DefaultOperationBuilder.TypeInference.LIMITED))
+                
+//                .withNestedResolverBuildersForType(AgotReduxActionData.class, new BeanResolverBuilder())
+                
+//                .withInterfaceMappingStrategy (new AnnotatedInterfaceStrategy (true))
+//                .withImplementationDiscoveryStrategy (new DefaultImplementationDiscoveryStrategy ())
+                
+//                .withInterfaceMappingStrategy (new InterfaceMappingStrategy() {
+//					
+//                	@Override
+//                    public boolean supports (final AnnotatedType interfase) {
+//                        return interfase.isAnnotationPresent (GraphQLInterface.class);
+//                    }
+//
+//                    @Override
+//                    public Collection<AnnotatedType> getInterfaces (final AnnotatedType type) {
+//                        @SuppressWarnings("rawtypes")
+//                        Class clazz = ClassUtils.getRawType (type.getType ());
+//                        final Set<AnnotatedType> interfaces = new HashSet<> ();
+//                        do {
+//                            final AnnotatedType currentType = GenericTypeReflector.getExactSuperType (type, clazz);
+//                            if (supports (currentType)) {
+//                                interfaces.add (currentType);
+//                            }
+//                            Arrays.stream (clazz.getInterfaces ())
+//                                    .map (inter -> GenericTypeReflector.getExactSuperType (type, inter))
+//                                    .filter (this::supports).forEach (interfaces::add);
+//                        } while ((clazz = clazz.getSuperclass()) != Object.class && clazz != null);
+//                        return interfaces;
+//                    }
+//                    
+//				})
+                
+                
+                
                 //.withNestedResolverBuildersForType(Link.class, new BeanResolverBuilder("com.motif.test.graphql.service"))
                 //.withNestedResolverBuildersForType(Link.class, signinResolver)
-                .withValueMapperFactory(new JacksonValueMapperFactory())
+                
+                .withValueMapperFactory (new JacksonValueMapperFactory ()) // cosa serve? 
                 .generate();
     }
 	

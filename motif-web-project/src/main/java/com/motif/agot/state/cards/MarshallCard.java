@@ -5,8 +5,6 @@ import java.util.stream.Stream;
 
 import com.google.gson.annotations.Expose;
 import com.motif.agot.ang.cards.AngMarshallCard;
-import com.motif.agot.ang.enums.AngToken;
-import com.motif.agot.endpoint.AgotContext;
 import com.motif.agot.state.AgotPlayer;
 import com.motif.agot.state.cards.AttachmentCard.AttachmentCardVisitor;
 import com.motif.agot.state.cards.CharacterCard.CharacterCardVisitor;
@@ -48,19 +46,6 @@ public abstract class MarshallCard<A extends AngMarshallCard> extends DrawCard<A
 		duplicates.add (card);
 		if (duplicateIds == null) { duplicateIds = new ArrayList<Long> (); }
 		duplicateIds.add (card.id());
-	}
-	
-	private ArrayList<AngToken> tokens = null;
-	public void addToken (AngToken token, AgotContext context) {
-		if (tokens == null) { tokens = new ArrayList<AngToken> (); }
-		tokens.add (token);
-	}
-	public void removeToken (AngToken token, AgotContext context) {
-		tokens.remove (token);
-		if (tokens.isEmpty ()) { tokens = null; }
-	}
-	public boolean hasToken (AngToken token) {
-		return tokens != null && tokens.contains (token);
 	}
 	
 	public MarshallCard (A ang, AgotPlayer owner) {

@@ -5,9 +5,10 @@ import com.google.gson.annotations.Expose;
 public abstract class MotifReduxAction<D extends MotifReduxActionData> {
 	
 	@Expose
-	private String type;
+	protected String type;
+	
 	@Expose
-	private D payload;
+	protected D payload;
 
 	public MotifReduxAction(String type, D data) {
 		super();

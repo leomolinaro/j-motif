@@ -4,15 +4,15 @@ import com.motif.agot.ang.text.costs.IAngCost;
 import com.motif.agot.ang.text.costs.IAngCostVisitor;
 import com.motif.agot.ang.text.instants.AngDiscardATokenFromThis;
 import com.motif.agot.ang.text.instants.AngDiscardNCardsFromYourHand;
+import com.motif.agot.ang.text.instants.AngInstants.AngKneelThis;
 import com.motif.agot.ang.text.instants.AngKneelYourFactionCard;
 import com.motif.agot.ang.text.instants.AngPayNGold;
 import com.motif.agot.ang.text.instants.AngRemoveThisFromTheGame;
 import com.motif.agot.ang.text.instants.AngReturnThisToYourHand;
 import com.motif.agot.ang.text.instants.AngSacrificeThis;
-import com.motif.agot.ang.text.instants.AngInstants.AngKneelThis;
 import com.motif.agot.state.AgotGame;
 import com.motif.agot.state.AgotPlayer;
-import com.motif.agot.state.cards.MarshallCard;
+import com.motif.agot.state.cards.DeckCard;
 import com.motif.agot.state.cards.TextCard;
 
 public class CostPayTester implements IAngCostVisitor {
@@ -50,7 +50,7 @@ public class CostPayTester implements IAngCostVisitor {
 		return handSize >= cost.getN ();
 	} // visit
 
-	@Override public boolean visit (AngDiscardATokenFromThis cost) { return ((MarshallCard<?>) thisCard).hasToken (cost.getToken ()); }
+	@Override public boolean visit (AngDiscardATokenFromThis cost) { return ((DeckCard<?>) thisCard).hasToken (cost.getToken ()); }
 
 	@Override public boolean visit (AngReturnThisToYourHand cost) { return thisCard.isControlledBy (you); }
 

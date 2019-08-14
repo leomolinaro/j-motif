@@ -2,7 +2,6 @@ package com.motif.test.graphql.service;
 
 import java.util.List;
 
-import com.motif.test.graphql.app.AuthContext;
 import com.motif.test.graphql.model.Link;
 import com.motif.test.graphql.model.LinkRepository;
 import com.motif.test.graphql.model.User;
@@ -11,7 +10,6 @@ import com.motif.test.graphql.model.UserRepository;
 import io.leangen.graphql.annotations.GraphQLContext;
 import io.leangen.graphql.annotations.GraphQLMutation;
 import io.leangen.graphql.annotations.GraphQLQuery;
-import io.leangen.graphql.annotations.GraphQLRootContext;
 
 public class LinkService {
     
@@ -37,10 +35,11 @@ public class LinkService {
     }
     
     @GraphQLMutation
-    public Link createLink(String url, String description, @GraphQLRootContext AuthContext context) {
-        Link newLink = new Link(url, description, context.getUser().getId());
-        linkRepository.saveLink(newLink);
-        return newLink;
+    public Link createLink(String url, String description/*, @GraphQLRootContext AuthContext context*/) {
+//        Link newLink = new Link(url, description, context.getUser().getId());
+//        linkRepository.saveLink(newLink);
+//        return newLink;
+    	return null;
     }
     
 //    @GraphQLSubscription

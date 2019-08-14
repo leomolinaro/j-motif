@@ -7,8 +7,8 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import graphql.servlet.GraphQLConfiguration;
 import graphql.servlet.GraphQLHttpServlet;
+import graphql.servlet.config.GraphQLConfiguration;
 
 @WebServlet(urlPatterns = "/motif/graphql")
 public class MotifGraphQLServlet extends GraphQLHttpServlet {

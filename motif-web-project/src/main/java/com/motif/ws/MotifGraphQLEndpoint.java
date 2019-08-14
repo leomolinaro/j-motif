@@ -26,17 +26,29 @@ import javax.websocket.server.ServerEndpointConfig.Configurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import graphql.servlet.GraphQLInvocationInputFactory;
-import graphql.servlet.GraphQLObjectMapper;
-import graphql.servlet.GraphQLQueryInvoker;
 import graphql.servlet.GraphQLWebsocketServlet;
-import graphql.servlet.SubscriptionConnectionListener;
-import graphql.servlet.internal.ApolloSubscriptionProtocolFactory;
-import graphql.servlet.internal.FallbackSubscriptionProtocolFactory;
-import graphql.servlet.internal.SubscriptionHandlerInput;
-import graphql.servlet.internal.SubscriptionProtocolFactory;
-import graphql.servlet.internal.SubscriptionProtocolHandler;
-import graphql.servlet.internal.WsSessionSubscriptions;
+import graphql.servlet.core.GraphQLObjectMapper;
+import graphql.servlet.core.GraphQLQueryInvoker;
+import graphql.servlet.core.SubscriptionConnectionListener;
+import graphql.servlet.core.internal.ApolloSubscriptionProtocolFactory;
+import graphql.servlet.core.internal.FallbackSubscriptionProtocolFactory;
+import graphql.servlet.core.internal.SubscriptionHandlerInput;
+import graphql.servlet.core.internal.SubscriptionProtocolFactory;
+import graphql.servlet.core.internal.SubscriptionProtocolHandler;
+import graphql.servlet.core.internal.WsSessionSubscriptions;
+import graphql.servlet.input.GraphQLInvocationInputFactory;
+
+//import graphql.servlet.GraphQLInvocationInputFactory;
+//import graphql.servlet.GraphQLObjectMapper;
+//import graphql.servlet.GraphQLQueryInvoker;
+//import graphql.servlet.GraphQLWebsocketServlet;
+//import graphql.servlet.SubscriptionConnectionListener;
+//import graphql.servlet.internal.ApolloSubscriptionProtocolFactory;
+//import graphql.servlet.internal.FallbackSubscriptionProtocolFactory;
+//import graphql.servlet.internal.SubscriptionHandlerInput;
+//import graphql.servlet.internal.SubscriptionProtocolFactory;
+//import graphql.servlet.internal.SubscriptionProtocolHandler;
+//import graphql.servlet.internal.WsSessionSubscriptions;
 
 @ServerEndpoint(
 	value = "/motif/graphql-ws",

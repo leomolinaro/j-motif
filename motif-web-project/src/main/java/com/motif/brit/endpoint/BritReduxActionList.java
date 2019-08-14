@@ -19,7 +19,7 @@ import lombok.RequiredArgsConstructor;
 
 public class BritReduxActionList {
 
-	private static class BritReduxActionData extends MotifReduxActionData {
+	private static class BritReduxActionData implements MotifReduxActionData {
 	}
 	
 	private static class BritReduxAction<D extends BritReduxActionData> extends MotifReduxAction<D> {

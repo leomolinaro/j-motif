@@ -1,5 +1,5 @@
 package com.motif.shared.action;
 
-public abstract class MotifReduxActionData {
+public interface MotifReduxActionData {
 
 }

@@ -38,7 +38,7 @@
 		<dependency>
             <groupId>com.graphql-java-kickstart</groupId>
             <artifactId>graphql-java-servlet</artifactId>
-            <version>7.0.0</version>
+            <version>8.0.0</version>
         </dependency>
 		<dependency>
 			<groupId>io.leangen.graphql</groupId>
@@ -51,12 +51,12 @@
 			<artifactId>reactive-streams</artifactId>
 			<version>1.0.2</version>
 		</dependency>
-
+		
 		<dependency>
-            <groupId>io.reactivex.rxjava2</groupId>
-            <artifactId>rxjava</artifactId>
-            <version>2.2.9</version>
-        </dependency>
+		    <groupId>io.projectreactor</groupId>
+		    <artifactId>reactor-core</artifactId>
+		    <version>3.2.11.RELEASE</version>
+		</dependency>
 		
 	</dependencies>
 
