@@ -5,11 +5,8 @@ import java.util.Objects;
 import com.motif.agot.ang.enums.AngIcon;
 import com.motif.agot.ang.enums.AngPhase;
 import com.motif.agot.endpoint.AgotContext;
-import com.motif.agot.endpoint.IAgotSender;
 import com.motif.agot.logic.AgotPlay;
-import com.motif.agot.logic.flow.AgotResponse;
 import com.motif.agot.logic.flow.AgotTrigger;
-import com.motif.agot.logic.flow.IAgotFlowRequest;
 import com.motif.agot.logic.requests.AAgotRequest;
 import com.motif.agot.logic.requests.AAgotRequest.AgotRequestType;
 import com.motif.agot.logic.requests.AgotChoice;
@@ -22,83 +19,88 @@ import com.motif.agot.state.cards.MarshallCard;
 import com.motif.agot.state.cards.PlotCard;
 import com.motif.agot.state.cards.TextCard;
 import com.motif.shared.endpoint.MotifUser;
+import com.motif.shared.exceptions.MotifException;
 
 public abstract class Test {
 
-	public final void run() throws AgotTestException {
-		this.game = init();
-		var sender = new IAgotSender() {
-			@Override
-			public void send(IAgotFlowRequest request, AgotContext context) {
-				Test.this.pendingRequest = (AAgotRequest) request;
-				if (!request.isRepeated()) { System.out.println(request); }
-			}
-		};
-		this.trigger = new AgotTrigger(sender);
-		var context = new AgotContext(this.game.players().findFirst().get());
-		this.trigger.start(new AgotPlay(this.game), context);
-		execute();
+	public final void run () throws AgotTestException, MotifException {
+		this.game = init ();
+		this.trigger = new AgotTrigger ();
+		var context = new AgotContext (this.game.players ().findFirst ().get ());
+		this.trigger.start (new AgotPlay (this.game), context);
+		execute ();
 	}
 	
 	protected abstract AgotGame init ();
-	protected abstract void execute () throws AgotTestException;
+	protected abstract void execute () throws AgotTestException, MotifException;
 
 	protected MotifUser testUser = new MotifUser("test");
 	
 	private AgotGame game;
-	private AAgotRequest pendingRequest;
 	private AgotTrigger trigger;
 	
-	private void chooseOrPass(AgotChoice choice, AgotPlayer player) {
-		var response = new AgotResponse(player.id(), choice);
-		var context = new AgotContext(player); 
-		var accepted = this.trigger.receive(response, context);
-		while(!accepted) {
-			pass(this.pendingRequest.getPlayer());
-			accepted = this.trigger.receive(response, context);
+	private void chooseOrPass (AgotChoice choice, AgotPlayer player) throws MotifException {
+		var context = new AgotContext (player);
+		var accepted = tryChoice (choice, context);
+		while (!accepted) {
+			var pendingRequest = (AAgotRequest) this.trigger.pendingRequests ().iterator ().next ();
+			pass (pendingRequest);
+			accepted = tryChoice (choice, context);
 		}
 	}
 	
-	private void pass(AgotPlayer player) {
-		var choice = AgotChoice.passChoice().sRequestType(this.pendingRequest.getType());
-		var response = new AgotResponse(player.id(), choice);
-		var context = new AgotContext(player); 
-		this.trigger.receive(response, context);
-	}
+	private boolean tryChoice (AgotChoice choice, AgotContext context) {
+		try {
+			this.trigger.receive (choice, context);
+			return true;
+		} catch (MotifException e) {
+			return false;
+		} // try - catch
+	} // tryChoice
 	
-	protected void endPlotPhase() { endPhase(AngPhase.PLOT, this.game.firstPlayer()); }
-	protected void endDrawPhase() { endPhase(AngPhase.DRAW, this.game.firstPlayer()); }
-	protected void endMarshallingPhase() { endPhase(AngPhase.MARSHALLING, this.game.firstPlayer()); }
-	protected void endChallengesPhase() { endPhase(AngPhase.CHALLENGES, this.game.firstPlayer()); }
-	protected void endDominancePhase() { endPhase(AngPhase.DOMINANCE, this.game.firstPlayer()); }
-	protected void endStandingPhase() { endPhase(AngPhase.STANDING, this.game.firstPlayer()); }
-	protected void endTaxationPhase() { endPhase(AngPhase.TAXATION, this.game.firstPlayer()); }
+	private void pass (AAgotRequest pendingRequest) throws MotifException {
+		var choice = AgotChoice.passChoice (pendingRequest.getType ());
+		var context = new AgotContext (pendingRequest.getPlayer ());
+		this.trigger.receive (choice, context);
+	} // pass
 	
-	protected void endChallenge(AgotPlayer player) {
+	protected void endPlotPhase() throws MotifException { endPhase(AngPhase.PLOT, this.game.firstPlayer()); }
+	protected void endDrawPhase() throws MotifException { endPhase(AngPhase.DRAW, this.game.firstPlayer()); }
+	protected void endMarshallingPhase() throws MotifException { endPhase(AngPhase.MARSHALLING, this.game.firstPlayer()); }
+	protected void endChallengesPhase() throws MotifException { endPhase(AngPhase.CHALLENGES, this.game.firstPlayer()); }
+	protected void endDominancePhase() throws MotifException { endPhase(AngPhase.DOMINANCE, this.game.firstPlayer()); }
+	protected void endStandingPhase() throws MotifException { endPhase(AngPhase.STANDING, this.game.firstPlayer()); }
+	protected void endTaxationPhase() throws MotifException { endPhase(AngPhase.TAXATION, this.game.firstPlayer()); }
+	
+	protected void endChallenge(AgotPlayer player) throws MotifException {
 		continueGame(player);
 	}
 	
-	private void endPhase(AngPhase phase, AgotPlayer player) {
+	private void endPhase(AngPhase phase, AgotPlayer player) throws MotifException {
 		continueGame(player);
 	}
 	
-	private void continueGame(AgotPlayer player) {
-		chooseOrPass(AgotChoice.continueChoice().sRequestType(AgotRequestType.CONTINUE), player);
-	}
-
-	protected void selectPlot(PlotCard plot, AgotPlayer player) {
-		chooseOrPass(AgotChoice.selectCardChoice(plot).sRequestType(AgotRequestType.SELECT_PLOT_TO_REVEAL), player);
-	}
-
-	protected void selectFirstPlayer(AgotPlayer firstPlayer, AgotPlayer player) {
-		chooseOrPass(AgotChoice.selectPlayerChoice(firstPlayer).sRequestType(AgotRequestType.SELECT_FIRST_PLAYER), player);
+	private void continueGame (AgotPlayer player) throws MotifException {
+		chooseOrPass (AgotChoice.continueChoice ("Continue"), player);
 	}
 	
-	protected void marshall(MarshallCard<?> toMarshall, AgotPlayer player) {
-		chooseOrPass(AgotChoice.selectCardActionChoice(toMarshall, AgotChoiceCardAction.MARSHALL).sRequestType(AgotRequestType.SELECT_ACTION_TO_PERFORM), player);
+	public void noMulligan (AgotPlayer player) throws MotifException {
+		chooseOrPass (AgotChoice.selectYesNoChoice (false), player);
+	} // noMulligan
+
+	protected void selectPlot(PlotCard plot, AgotPlayer player) throws MotifException {
+		chooseOrPass(AgotChoice.selectCardChoice (AgotRequestType.SELECT_PLOT_TO_REVEAL, plot), player);
 	}
 
-	protected void initiateChallenge(AngIcon challengeType, AgotPlayer defender, CharacterCard[] attackers, AgotPlayer player) {
+	protected void selectFirstPlayer(AgotPlayer firstPlayer, AgotPlayer player) throws MotifException {
+		chooseOrPass(AgotChoice.selectPlayerChoice (AgotRequestType.SELECT_FIRST_PLAYER, firstPlayer), player);
+	}
+	
+	protected void marshall(MarshallCard<?> toMarshall, AgotPlayer player) throws MotifException {
+		chooseOrPass(AgotChoice.selectCardActionChoice (AgotRequestType.SELECT_ACTION_TO_PERFORM, toMarshall, AgotChoiceCardAction.MARSHALL), player);
+	}
+
+	protected void initiateChallenge(AngIcon challengeType, AgotPlayer defender, CharacterCard[] attackers, AgotPlayer player) throws MotifException {
 		selectChallengeType(challengeType, player);
 		selectDefenderPlayer(defender, player);
 		for (var attacker : attackers) {
@@ -106,30 +108,37 @@ public abstract class Test {
 		}
 	}
 	
-	private void selectDefenderPlayer(AgotPlayer defender, AgotPlayer player) {
-		chooseOrPass(AgotChoice.selectPlayerChoice(defender).sRequestType(AgotRequestType.SELECT_DEFENDER), player);
+	private void selectDefenderPlayer (AgotPlayer defender, AgotPlayer player) throws MotifException {
+		chooseOrPass (AgotChoice.selectPlayerChoice (AgotRequestType.SELECT_DEFENDER, defender), player);
 	}
 
-	private void selectChallengeType(AngIcon challengeType, AgotPlayer player) {
-		chooseOrPass(AgotChoice.selectIconChoice(challengeType).sRequestType(AgotRequestType.SELECT_CHALLENGE_TO_INITIATE), player);
+	private void selectChallengeType (AngIcon challengeType, AgotPlayer player) throws MotifException {
+		chooseOrPass (AgotChoice.selectIconChoice (AgotRequestType.SELECT_CHALLENGE_TO_INITIATE, challengeType),
+		        player);
+	}
+
+	protected void selectAttacker (CharacterCard attacker, AgotPlayer player) throws MotifException {
+		chooseOrPass (AgotChoice.selectCardChoice (AgotRequestType.SELECT_CHARACTER_TO_ATTACK, attacker), player);
+	}
+
+	protected void defend (CharacterCard defender, AgotPlayer player) throws MotifException {
+		chooseOrPass (AgotChoice.selectCardChoice (AgotRequestType.SELECT_CHARACTER_TO_DEFEND, defender), player);
+	}
+
+	protected void reaction (TextCard<?> reactingCard, AgotPlayer player) throws MotifException {
+		chooseOrPass (AgotChoice.selectCardActionChoice (AgotRequestType.SELECT_REACTION_TO_PERFORM, reactingCard,
+		        AgotChoiceCardAction.REACTION), player);
 	}
 	
-	protected void selectAttacker(CharacterCard attacker, AgotPlayer player) {
-		chooseOrPass(AgotChoice.selectCardChoice(attacker).sRequestType(AgotRequestType.SELECT_CHARACTER_TO_ATTACK), player);
-	}
+	public void attach (AttachmentCard attachment, CharacterCard attachTo, AgotPlayer player) throws MotifException {
+		chooseOrPass (AgotChoice.selectCardActionChoice (AgotRequestType.SELECT_ACTION_TO_PERFORM, attachment,
+		        AgotChoiceCardAction.MARSHALL), player);
+		chooseOrPass (AgotChoice.selectCardChoice (AgotRequestType.SELECT_CARD_TO_ATTACH, attachTo), player);
+	} // attach
 	
-	protected void defend (CharacterCard defender, AgotPlayer player) {
-		chooseOrPass(AgotChoice.selectCardChoice(defender).sRequestType(AgotRequestType.SELECT_CHARACTER_TO_DEFEND), player);
-	}
-	
-	protected void reaction (TextCard<?> reactingCard, AgotPlayer player) {
-		chooseOrPass(AgotChoice.selectCardActionChoice(reactingCard, AgotChoiceCardAction.REACTION).sRequestType(AgotRequestType.SELECT_REACTION_TO_PERFORM), player);
-	}
-	
-	public void attach(AttachmentCard attachment, CharacterCard attachTo, AgotPlayer player) {
-		chooseOrPass(AgotChoice.selectCardActionChoice(attachment, AgotChoiceCardAction.MARSHALL).sRequestType(AgotRequestType.SELECT_ACTION_TO_PERFORM), player);
-		chooseOrPass(AgotChoice.selectCardChoice(attachTo).sRequestType(AgotRequestType.SELECT_CARD_TO_ATTACH), player);
-	}
+	public void draw (AgotPlayer player) throws MotifException {
+		chooseOrPass (AgotChoice.drawChoice (), player);
+	} // draw
 	
 	protected <T> void assertEqual (T o1, T o2) throws AgotTestException {
 		if (!Objects.equals (o1, o2)) { throw new AgotTestException (); }
@@ -139,6 +148,4 @@ public abstract class Test {
 		private static final long serialVersionUID = -3252117767029803155L;
 	}
 
-	
-	
 }

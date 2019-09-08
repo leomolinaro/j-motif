@@ -44,32 +44,34 @@ public class ClaimStep extends APhaseStep<IChallengesPhaseStep> implements IHasM
 
 	@Override
 	public IAgotFlowStep stepStart(AgotContext context) {
-		if (this.data.attackWins()) {
-			var claim = this.data.attacker.revealedPlot().getClaim();
-			switch (this.data.type()) {
+		if (this.data.attackWins ()) {
+			var claim = this.data.attacker.revealedPlot ().get ().getClaim ();
+			switch (this.data.type ()) {
 				case INTRIGUE:
-					var nCards = Math.min(this.data.defender.handSize(), claim);
-					var lostCards = new ArrayList<DrawCard<?>> (); 
-					for (var i = 0; i < nCards; i++) { lostCards.add (this.data.defender.randomDiscardFromHand(context)); }
+					var nCards = Math.min (this.data.defender.handSize (), claim);
+					var lostCards = new ArrayList<DrawCard<?>> ();
+					for (var i = 0; i < nCards; i++) {
+						lostCards.add (this.data.defender.randomDiscardFromHand (context));
+					}
 					for (var lostCard : lostCards) {
-						this.game.logManager().discards(this.data.defender, lostCard, context);
+						this.game.logManager ().discards (this.data.defender, lostCard, context);
 					}
 					return null;
 				case MILITARY:
-					this.nKills = Math.min(this.data.defender.charactersSize(), claim);
+					this.nKills = Math.min (this.data.defender.charactersSize (), claim);
 					if (this.nKills > 0) {
-						var available = this.data.defender.characters().collect(Collectors.toList());
-						return new MilitartyClaimRequest(available, this.data.defender, this);
+						var available = this.data.defender.characters ().collect (Collectors.toList ());
+						return new MilitartyClaimRequest (available, this.data.defender, this);
 					} else {
 						return null;
 					}
 				case POWER:
 					var defFacCard = this.data.defender.faction ();
-					var lostPower = Math.min(defFacCard.power (), claim);
-					defFacCard.losePower(lostPower, context);
-					this.data.attacker.gainPowerOnTheFactionCard(lostPower, context);
-					this.game.logManager().losesPowerTokens (this.data.defender, lostPower, context);
-					this.game.logManager().gainsPowerTokens(this.data.attacker, lostPower, context);
+					var lostPower = Math.min (defFacCard.power (), claim);
+					defFacCard.losePower (lostPower, context);
+					this.data.attacker.gainPowerOnTheFactionCard (lostPower, context);
+					this.game.logManager ().losesPowerTokens (this.data.defender, lostPower, context);
+					this.game.logManager ().gainsPowerTokens (this.data.attacker, lostPower, context);
 					return null;
 				default: return null;
 			}

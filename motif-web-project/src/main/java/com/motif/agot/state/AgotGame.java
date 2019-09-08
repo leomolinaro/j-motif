@@ -7,7 +7,8 @@ import java.util.Iterator;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-import com.google.gson.annotations.Expose;
+import javax.annotation.Nonnull;
+
 import com.motif.agot.ang.cards.AngAgendaCard;
 import com.motif.agot.ang.cards.AngAttachmentCard;
 import com.motif.agot.ang.cards.AngCharacterCard;
@@ -47,13 +48,26 @@ import io.leangen.graphql.annotations.GraphQLQuery;
 
 public class AgotGame extends MotifGame<AgotPlayer> {
 	
-	@Expose private HashMap<Long, Card<?>> cardMap = new HashMap<Long, Card<?>> ();
-	@GraphQLQuery public Collection<? extends ICard> allCards() { return this.cardMap.values(); }
+	public AgotGame (String name) {
+		this.id = ++idSequence;
+		this.name = name;
+	} // AgotGame
+	
+	private static long idSequence = 0;
+	
+	private final long id;
+	@GraphQLQuery public long id () { return this.id; }
+	
+	private String name;
+	@GraphQLQuery @Nonnull public String name () { return this.name; }
+	
+	private HashMap<Long, Card<?>> cardMap = new HashMap<Long, Card<?>> ();
+	@GraphQLQuery public Collection<? extends ICard> allCards() { return this.cardMap.values (); }
 	public Card<?> getCard (long cardId) { return this.cardMap.get (cardId); }
 
-	@Expose private HashMap<String, AgotPlayer> playerMap = new HashMap<String, AgotPlayer>();
-	@GraphQLQuery public Collection<AgotPlayer> allPlayers() { return this.playerMap.values(); }
-	public AgotPlayer getPlayer(String username) { return this.playerMap.get(username); }
+	private HashMap<String, AgotPlayer> playerMap = new HashMap<String, AgotPlayer> ();
+	@GraphQLQuery public Collection<AgotPlayer> allPlayers() { return this.playerMap.values (); }
+	public AgotPlayer getPlayer (String username) { return this.playerMap.get (username); }
 	
 	private AgotPlayer firstPlayer;
 	@GraphQLQuery public AgotPlayer firstPlayer() { return firstPlayer; }
@@ -63,16 +77,15 @@ public class AgotGame extends MotifGame<AgotPlayer> {
 	}
 
 	private ArrayList<AgotPlayer> players = new ArrayList<AgotPlayer> ();
-	@Expose private ArrayList<String> playerIds = new ArrayList<String> ();
 	@Override public Stream<AgotPlayer> players () { return players.stream (); }
 	public void forEachPlayer (Consumer<? super AgotPlayer> action) { players ().forEach (action); }
 	public int getNumPlayers () { return players.size (); }
-	public AgotPlayer initPlayer (AgotPlayer player) { players.add (player); playerIds.add(player.id()); playerMap.put (player.id(), player); return player; }
+	public AgotPlayer initPlayer (AgotPlayer player) { players.add (player); playerMap.put (player.id(), player); return player; }
 	public AgotPlayer getRandomPlayer () { return ListUtil.getRandom (players); }
 	public Stream<TextCard<?>> inPlayTextCards () { return players ().flatMap (p -> p.inPlayTextCards ()); }
 	public Stream<Card<?>> inPlayCards () { return players ().flatMap (p -> p.inPlayCards ()); }
 	
-	@Expose private ArrayList<GameLogRow> log = new ArrayList<GameLogRow> ();
+	private ArrayList<GameLogRow> log = new ArrayList<GameLogRow> ();
 	@GraphQLQuery public ArrayList<GameLogRow> log() { return this.log; }
 	private GameLog logManager = new GameLog (log);
 	public GameLog logManager() { return this.logManager; }
@@ -92,15 +105,15 @@ public class AgotGame extends MotifGame<AgotPlayer> {
 	
 	public AgotPlayer getNextPlayer (AgotPlayer activePlayer) { return activePlayer.getNextPlayer (); }
 	
-	@Expose private String round;
+	private String round;
 	@GraphQLQuery public String round() { return this.round; }
 	public void setRound (String round, AgotContext context) { this.round = round; context.actions ().setPhase (round, phase, step); }
 	
-	@Expose private AngPhase phase;
+	private AngPhase phase;
 	@GraphQLQuery public AngPhase phase() { return this.phase; }
 	public void setPhase (AngPhase phase, AgotContext context) { this.phase = phase; context.actions ().setPhase (round, phase, step); }
 	
-	@Expose private String step;
+	private String step;
 	@GraphQLQuery public String step() { return this.step; }
 	public void setStep (String step, AgotContext context) { this.step = step; context.actions ().setPhase (round, phase, step); }
 	
@@ -161,6 +174,7 @@ public class AgotGame extends MotifGame<AgotPlayer> {
 		while (toReturn == null) {
 			ConsAbility ca = consAbilityIt.next ();
 			if (ca.getAng () == angConsAbility && ca.getCard () == card) {
+				consAbilityIt.remove ();
 				toReturn = ca;
 			} // if
 		} // while
@@ -294,7 +308,7 @@ public class AgotGame extends MotifGame<AgotPlayer> {
 		@Override public void visit (AngCharacterCard ang) { card = new CharacterCard (ang, player); }
 	} // CardInitializer
 
-	@Expose private boolean started = false;
+	private boolean started = false;
 	@GraphQLQuery public boolean started() { return this.started; }
 	public void setStarted(boolean started, AgotContext context) {
 		this.started = started;

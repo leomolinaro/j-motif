@@ -37,8 +37,8 @@ public class AgotRound implements
 	private final int roundNumber;
 	private final AgotGame game;
 
-	public interface IAgotAfterRound extends IAgotFlowProcess { public IAgotFlowStep after(AgotRound round, AgotContext context); }
-	@Getter private final IAgotAfterRound parent;
+	public interface IHasAgotRound extends IAgotFlowProcess { public IAgotFlowStep after(AgotRound round, AgotContext context); }
+	@Getter private final IHasAgotRound parent;
 	@Override public IAgotFlowStep next(AgotContext context) { return this.parent.after(this, context); }
 
 	public String getRoundTitle() {

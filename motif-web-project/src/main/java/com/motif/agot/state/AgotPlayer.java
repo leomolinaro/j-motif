@@ -2,17 +2,23 @@ package com.motif.agot.state;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import com.google.gson.annotations.Expose;
 import com.motif.agot.ang.cards.AngDrawCard;
 import com.motif.agot.ang.enums.AngArea;
+import com.motif.agot.ang.enums.AngIcon;
 import com.motif.agot.ang.enums.AngType;
+import com.motif.agot.ang.text.conseffects.AngConsEffects.AngReduceTheCostOfTheNextCardYouMarshallByN;
 import com.motif.agot.endpoint.AgotContext;
 import com.motif.agot.logic.flow.IAgotModelChoice;
+import com.motif.agot.logic.requests.AAgotRequest.AgotRequestType;
 import com.motif.agot.logic.requests.AgotChoice;
 import com.motif.agot.state.cards.AgendaCard;
 import com.motif.agot.state.cards.AttachmentCard;
@@ -41,16 +47,16 @@ public class AgotPlayer extends MotifPlayer implements IAgotModelChoice {
 	/****  PLAYER BASE  *************************************************************/
 	/********************************************************************************/
 	
-	public AgotPlayer(String id, String playerName, MotifUser user) {
+	public AgotPlayer (String id, String playerName, MotifUser user) {
 		super(user);
 		this.id = id;
 		this.name = playerName;
 	}
 
-	@Expose private String id;
+	private String id;
 	@GraphQLQuery public String id () { return id; }
 	
-	@Expose private String name;
+	private String name;
 	@GraphQLQuery public String name () { return name; }
 	
 	private AgotPlayer nextPlayer;
@@ -61,7 +67,7 @@ public class AgotPlayer extends MotifPlayer implements IAgotModelChoice {
 	/****  PLAYER GOLD  *************************************************************/
 	/********************************************************************************/
 	
-	@Expose private int gold = 0;
+	private int gold = 0;
 	@GraphQLQuery public int gold () { return gold; }
 	public void gainGold (int goldGained, AgotContext context) {
 		this.gold += goldGained;
@@ -83,83 +89,87 @@ public class AgotPlayer extends MotifPlayer implements IAgotModelChoice {
 	/********************************************************************************/
 	
 	private transient FactionCard faction;
-	@Expose private long factionId;
 	@GraphQLQuery public FactionCard faction () { return faction; }
-	public void setFaction (FactionCard factionCard) { this.faction = factionCard; this.factionId = factionCard.id(); }
+	public void setFaction (FactionCard factionCard) { this.faction = factionCard; }
 	
 	private AgendaCard agenda;
-	@Expose private Long agendaId = null;
 	@GraphQLQuery public AgendaCard agenda () { return agenda; }
-	public void setAgenda (AgendaCard agendaCard) { this.agenda = agendaCard; this.agendaId = agendaCard == null ? null : agendaCard.id (); }
+	public void setAgenda (AgendaCard agendaCard) { this.agenda = agendaCard; }
 	public boolean hasAgenda () { return agenda != null; }
 	
 	private ModelPile<DrawCard<?>> drawDeck = new ModelPile<DrawCard<?>> ();
-	@Expose private boolean drawDeckEmpty = false;
-	public void addDrawCard (DrawCard<?> card) { drawDeckEmpty = false; drawDeck.addLast (card); }
+	public void addDrawCard (DrawCard<?> card) { drawDeck.addLast (card); }
 	public void shuffleDeck () { Collections.shuffle (drawDeck); }
 	public int drawDeckSize () { return drawDeck.size (); }
-	public boolean canDraw () { return !drawDeckEmpty; }
+	public boolean canDraw () { return !drawDeckEmpty (); }
 	public boolean hasInDeck (DrawCard<?> card) { return drawDeck != null && drawDeck.contains (card); }
-	@GraphQLQuery public boolean drawDeckEmpty () { return drawDeckEmpty; }
-	private DrawCard<?> drawDeckRemoveTop () { DrawCard<?> card = drawDeck.removeLast (); if (drawDeck.isEmpty ()) { drawDeckEmpty = true; } return card; }
+	@GraphQLQuery public boolean drawDeckEmpty () { return drawDeck.isEmpty (); }
+	private DrawCard<?> drawDeckRemoveTop () { DrawCard<?> card = drawDeck.removeLast (); return card; }
+	private void drawDeckPutTop (DrawCard<?> card) { drawDeck.putTop (card); }
+	private void drawDeckRemove (DrawCard<?> card) { drawDeck.remove (card); }
+	public boolean hasDrawCard (long cardId) { return this.drawDeck.stream ().anyMatch (card -> card.id () == cardId); }
+	public Iterator<DrawCard<? extends AngDrawCard>> drawDeckIt () { return drawDeck.iterator (); }
+	private DrawCard<?> drawDeckRemove (long cardId) {
+		var it = this.drawDeck.iterator ();
+		while (it.hasNext ()) {
+			var card = it.next ();
+			if (card.id () == cardId) {
+				it.remove ();
+				return card;
+			} // if
+		} // while
+		return null;
+	} // drawDeckRemove
 	
 	private ModelPile<DrawCard<?>> discardPile = new ModelPile<DrawCard<?>> ();
-	@Expose private ModelPile<Long> discardPileIds = new ModelPile<Long> ();
 	@GraphQLQuery public Stream<DrawCard<? extends AngDrawCard>> discardPile () { return discardPile.stream (); }
-	private void discardPilePutTop (DrawCard<?> card) { discardPile.putTop (card); discardPileIds.putTop (card.id ()); }
+	private void discardPilePutTop (DrawCard<?> card) { discardPile.putTop (card); }
 
 	private ModelPile<CharacterCard> deadPile = new ModelPile<CharacterCard> ();
-	@Expose private ModelPile<Long> deadPileIds = new ModelPile<Long> ();
 	@GraphQLQuery public Stream<CharacterCard> deadPile () { return deadPile.stream (); }
-	private void deadPilePutTop (CharacterCard card) { deadPile.putTop (card); deadPileIds.putTop (card.id ()); }
+	private void deadPilePutTop (CharacterCard card) { deadPile.putTop (card); }
 	
 	private ArrayList<PlotCard> plotDeck = new ArrayList<PlotCard> ();
-	@Expose private ArrayList<Long> plotDeckIds = new ArrayList<Long> ();
-	public void addPlotCard (PlotCard card) { plotDeck.add (card); plotDeckIds.add (card.id ()); }
+	public void addPlotCard (PlotCard card) { plotDeck.add (card); }
 	@GraphQLQuery public Stream<PlotCard> plotDeck () { return plotDeck.stream (); }
 	public boolean emptyPlotDeck () { return plotDeck.isEmpty (); }
-	private void plotDeckAdd (PlotCard card) { plotDeck.add (card); plotDeckIds.add (card.id ()); }
-	private void plotDeckRemove (PlotCard card) { plotDeck.remove (card); plotDeckIds.remove (card.id ()); }
+	private void plotDeckAdd (PlotCard card) { plotDeck.add (card); }
+	private void plotDeckRemove (PlotCard card) { plotDeck.remove (card); }
 	
 	private PlotCard revealedPlot = null;
-	@Expose private Long revealedPlotId = null;
-	private void setRevealedPlot (PlotCard card) { revealedPlot = card; revealedPlotId = card == null ? null : card.id (); }
-	@GraphQLQuery public PlotCard revealedPlot () { return revealedPlot; }
+	private void setRevealedPlot (PlotCard card) { revealedPlot = card; }
+	@GraphQLQuery public Optional<PlotCard> revealedPlot () { return Optional.ofNullable (revealedPlot); }
 	public int getInitiative () {  return revealedPlot.getInitiative (); }
 	public int getIncome () { return revealedPlot.getIncome (); }
 	public int getReserve () { return revealedPlot.getReserve (); }
 	
 	private ModelPile<PlotCard> usedPlotPile = new ModelPile<PlotCard> ();
-	@Expose private ModelPile<Long> usedPlotPileIds = new ModelPile<Long> ();
 	@GraphQLQuery public Stream<PlotCard> usedPlotPile () { return usedPlotPile.stream (); }
-	private void usedPlotPilePutTop (PlotCard card) { usedPlotPile.putTop (card); usedPlotPileIds.putTop (card.id ()); }
-	private PlotCard usedPlotPileRemoveTop () { usedPlotPileIds.removeLast (); return usedPlotPile.removeLast (); }
+	private void usedPlotPilePutTop (PlotCard card) { usedPlotPile.putTop (card); }
+	private PlotCard usedPlotPileRemoveTop () { return usedPlotPile.removeLast (); }
 	
 	private LinkedList<DrawCard<?>> hand = new LinkedList<DrawCard<?>> ();
-	@Expose private LinkedList<Long> handIds = new LinkedList<Long> ();
 	@GraphQLQuery public Stream<DrawCard<? extends AngDrawCard>> hand () { return hand.stream (); }
 	public boolean hasInHand (DrawCard<?> card) { return hand.contains (card); }
 	public int handSize () { return hand.size (); }
-	private void handAdd (DrawCard<?> card) { hand.add (card); handIds.add (card.id ()); }
-	private void handRemove (DrawCard<?> card) { hand.remove (card); handIds.remove (card.id ()); }
+	private void handAdd (DrawCard<?> card) { hand.add (card); }
+	private void handRemove (DrawCard<?> card) { hand.remove (card); }
 	
 	private LinkedList<CharacterCard> characters = new LinkedList<CharacterCard> ();
-	@Expose private LinkedList<Long> charactersIds = new LinkedList<Long> ();
 	@GraphQLQuery public Stream<CharacterCard> characters () { return characters.stream (); }
 	public void forEachCharacter (Consumer<? super CharacterCard> action) { characters ().forEach (action); }
 	public boolean hasCharacter (CharacterCard card) { return characters.contains (card); }
 	public boolean hasCharacters () { return !characters.isEmpty (); }
 	public int charactersSize () { return characters.size (); }
-	private void charactersAdd (CharacterCard card) { characters.add (card); charactersIds.add (card.id ()); }
-	private void charactersRemove (CharacterCard card) { characters.remove (card); charactersIds.remove (card.id ()); }
+	private void charactersAdd (CharacterCard card) { characters.add (card); }
+	private void charactersRemove (CharacterCard card) { characters.remove (card); }
 	
 	private LinkedList<LocationCard> locations = new LinkedList<LocationCard> ();
-	@Expose private LinkedList<Long> locationsIds = new LinkedList<Long> ();
 	@GraphQLQuery public Stream<LocationCard> locations () { return locations.stream (); }
 	public boolean hasLocation (LocationCard card) { return locations.contains (card); }
 	public boolean hasLocations () { return !locations.isEmpty (); }
-	private void locationsAdd (LocationCard card) { locations.add (card); locationsIds.add (card.id ()); }
-	private void locationsRemove (LocationCard card) { locations.remove (card); locationsIds.remove (card.id ()); }
+	private void locationsAdd (LocationCard card) { locations.add (card); }
+	private void locationsRemove (LocationCard card) { locations.remove (card); }
 	
 	private LinkedList<AttachmentCard> attachments = new LinkedList<AttachmentCard> ();
 	public Stream<AttachmentCard> attachments () { return attachments.stream (); }
@@ -194,28 +204,42 @@ public class AgotPlayer extends MotifPlayer implements IAgotModelChoice {
 		} // while
 	} // resetPlotDeck
 	
+	public void discardPlot (PlotCard plot, AgotContext context) {
+		setRevealedPlot (null);
+		context.actions ().removeCard (plot, this, AngArea.REVEALED_PLOT);			
+		usedPlotPilePutTop (plot);
+		context.actions ().addCard (plot, this, AngArea.USED_PLOT_PILE, AngArea.TOP_PILE);			
+	} // discardPlot
+	
 	public void choosePlot (PlotCard plot, AgotContext context) {
 		plotDeckRemove (plot);
 		context.actions ().removeCard (plot, this, AngArea.PLOT_DECK);
-		if (revealedPlot != null) {
-			context.actions ().removeCard (revealedPlot, this, AngArea.REVEALED_PLOT);			
-			usedPlotPilePutTop (revealedPlot);
-			context.actions ().addCard (revealedPlot, this, AngArea.USED_PLOT_PILE, AngArea.TOP_PILE);			
-		} // if
 		setRevealedPlot (plot);
-		revealedPlot.hide (context);
-		context.actions ().addCard (revealedPlot, this, AngArea.REVEALED_PLOT);
+		plot.hide (context);
+		context.actions ().addCard (plot, this, AngArea.REVEALED_PLOT);
 	} // revealPlot
 	
 	public void draw (int qty, AgotContext context) {
 		for (int i = 0; i < qty; i++) { draw (context); }
 	} // draw
 	
+	public List<DrawCard<?>> draw (LinkedHashSet<Long> cardIds, AgotContext context) {
+		var cards = new ArrayList<DrawCard<?>> ();
+		for (var cardId : cardIds) {
+			var card = drawDeckRemove (cardId);
+			context.actions ().addCard (card, this, AngArea.HAND);
+			handAdd (card);
+			if (!this.drawDeck.hasElements ()) { context.actions ().emptyDrawDeck (this); }
+			cards.add (card);
+		} // for
+		return cards;
+	} // draw
+	
 	public DrawCard<?> draw (AgotContext context) {
-		DrawCard<?> card = drawDeckRemoveTop ();
+		var card = drawDeckRemoveTop ();
 		context.actions ().addCard (card, this, AngArea.HAND);
 		handAdd (card);
-		if (!drawDeck.hasElements ()) { context.actions ().emptyDrawDeck (this); }
+		if (!this.drawDeck.hasElements ()) { context.actions ().emptyDrawDeck (this); }
 		return card;
 	} // draw
 	
@@ -225,6 +249,20 @@ public class AgotPlayer extends MotifPlayer implements IAgotModelChoice {
 		discardPilePutTop (card);
 		context.actions ().addCard (card, this, AngArea.DISCARD_PILE, AngArea.TOP_PILE);
 	} // discardFromHand
+	
+	public void returnToDeckFromHand (DrawCard<?> card, AgotContext context) {
+		handRemove (card);
+		context.actions ().removeCard (card, this, AngArea.HAND);
+		drawDeckPutTop (card);
+	} // returnToDeckFromHand
+	
+	public void cheatDrawDeck (LinkedList<DrawCard<? extends AngDrawCard>> cards, AgotContext context) {
+		cards.forEach (card -> drawDeckRemove (card));
+		var it = cards.descendingIterator ();
+		while (it.hasNext ()) {
+			drawDeckPutTop (it.next ());			
+		} // while
+	} // cheatDrawDeck
 	
 	public void discardDuplicate (MarshallCard<?> dup, MarshallCard<?> card, AgotContext context) {
 		card.removeDuplicate (dup);
@@ -426,6 +464,17 @@ public class AgotPlayer extends MotifPlayer implements IAgotModelChoice {
 	private int modDominanceStrength = 0;
 	public void increaseDominanceStrength (int strength) { modDominanceStrength += strength; }
 	
+	private List<AngReduceTheCostOfTheNextCardYouMarshallByN> marshallModifiers = new LinkedList<> ();
+	public Stream<AngReduceTheCostOfTheNextCardYouMarshallByN> marshallModifers () { return this.marshallModifiers.stream (); }
+	public void addMarshallModifier (AngReduceTheCostOfTheNextCardYouMarshallByN marshallModifier) { this.marshallModifiers.add (marshallModifier); }
+	public void removeMarshallModifier (AngReduceTheCostOfTheNextCardYouMarshallByN marshallModifier) { this.marshallModifiers.remove (marshallModifier); }
+	public void removeAllMarshallModifiers () { this.marshallModifiers.clear (); }
+	
+	private List<AngIcon> additionalChallenges = new LinkedList<> ();
+	public void addAdditionalChallenge (AngIcon icon) { this.additionalChallenges.add (icon); }
+	public void removeAdditionalChallenge (AngIcon icon) { this.additionalChallenges.remove (icon); }
+	public Stream<AngIcon> additionalChallenges () { return this.additionalChallenges.stream (); }
+	
 	/********************************************************************************/
 	/****  COUNTERS  ****************************************************************/
 	/********************************************************************************/
@@ -467,8 +516,8 @@ public class AgotPlayer extends MotifPlayer implements IAgotModelChoice {
 	@Override public String toString () { return name; }
 	
 	@Override
-	public AgotChoice getChoice() {
-		return AgotChoice.selectPlayerChoice(this);
+	public AgotChoice getChoice (AgotRequestType requestType) {
+		return AgotChoice.selectPlayerChoice (requestType, this);
 	}
 		
 }

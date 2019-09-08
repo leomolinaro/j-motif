@@ -2,6 +2,7 @@ package com.motif.agot.logic.visitors;
 
 import com.motif.agot.ang.text.untilconditions.AngUntilTheEndOfTheChallenge;
 import com.motif.agot.ang.text.untilconditions.AngUntilTheEndOfThePhase;
+import com.motif.agot.ang.text.untilconditions.AngUntilTheEndOfTheRound;
 import com.motif.agot.ang.text.untilconditions.IAngUntilCondition;
 import com.motif.agot.ang.text.untilconditions.IAngUntilConditionVisitor;
 import com.motif.agot.logic.events.AgotEvent;
@@ -25,6 +26,7 @@ import com.motif.agot.logic.events.list.PhaseBeginsEvent;
 import com.motif.agot.logic.events.list.PhaseEndsEvent;
 import com.motif.agot.logic.events.list.PlaceOneTokenEvent;
 import com.motif.agot.logic.events.list.ReturnToYourHandEvent;
+import com.motif.agot.logic.events.list.RoundEndsEvent;
 import com.motif.agot.logic.events.list.SaveEvent;
 import com.motif.agot.logic.events.list.StandEvent;
 import com.motif.agot.logic.events.list.WinDominanceEvent;
@@ -60,9 +62,15 @@ public class UntilChecker implements IEventVisitor {
 	
 	private abstract class StandardEventUntilChecker<E extends AgotEvent> extends EventUntilChecker<E> {
 		protected StandardEventUntilChecker (E event) { super (event); }
+		@Override public boolean visit (AngUntilTheEndOfTheRound untilCond) { return false; }
 		@Override public boolean visit (AngUntilTheEndOfThePhase untilCond) { return false; }
 		@Override public boolean visit (AngUntilTheEndOfTheChallenge untilCond) { return false; }
 	} // StandardEventUntilChecker
+	
+	private class RoundEndsEventUntilChecker extends StandardEventUntilChecker<RoundEndsEvent> {
+		protected RoundEndsEventUntilChecker (RoundEndsEvent event) { super (event); }
+		@Override public boolean visit (AngUntilTheEndOfTheRound untilCond) { return true; }
+	} // RoundEndsEventUntilChecker
 	
 	private class PhaseEndsEventUntilChecker extends StandardEventUntilChecker<PhaseEndsEvent> {
 		protected PhaseEndsEventUntilChecker (PhaseEndsEvent event) { super (event); }
@@ -84,6 +92,7 @@ public class UntilChecker implements IEventVisitor {
 	@Override public boolean visit (KneelEvent event) { return false; }
 	@Override public boolean visit (MarshallEvent event) { return false; }
 	@Override public boolean visit (PhaseBeginsEvent event) { return false; }
+	@Override public boolean visit (RoundEndsEvent event) { eventUntilChecker = new RoundEndsEventUntilChecker (event); return true; }
 	@Override public boolean visit (PhaseEndsEvent event) { eventUntilChecker = new PhaseEndsEventUntilChecker (event); return true; }
 	@Override public boolean visit (ChallengeEndEvent event) { eventUntilChecker = new ChallengeEndEventUntilChecker (event); return true; }
 	@Override public boolean visit (ReturnToYourHandEvent event) { return false; }

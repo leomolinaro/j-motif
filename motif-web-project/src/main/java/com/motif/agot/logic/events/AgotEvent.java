@@ -17,6 +17,6 @@ public abstract class AgotEvent implements IAgotFlowProcess {
 	@Getter @Setter private IAgotHasEvent parent;
 	@Override public IAgotFlowStep next(AgotContext context) { return this.parent.after(this, context); }
 	
-	public abstract boolean accept(IEventVisitor visitor);
+	public abstract boolean accept (IEventVisitor visitor);
 	
 }

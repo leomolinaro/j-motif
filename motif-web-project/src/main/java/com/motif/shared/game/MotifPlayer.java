@@ -2,16 +2,16 @@ package com.motif.shared.game;
 
 import com.motif.shared.endpoint.MotifUser;
 
-import lombok.Getter;
+import io.leangen.graphql.annotations.GraphQLQuery;
 
 public abstract class MotifPlayer {
 
-	public MotifPlayer(MotifUser user) {
+	public MotifPlayer (MotifUser user) {
 		this.user = user;
 		this.user.addPlayer (this);
-	}
+	} // MotifPlayer
 	
-	@Getter
 	private final MotifUser user;
+	@GraphQLQuery public MotifUser getUser () { return this.user; }
 	
-}
+} // MotifPlayer

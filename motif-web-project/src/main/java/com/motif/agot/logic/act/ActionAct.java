@@ -7,6 +7,7 @@ import com.motif.agot.endpoint.AgotContext;
 import com.motif.agot.logic.flow.IAgotFlowStep;
 import com.motif.agot.logic.other.AbilityContext;
 import com.motif.agot.logic.requests.AgotChoice;
+import com.motif.agot.logic.requests.AAgotRequest.AgotRequestType;
 import com.motif.agot.logic.requests.AgotChoice.AgotChoiceCardAction;
 import com.motif.agot.state.AgotGame;
 import com.motif.agot.state.AgotPlayer;
@@ -40,17 +41,17 @@ public final class ActionAct extends TrigAbilityAct<AngAction> implements IPhase
 		if (!canBeInitiated) { return false; }
 		if (!actionType.equals (AngActionType.ACTION)) {
 			switch (phase) {
-				case CHALLENGES: if (!actionType.equals (AngActionType.CHALLENGES_ACTION)) { return false; }
-				case DOMINANCE: if (!actionType.equals (AngActionType.DOMINANCE_ACTION)) { return false; }
-				case DRAW: if (!actionType.equals (AngActionType.DRAW_ACTION)) { return false; }
-				case MARSHALLING: if (!actionType.equals (AngActionType.MARSHALLING_ACTION)) { return false; }
-				case PLOT: if (!actionType.equals (AngActionType.PLOT_ACTION)) { return false; }
-				case STANDING: if (!actionType.equals (AngActionType.STANDING_ACTION)) { return false; }
-				case TAXATION: if (!actionType.equals (AngActionType.TAXATION_ACTION)) { return false; }
-			}
-		}
+				case CHALLENGES: return actionType.equals (AngActionType.CHALLENGES_ACTION);
+				case DOMINANCE: return actionType.equals (AngActionType.DOMINANCE_ACTION);
+				case DRAW: return actionType.equals (AngActionType.DRAW_ACTION);
+				case MARSHALLING: return actionType.equals (AngActionType.MARSHALLING_ACTION);
+				case PLOT: return actionType.equals (AngActionType.PLOT_ACTION);
+				case STANDING: return actionType.equals (AngActionType.STANDING_ACTION);
+				case TAXATION: return actionType.equals (AngActionType.TAXATION_ACTION);
+			} // switch
+		} // if
 		return true;
-	}
+	} // canBeInitiated
 
 	@Override
 	public long getCardId() {
@@ -58,8 +59,8 @@ public final class ActionAct extends TrigAbilityAct<AngAction> implements IPhase
 	}
 
 	@Override
-	public AgotChoice getChoice() {
-		return AgotChoice.selectCardActionChoice(this.getTrigCard(), AgotChoiceCardAction.ACTION);
+	public AgotChoice getChoice (AgotRequestType requestType) {
+		return AgotChoice.selectCardActionChoice (requestType, this.getTrigCard(), AgotChoiceCardAction.ACTION);
 	}
 
 }

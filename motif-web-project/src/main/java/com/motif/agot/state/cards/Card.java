@@ -7,6 +7,7 @@ import com.motif.agot.ang.enums.AngType;
 import com.motif.agot.endpoint.AgotContext;
 import com.motif.agot.logic.flow.IAgotModelChoice;
 import com.motif.agot.logic.requests.AgotChoice;
+import com.motif.agot.logic.requests.AAgotRequest.AgotRequestType;
 import com.motif.agot.state.AgotPlayer;
 import com.motif.shared.util.SB;
 
@@ -44,8 +45,8 @@ public abstract class Card<A extends AngCard> implements IAgotModelChoice, ICard
 	@Override public String toString() { return getTitle (); }
 	
 	@Override
-	public AgotChoice getChoice() {
-		return AgotChoice.selectCardChoice(this);
+	public AgotChoice getChoice (AgotRequestType requestType) {
+		return AgotChoice.selectCardChoice (requestType, this);
 	}
 	
 	/********************************************************************************/

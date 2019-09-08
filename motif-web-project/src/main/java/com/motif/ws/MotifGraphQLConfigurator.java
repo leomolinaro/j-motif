@@ -69,7 +69,7 @@ public class MotifGraphQLConfigurator {
 		
 		@Override
 	    public RequestCallback onRequest(HttpServletRequest request, HttpServletResponse response) {	
-	        System.out.println("onRequest:" + request.getRequestURI());
+//	        System.out.println("onRequest:" + request.getRequestURI());
 	        setAccessControlHeaders (response);
 	        //TODO cookies here
 	        // response.addCookie(new Cookie("sample","test"));

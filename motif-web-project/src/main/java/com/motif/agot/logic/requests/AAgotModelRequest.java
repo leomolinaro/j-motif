@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import com.motif.agot.endpoint.AgotContext;
-import com.motif.agot.logic.flow.AgotResponse;
 import com.motif.agot.logic.flow.IAgotModelChoice;
 import com.motif.agot.state.AgotPlayer;
 
@@ -16,28 +15,28 @@ public abstract class AAgotModelRequest<M extends IAgotModelChoice> extends AAgo
 	public Stream<M> models() { return this.models.stream(); }
 	public <T extends M> String getKeyByModel (T model) { return this.models.indexOf (model) + ""; }
 	
-	public AAgotModelRequest(AgotRequestType type, List<M> models, AgotPlayer player, String instruction) {
-		super(type, player, instruction);
+	public AAgotModelRequest (AgotRequestType type, List<M> models, AgotPlayer player, String instruction) {
+		super (type, player, instruction);
 		this.models = models;
 		for (var model : models) {
-			this.addChoice(model.getChoice());
-		}
-	}
+			this.addChoice (model.getChoice (type));
+		} // for
+	} // AAgotModelRequest
 	
 	@Getter protected M choosenModel;
 	
 	@Override
-	protected boolean accept(AgotChoice choice, AgotContext context) {
-		this.choosenModel = this.models.stream()
-		.filter(model -> model.getChoice().equals(choice))
-		.findFirst()
-		.get();
+	protected boolean acceptChoice (AgotChoice choice, AgotContext context) {
+		this.choosenModel = this.models.stream ()
+		.filter (model -> model.getChoice (this.getType ()).equals(choice))
+		.findFirst ()
+		.get ();
 		return true;
-	}
+	} // acceptChoice
 	
 	@Override
-	public AgotResponse getAutoResponse() {
+	public AgotChoice getAutoChoice () {
 		return null;
-	}
+	} // getAutoChoice
 	
-}
+} // AAgotModelRequest

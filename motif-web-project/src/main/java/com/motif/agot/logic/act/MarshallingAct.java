@@ -1,8 +1,11 @@
 package com.motif.agot.logic.act;
 
+import java.util.ArrayList;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.motif.agot.ang.enums.AngType;
+import com.motif.agot.ang.text.conseffects.AngConsEffects.AngReduceTheCostOfTheNextCardYouMarshallByN;
 import com.motif.agot.ang.text.instants.AngPayNGold;
 import com.motif.agot.endpoint.AgotContext;
 import com.motif.agot.logic.act.MarshallingPayCostStep.IAgotHasMarshallingPayCostStep;
@@ -12,6 +15,7 @@ import com.motif.agot.logic.flow.IAgotFlowStep;
 import com.motif.agot.logic.other.AbilityContext;
 import com.motif.agot.logic.other.FilterMatcher;
 import com.motif.agot.logic.phases.marshalling.IMarshallingPhaseStep;
+import com.motif.agot.logic.requests.AAgotRequest.AgotRequestType;
 import com.motif.agot.logic.requests.AgotChoice;
 import com.motif.agot.logic.requests.AgotChoice.AgotChoiceCardAction;
 import com.motif.agot.logic.visitors.CostPayTester;
@@ -36,7 +40,7 @@ public class MarshallingAct extends Act implements IPhaseAct, IMarshallingPhaseS
 	
 	@Override
 	public final IAgotFlowStep start(AgotContext context) {
-		var cost = determineCost();
+		var cost = determineCost (true);
 		var ac = new AbilityContext(this.card /*or null?*/, this.player);
 		var payCostStep = new MarshallingPayCostStep(cost, ac, this.game, this);
 		return payCostStep;
@@ -75,25 +79,28 @@ public class MarshallingAct extends Act implements IPhaseAct, IMarshallingPhaseS
 	
 	@Override
 	public boolean canBePaid () {
-		AngPayNGold cost = determineCost();
+		AngPayNGold cost = determineCost (false);
 		return CostPayTester.canBePaid (cost, card, player, game);
-	}
+	} // canBePaid
 	
-	private AngPayNGold determineCost() {
-		if (enterAsDuplicate()) {
-			return new AngPayNGold(0);
+	private AngPayNGold determineCost (boolean removeUsedModifiers) {
+		if (enterAsDuplicate ()) {
+			return new AngPayNGold (0);
 		} else {
-			int cost = card.getCost ();
-//			ArrayList<DelayedEffect> appliedModifiers = new ArrayList<DelayedEffect> ();
-//			CostModifier modifier = new CostModifier ();
-//			for (DelayedEffect delayedEffect : game.getDelayedEffects ()) {
-//				if (delayedEffect.accept (modifier)) { appliedModifiers.add (delayedEffect); }
-//			} // for
-//			cost += modifier.costModifier;
-			return new AngPayNGold (cost);
-//			mCost.appliedModifiers = appliedModifiers;
+			var cost = card.getCost ();
+			var usedModifiers = new ArrayList<AngReduceTheCostOfTheNextCardYouMarshallByN> ();
+			int modifiers = this.player.marshallModifers ()
+	        .filter (marshallModifier -> FilterMatcher.doesMatch (card, player, marshallModifier.getCardFilter ()))
+	        .peek (marshallModifier -> usedModifiers.add (marshallModifier))
+	        .map (marshallModifier -> marshallModifier.getN ())
+	        .collect (Collectors.summingInt (Integer::intValue));
+			if (removeUsedModifiers) {
+				usedModifiers.forEach (m -> this.player.removeMarshallModifier (m));
+			} // if
+			int finalCost = Math.max (cost - modifiers, 0);
+			return new AngPayNGold (finalCost);
 		} // if - else
-	}
+	} // determineCost
 	
 	private boolean enterAsDuplicate () {
 		return getDuplicate () != null;
@@ -132,8 +139,8 @@ public class MarshallingAct extends Act implements IPhaseAct, IMarshallingPhaseS
 //	} // CostModifier
 
 	@Override
-	public AgotChoice getChoice() {
-		return AgotChoice.selectCardActionChoice(this.card, AgotChoiceCardAction.MARSHALL);
+	public AgotChoice getChoice (AgotRequestType requestType) {
+		return AgotChoice.selectCardActionChoice (requestType, this.card, AgotChoiceCardAction.MARSHALL);
 	}
 	
 }

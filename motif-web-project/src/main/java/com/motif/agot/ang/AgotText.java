@@ -80,6 +80,8 @@ public class AgotText {
 		public String chooseACard (AgotPlayer player) { return MotifConsole.format ("{0}, choose a card to apply the effect.", player.name ()); }
 		public String endPhase (AngPhase phase, AgotPlayer player) { return MotifConsole.format ("{0}, end {1}.", player.name (), phase.getLabel ()); }
 		public String endChallenge (AgotPlayer player) { return MotifConsole.format ("{0}, end challenge.", player.name ()); }
+		public String askForMulligan (AgotPlayer player) { return MotifConsole.format ("{0}, do you want to mulligan?", player.name ()); }
+		public String drawCards (int nCards, AgotPlayer player) { return MotifConsole.format ("{0}, draw {1} card{2}.", player.name (), nCards, nCards > 1 ? "s" : ""); }
 
 	} // AgotRequestMessage
 	

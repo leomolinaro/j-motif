@@ -48,9 +48,7 @@ public class MarshallingActionStep extends AActionPhaseStep<IMarshallingPhaseSte
 			        this.activePlayer.hand().filter(card -> !card.isType(AngType.EVENT))
 			                .map(card -> new MarshallingAct((MarshallCard<?>) card, this.player, this.game, this))
 			                .filter(act -> act.canBeInitiated() && act.canBePaid()));
-		} else {
-			availableActs = Stream.empty();
-		}
+		} // if
 		return availableActs.collect(Collectors.toList());
 	}
 	

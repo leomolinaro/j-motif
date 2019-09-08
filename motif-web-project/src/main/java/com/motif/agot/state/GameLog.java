@@ -57,6 +57,9 @@ public class GameLog {
 	public void phase (String phase, AgotContext context) { add (context, GameLogRowType.PHASE, phase); }
 	public void step (String step, AgotContext context) { add (context, GameLogRowType.STEP, step); }
 	
+	// SETUP INFO
+	public void choosesToMulligan (AgotPlayer player, AgotContext context) { add (context, "{0} chooses to mulligan.", player.name ()); }
+	
 	// PLOT PHASE INFO
 	public void winsInitiative (AgotPlayer initiveWinner, AgotContext context) { add (context, "{0} wins the initiative.", initiveWinner.name ()); }
 	public void hasMoreInitiativeThan (AgotPlayer p1, AgotPlayer p2, AgotContext context) { add (context, "{0} has more initiative than {1}.", p1.name (), p2.name ()); }
@@ -131,5 +134,7 @@ public class GameLog {
 	public void placeOneToken (AngToken token, MarshallCard<?> card, AgotContext context) { add (context, "{0} gains one {1} token.", card.getTitle (), token.getLabel ()); }
 	
 	public void becomesActivePlayer (AgotPlayer nextPlayer, AgotContext context) { add (context, "{0} becomes the active player.", nextPlayer.name ()); }
+
+	
 
 } // GameLog

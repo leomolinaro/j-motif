@@ -10,6 +10,7 @@ import com.motif.agot.state.cards.CharacterCard;
 import com.motif.agot.state.cards.EventCard;
 import com.motif.agot.state.cards.LocationCard;
 import com.motif.agot.state.cards.MarshallCard;
+import com.motif.agot.state.cards.PlotCard;
 import com.motif.shared.util.ListUtil;
 
 public class ExitGameProcedure {
@@ -71,5 +72,12 @@ public class ExitGameProcedure {
 		game.registerEvent (eventCard.getAngCard (), player);
 		player.play (eventCard, context);
 	} // playEvent
+	
+	public static void discardPlot (PlotCard card, AgotPlayer player, AgotGame game, AgotContext context) {
+		if (card.hasConsAbilities ()) {
+			card.consAbilities ().forEach (consAbility -> ConsAbilities.unsubscribe (consAbility, card, game));
+		} // if
+		player.discardPlot (card, context);
+	} // discardPlot
 	
 } // ExitGameProcedure

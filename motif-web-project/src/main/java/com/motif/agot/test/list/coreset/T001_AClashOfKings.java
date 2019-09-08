@@ -10,6 +10,7 @@ import com.motif.agot.state.cards.FactionCard;
 import com.motif.agot.state.cards.PlotCard;
 import com.motif.agot.test.TPlayer;
 import com.motif.agot.test.Test;
+import com.motif.shared.exceptions.MotifException;
 
 ///**
 // *  Neutral.
@@ -52,39 +53,45 @@ public class T001_AClashOfKings extends Test {
 	private TPlayer fede;
 	
 	@Override
-	public void execute() throws AgotTestException {
-		leo.selectPlot(aClashOfKings);
-		fede.selectPlot(aNobleCause);
-		leo.selectFirstPlayer(fede);
-		endPlotPhase();
-		endDrawPhase();
-		fede.marshall(targaryenLoyalist1);
-		fede.marshall(targaryenLoyalist2);
-		fede.marshall(handmaiden);
-		leo.marshall(bastardInHiding);
-		endMarshallingPhase();
-		fede.initiateChallenge(AngIcon.INTRIGUE, leo, handmaiden);
-		fede.endChallenge();
-		assertEqual(targaryen.power(), 1);
-		fede.initiateChallenge(AngIcon.POWER, leo, targaryenLoyalist1);
-		fede.endChallenge();
-		assertEqual(targaryen.power(), 2);
-		leo.initiateChallenge(AngIcon.POWER, fede, bastardInHiding);
-		fede.defend(targaryenLoyalist2);
-		leo.reaction(aClashOfKings);
-		fede.endChallenge();
-		assertEqual(baratheon.power(), 2);
-		assertEqual(targaryen.power(), 0);
-	}
+	public void execute () throws AgotTestException, MotifException {
+		leo.draw ();
+		fede.draw ();
+		leo.noMulligan ();
+		fede.noMulligan ();
+		leo.selectPlot (aClashOfKings);
+		fede.selectPlot (aNobleCause);
+		leo.selectFirstPlayer (fede);
+		endPlotPhase ();
+		leo.draw ();
+		fede.draw ();
+		endDrawPhase ();
+		fede.marshall (targaryenLoyalist1);
+		fede.marshall (targaryenLoyalist2);
+		fede.marshall (handmaiden);
+		leo.marshall (bastardInHiding);
+		endMarshallingPhase ();
+		fede.initiateChallenge (AngIcon.INTRIGUE, leo, handmaiden);
+		fede.endChallenge ();
+		assertEqual (targaryen.power (), 1);
+		fede.initiateChallenge (AngIcon.POWER, leo, targaryenLoyalist1);
+		fede.endChallenge ();
+		assertEqual (targaryen.power (), 2);
+		leo.initiateChallenge (AngIcon.POWER, fede, bastardInHiding);
+		fede.defend (targaryenLoyalist2);
+		leo.reaction (aClashOfKings);
+		fede.endChallenge ();
+		assertEqual (baratheon.power (), 2);
+		assertEqual (targaryen.power (), 0);
+	} // execute
 
 	@Override
 	protected AgotGame init () {
-		var game = new AgotGame();
+		var game = new AgotGame ("T001_AClashOfKings");
 
-		var leo = game.initPlayer(new AgotPlayer("leo", "Leo", this.testUser));
-		var fede = game.initPlayer(new AgotPlayer("fede", "Fede", this.testUser));
-		this.leo = new TPlayer(leo, this);
-		this.fede = new TPlayer(fede, this);
+		var leo = game.initPlayer (new AgotPlayer("leo", "Leo", this.testUser));
+		var fede = game.initPlayer (new AgotPlayer("fede", "Fede", this.testUser));
+		this.leo = new TPlayer (leo, this);
+		this.fede = new TPlayer (fede, this);
 
 		targaryen = game.initFaction(fede, AngFaction.TARGARYEN);
 		var c = game.initCard(fede, AgotCardSeed.A_NOBLE_CAUSE_Core, 7);

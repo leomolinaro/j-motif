@@ -1,6 +1,5 @@
 package com.motif.agot.logic.events.list;
 
-import com.motif.agot.ang.enums.AngPhase;
 import com.motif.agot.endpoint.AgotContext;
 import com.motif.agot.logic.events.AgotEvent;
 import com.motif.agot.logic.events.IEventVisitor;
@@ -9,21 +8,20 @@ import com.motif.agot.state.AgotGame;
 
 import lombok.Getter;
 
-public class PhaseEndsEvent extends AgotEvent {
+public class RoundEndsEvent extends AgotEvent {
 
-	@Getter private final AngPhase phase;
+	@Getter private final int roundNumber;
 	
-	public PhaseEndsEvent (AngPhase phase, AgotGame game) {
+	public RoundEndsEvent (int roundNumber, AgotGame game) {
 		super (game);
-		this.phase = phase;
-	}
+		this.roundNumber = roundNumber;
+	} // RoundEndsEvent
 
 	@Override
 	public IAgotFlowStep start (AgotContext context) {
-//		game.removeDelayedEffects (); TODO ???
 		return null;
-	}
+	} // start
 	
 	@Override public boolean accept (IEventVisitor visitor) { return visitor.visit (this); }
 
-}
+} // RoundEndsEvent

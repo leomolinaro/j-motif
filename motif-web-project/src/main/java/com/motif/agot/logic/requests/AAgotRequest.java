@@ -3,9 +3,7 @@ package com.motif.agot.logic.requests;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.google.gson.annotations.Expose;
 import com.motif.agot.endpoint.AgotContext;
-import com.motif.agot.logic.flow.AgotResponse;
 import com.motif.agot.logic.flow.IAgotFlowRequest;
 import com.motif.agot.state.AgotPlayer;
 
@@ -28,36 +26,32 @@ public abstract class AAgotRequest implements IAgotFlowRequest {
 		SELECT_CARD_TO_ATTACH,
 		SELECT_CARD_TO_DISCARD,
 		CHOOSE_CARD,
-		CONTINUE
+		CONTINUE,
+		DRAW,
+		YES_NO
 	}
 	
-	@Expose private final AgotRequestType type;
+	private final AgotRequestType type;
 	@GraphQLQuery (name = "type") public AgotRequestType getType () { return this.type; }
 	
 	private final AgotPlayer player;
 	@GraphQLQuery (name = "player") public AgotPlayer getPlayer () { return this.player; }
-	@Expose private final String playerId;
 	
-	@Expose private final String instruction;
+	private final String instruction;
 	@GraphQLQuery (name = "instruction") public String getInstruction () { return this.instruction; }
 	
-	public AAgotRequest(AgotRequestType type, AgotPlayer player, String instruction) {
+	public AAgotRequest (AgotRequestType type, AgotPlayer player, String instruction) {
 		this.type = type;
 		this.player = player;
-		this.playerId = player.id();
 		this.instruction = instruction;
-	}
+	} // AAgotRequest
 	
-	@Expose private final List<AgotChoice> choices = new ArrayList<>();
+	private final List<AgotChoice> choices = new ArrayList<> ();
 	@GraphQLQuery (name = "choices") public List<AgotChoice> getChoices () { return this.choices; }
-	protected void addChoice(AgotChoice choice) {
-		choice.setRequestType(this.type);
-		this.choices.add(choice);
-	}
-	
-	@Expose private boolean repeated;
-	@GraphQLQuery (name = "repeated") public boolean isRepeated () { return this.repeated; }
-	@Override public void setRepeated() { this.repeated = true; }
+	protected void addChoice (AgotChoice choice) {
+		choice.setRequestType (this.type);
+		this.choices.add (choice);
+	} // addChoice
 	
 	@Override public String toString () {
 		StringBuilder s = new StringBuilder(this.instruction).append ("\n");
@@ -68,14 +62,11 @@ public abstract class AAgotRequest implements IAgotFlowRequest {
 	}
 	
 	@Override
-	public boolean accept(AgotResponse response, AgotContext context) {
-		if (!response.getPlayerId().equals(this.player.id())) { return false; }
-		var choice = response.getChoice();
-		if (!choice.getRequestType().equals(this.type)) { return false; }
-		if (!this.choices.contains(choice)) { return false; }
-		return this.accept(choice, context);
+	public boolean accept (AgotChoice choice, AgotContext context) {
+		if (!this.choices.contains (choice)) { return false; }
+		return this.acceptChoice (choice, context);
 	}
 
-	protected abstract boolean accept(AgotChoice choice, AgotContext context);
+	protected abstract boolean acceptChoice (AgotChoice choice, AgotContext context);
 	
 }

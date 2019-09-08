@@ -11,7 +11,5 @@ public abstract class MotifRuntimeException extends RuntimeException {
 	public MotifRuntimeException (String arg0) {
 		super (arg0);
 	}
-
 	
-	
-} // MotifException
+} // MotifRuntimeException

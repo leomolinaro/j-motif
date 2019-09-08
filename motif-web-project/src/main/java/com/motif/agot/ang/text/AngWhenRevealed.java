@@ -5,13 +5,18 @@ import com.motif.agot.ang.text.limit.AngTrigLimit;
 
 public class AngWhenRevealed extends AngTrigAbility {
 
-	public AngWhenRevealed (IAngEffect effect, AngTrigLimit limit) {
+	private final boolean implicit;
+
+	public AngWhenRevealed (IAngEffect effect, AngTrigLimit limit, boolean implicit) {
 		super (null, effect, limit);
+		this.implicit = implicit;
 	} // AngAction
 	
 	public String getLabel () { return "When revealed"; }
 	
 	public static class WRB extends TAB<WRB> {
+		
+		private boolean implicit = false;
 		
 		@Override protected WRB getThis () { return this; }
 		
@@ -20,8 +25,13 @@ public class AngWhenRevealed extends AngTrigAbility {
 			return wrb.new EB ();
 		} // i
 		
+		public WRB implicit () {
+			this.implicit = true;
+			return this;
+		} // implicit
+		
 		public AngWhenRevealed build () {
-			AngWhenRevealed whenRevealed = new AngWhenRevealed (effect, limit);
+			AngWhenRevealed whenRevealed = new AngWhenRevealed (effect, limit, implicit);
 			return whenRevealed;
 		} // build
 		

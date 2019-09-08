@@ -79,8 +79,8 @@ public class AgotReduxActionList {
 		@GraphQLQuery public long cardId () { return this.cardId; }
 		@Expose private String toPlayer;
 		@GraphQLQuery public String toPlayer () { return this.toPlayer; }
-		@Expose private String toArea;
-		@GraphQLQuery public String toArea () { return this.toArea; }
+		@Expose private AngArea toArea;
+		@GraphQLQuery public AngArea toArea () { return this.toArea; }
 		@Expose private int index;
 		@GraphQLQuery public int index () { return this.index; }
 		
@@ -88,7 +88,7 @@ public class AgotReduxActionList {
 			super ();
 			this.cardId = card.id();
 			this.toPlayer = toPlayer.id ();
-			this.toArea = toArea.getLabel ();
+			this.toArea = toArea;
 			this.index = index;
 		} // AddCardData
 
@@ -124,14 +124,14 @@ public class AgotReduxActionList {
 		@GraphQLQuery public long cardId () { return this.cardId; }
 		@Expose private String fromPlayer;
 		@GraphQLQuery public String fromPlayer () { return this.fromPlayer; }
-		@Expose private String fromArea;
-		@GraphQLQuery public String fromArea () { return this.fromArea; }
+		@Expose private AngArea fromArea;
+		@GraphQLQuery public AngArea fromArea () { return this.fromArea; }
 		
 		public RemoveCardData (Card<?> card, AgotPlayer fromPlayer, AngArea fromArea) {
 			super ();
 			this.cardId = card.id ();
 			this.fromPlayer = fromPlayer.id ();
-			this.fromArea = fromArea.getLabel ();
+			this.fromArea = fromArea;
 		} // InitGameData
 		
 	} // RemoveCardData

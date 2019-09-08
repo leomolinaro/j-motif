@@ -16,6 +16,7 @@ import com.motif.agot.ang.text.conseffects.AngConsEffects.AngEachPlayerCannotIni
 import com.motif.agot.ang.text.conseffects.AngConsEffects.AngEachPlayerCannotStandMoreThanNCardsDuringTheStandingPhase;
 import com.motif.agot.ang.text.conseffects.AngConsEffects.AngEachPlayerCannotTriggerCardAbilities;
 import com.motif.agot.ang.text.conseffects.AngConsEffects.AngMultiConsEffect;
+import com.motif.agot.ang.text.conseffects.AngConsEffects.AngReduceTheCostOfTheNextCardYouMarshallByN;
 import com.motif.agot.ang.text.conseffects.AngConsEffects.AngThatGainsAKeyword;
 import com.motif.agot.ang.text.conseffects.AngConsEffects.AngThatGainsAnIcon;
 import com.motif.agot.ang.text.conseffects.AngConsEffects.AngThatGetsStrength;
@@ -93,6 +94,16 @@ public class ConsEffectApplier implements IAngConsEffectVisitor {
 	@Override public boolean visit (AngAddStrengthToYourTotalForDominance consEffect) { ac.you.increaseDominanceStrength (consEffect.getStrength () * (activate ? 1 : -1)); return true; }
 
 	@Override
+	public boolean visit (AngReduceTheCostOfTheNextCardYouMarshallByN consEffect) {
+		if (this.activate) {
+			this.ac.you.addMarshallModifier (consEffect);			
+		} else {
+			this.ac.you.removeMarshallModifier (consEffect);			
+		} // if - else
+		return true;
+	} // visit
+	
+	@Override
 	public boolean visit (AngTreatEachCardAsIfItsPrintedTextBoxWereBlackExceptForTrait consAbility) {
 		// TODO applicare AngTreatEachCardAsIfItsPrintedTextBoxWereBlackExceptForTrait
 		return false;
@@ -112,9 +123,13 @@ public class ConsEffectApplier implements IAngConsEffectVisitor {
 
 	@Override
 	public boolean visit (AngYouMayInitiateAnAdditionalChallengeDuringTheChallengePhase consAbility) {
-		// TODO applicare AngYouMayInitiateAnAdditionalChallengeDuringTheChallengePhase
-		return false;
-	}
+		if (activate) {
+			this.ac.you.addAdditionalChallenge (consAbility.getIcon ());
+		} else {
+			this.ac.you.removeAdditionalChallenge (consAbility.getIcon ());
+		} // if - else
+		return true;
+	} // visit
 
 	@Override
 	public boolean visit (AngEachPlayerCannotStandMoreThanNCardsDuringTheStandingPhase consAbility) {
@@ -166,5 +181,5 @@ public class ConsEffectApplier implements IAngConsEffectVisitor {
 		// TODO Auto-generated method stub
 		return false;
 	}
-	
+
 }

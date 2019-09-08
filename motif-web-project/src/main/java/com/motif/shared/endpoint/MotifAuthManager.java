@@ -1,6 +1,7 @@
 package com.motif.shared.endpoint;
 
 import java.util.HashMap;
+import java.util.Optional;
 
 public class MotifAuthManager {
 
@@ -17,18 +18,23 @@ public class MotifAuthManager {
 
 	private HashMap<String, MotifUser> users = new HashMap<String, MotifUser> ();
 
-	public MotifUser getUser (String username) {
-		return users.get (username);
+	public Optional<MotifUser> getUser (String username) {
+		return Optional.ofNullable (this.users.get (username));
 	} // getUser
 	
-	public MotifUser getUserByToken (MotifToken token) {
+	public Optional<MotifUser> getUserByToken (MotifToken token) {
 		return this.getUser (token.getToken ());
 	} // getUserByToken
 
-	public String addUser (String username) {
-		var user = new MotifUser (username);
-		this.users.put (username, user);
-		return username;
-	} // addUser
+	public String registerUser (String username) {
+		var user = this.getUser (username)
+			.orElseGet (() -> {
+				var newUser = new MotifUser (username);
+				this.users.put (username, newUser);
+				return newUser;
+			});
+		var token = user.getUsername ();
+		return token;
+	} // registerUser
 	
 } // MotifSessionManager

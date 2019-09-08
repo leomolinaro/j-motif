@@ -7,6 +7,7 @@ import com.motif.agot.state.cards.AttachmentCard;
 import com.motif.agot.state.cards.CharacterCard;
 import com.motif.agot.state.cards.LocationCard;
 import com.motif.agot.state.cards.MarshallCard;
+import com.motif.agot.state.cards.PlotCard;
 import com.motif.agot.state.cards.TextCard;
 
 public class EnterGameProcedure {
@@ -39,5 +40,10 @@ public class EnterGameProcedure {
 		registerConsAbilities (card, game);
 		submitConsAbilities (card, game);
 	} // play
+	
+	public static void reveal (PlotCard card, AgotPlayer player, AgotGame game, AgotContext context) {
+		card.reveal (context);
+		registerConsAbilities (card, game);
+	} // reveal
 	
 } // EnterGameProcedure

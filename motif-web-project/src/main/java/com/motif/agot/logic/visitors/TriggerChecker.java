@@ -44,6 +44,7 @@ import com.motif.agot.logic.events.list.PhaseBeginsEvent;
 import com.motif.agot.logic.events.list.PhaseEndsEvent;
 import com.motif.agot.logic.events.list.PlaceOneTokenEvent;
 import com.motif.agot.logic.events.list.ReturnToYourHandEvent;
+import com.motif.agot.logic.events.list.RoundEndsEvent;
 import com.motif.agot.logic.events.list.SaveEvent;
 import com.motif.agot.logic.events.list.StandEvent;
 import com.motif.agot.logic.events.list.WinDominanceEvent;
@@ -309,5 +310,6 @@ public class TriggerChecker implements IEventVisitor {
 	@Override public boolean visit (PlaceOneTokenEvent event) { return false; }
 	@Override public boolean visit (PayNGoldEvent event) { return false; }
 	@Override public boolean visit (ChallengeEndEvent event) { return false; }
+	@Override public boolean visit (RoundEndsEvent event) { return false; }
 
 } // TriggerChecker

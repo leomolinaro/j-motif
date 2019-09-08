@@ -12,6 +12,7 @@ import com.motif.agot.ang.text.conseffects.AngConsEffects.AngEachPlayerCannotIni
 import com.motif.agot.ang.text.conseffects.AngConsEffects.AngEachPlayerCannotStandMoreThanNCardsDuringTheStandingPhase;
 import com.motif.agot.ang.text.conseffects.AngConsEffects.AngEachPlayerCannotTriggerCardAbilities;
 import com.motif.agot.ang.text.conseffects.AngConsEffects.AngMultiConsEffect;
+import com.motif.agot.ang.text.conseffects.AngConsEffects.AngReduceTheCostOfTheNextCardYouMarshallByN;
 import com.motif.agot.ang.text.conseffects.AngConsEffects.AngThatGainsAKeyword;
 import com.motif.agot.ang.text.conseffects.AngConsEffects.AngThatGainsAnIcon;
 import com.motif.agot.ang.text.conseffects.AngConsEffects.AngThatGetsStrength;
@@ -49,5 +50,6 @@ public interface IAngConsEffectVisitor {
 	public boolean visit (AngEachPlayerCannotDeclareMoreThanNCharacters consEffect);
 	public boolean visit (AngMultiConsEffect consEffect);
 	public boolean visit (AngThisDoesNotKneelWhenDeclared consEffect);
+	public boolean visit (AngReduceTheCostOfTheNextCardYouMarshallByN consEffect);
 
 } // IAngConsEffectVisitor

@@ -2,6 +2,7 @@ package com.motif.agot.ang.enums;
 
 import com.motif.agot.logic.flow.IAgotModelChoice;
 import com.motif.agot.logic.requests.AgotChoice;
+import com.motif.agot.logic.requests.AAgotRequest.AgotRequestType;
 
 import lombok.Getter;
 
@@ -17,8 +18,8 @@ public enum AngIcon implements IAgotModelChoice {
 	}
 	
 	@Override
-	public AgotChoice getChoice() {
-		return AgotChoice.selectIconChoice(this);
+	public AgotChoice getChoice (AgotRequestType requestType) {
+		return AgotChoice.selectIconChoice (requestType, this);
 	}
 
 }

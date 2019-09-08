@@ -75,88 +75,102 @@ public class InitiateChallengeStep extends APhaseStep<IChallengesPhaseStep> impl
 	}
 
 	@Override
-	protected IAgotFlowStep stepStart(AgotContext context) {
-		if (this.game.firstPlayerChallenge ()) { this.game.setRemainingChallenges(new IcB().military().intrigue().power().build()); }
-		var availableChallenges = new ArrayList<AngIcon>();
-		this.game.remainingChallenges().forEach(challType -> {
-			ArrayList<CharacterCard> availableAttackers = getAvailableAttackers(this.activePlayer, challType);
-			if (!availableAttackers.isEmpty()) {
-				this.availableAttackersByType.put(challType, availableAttackers);
-				availableChallenges.add(challType);
+	protected IAgotFlowStep stepStart (AgotContext context) {
+		if (this.game.firstPlayerChallenge ()) {
+			var icb = new IcB ().military ().intrigue ().power ();
+			this.activePlayer.additionalChallenges ().forEach (icon -> {
+				switch (icon) {
+					case INTRIGUE: icb.intrigue (); break;
+					case MILITARY: icb.military (); break;
+					case POWER: icb.power (); break;
+					default: break;
+				} // switch - case
+			});
+			this.game.setRemainingChallenges (icb.build ());
+		}
+		var availableChallenges = new ArrayList<AngIcon> ();
+		this.game.remainingChallenges ().forEach (challType -> {
+			ArrayList<CharacterCard> availableAttackers = getAvailableAttackers (this.activePlayer, challType);
+			if (!availableAttackers.isEmpty ()) {
+				this.availableAttackersByType.put (challType, availableAttackers);
+				availableChallenges.add (challType);
 			}
 		});
-		return new ChooseAChallengeTypeRequest(availableChallenges, this.activePlayer, this);	
-	}
+		return new ChooseAChallengeTypeRequest (availableChallenges, this.activePlayer, this);
+	} // stepStart
 	
 	@Override
-	public IAgotFlowStep after(ChooseAChallengeTypeRequest decision, AgotContext context) {
-		if (decision.isHasPassed()) {
+	public IAgotFlowStep after (ChooseAChallengeTypeRequest decision, AgotContext context) {
+		if (decision.isHasPassed ()) {
 			return null;
 		} else {
-			this.challengeType = decision.getChoosenModel();
-			this.game.removeRemainingChallenge(this.challengeType);
-			var availableDefenders = this.game.players().filter(player -> player != this.activePlayer);
-			return new ChooseDefenderRequest(availableDefenders.collect(Collectors.toList()), this.activePlayer, this);			
+			this.challengeType = decision.getChoosenModel ();
+			this.game.removeRemainingChallenge (this.challengeType);
+			var availableDefenders = this.game.players ().filter (player -> player != this.activePlayer);
+			return new ChooseDefenderRequest (availableDefenders.collect (Collectors.toList ()), this.activePlayer, this);
 		}
 	}
 	
 	@Override
-	public IAgotFlowStep after(ChooseDefenderRequest decision, AgotContext context) {
-		this.defender = decision.getChoosenModel();
-		this.availableAttackers = this.availableAttackersByType.get(this.challengeType);
-		return new SelectCharacterToAttackRequest(this.availableAttackers, this.activePlayer, this);
+	public IAgotFlowStep after (ChooseDefenderRequest decision, AgotContext context) {
+		this.defender = decision.getChoosenModel ();
+		this.availableAttackers = this.availableAttackersByType.get (this.challengeType);
+		return new SelectCharacterToAttackRequest (this.availableAttackers, this.activePlayer, this);
 	}
-	
+
 	@Override
-	public IAgotFlowStep after(SelectCharacterToAttackRequest decision, AgotContext context) {
-		var attacker = decision.getChoosenModel();
-		return afterChooseAttacker(attacker, context);
+	public IAgotFlowStep after (SelectCharacterToAttackRequest decision, AgotContext context) {
+		var attacker = decision.getChoosenModel ();
+		return afterChooseAttacker (attacker, context);
 	}
 	
-	private IAgotFlowStep afterChooseAttacker(CharacterCard attacker, AgotContext context) {
-		this.attackers.add(attacker);
+	private IAgotFlowStep afterChooseAttacker (CharacterCard attacker, AgotContext context) {
+		this.attackers.add (attacker);
 		this.availableAttackers.remove (attacker);
 		if (attacker.hasStealth ()) {
-			var availableDefenders = this.defender.characters().filter(cha -> cha.canBeBypassedByStealth());
-			return new ResolveStealthRequest(availableDefenders.collect(Collectors.toList()), this.activePlayer, this);
+			var availableDefenders = this.defender.characters ().filter (cha -> cha.canBeBypassedByStealth ());
+			return new ResolveStealthRequest (availableDefenders.collect (Collectors.toList ()), this.activePlayer,
+			        this);
 		} else {
-			return new ChooseOptionalAttackerRequest(this.availableAttackers, this.activePlayer, this);
+			return new ChooseOptionalAttackerRequest (this.availableAttackers, this.activePlayer, this);
 		}
 	}
 	
 	@Override
-	public IAgotFlowStep after(ChooseOptionalAttackerRequest decision, AgotContext context) {
-		if (decision.isHasPassed()) {
-			var challenge = new Challenge(this.challengeType, this.activePlayer, this.defender, this.attackers, this.bypassed);
-			this.game.logManager().initiatesAchallenge(challenge.attacker(), challenge.defender(), challenge.type(), context);
-			challenge.attackers().forEach (att -> {
-				att.kneel(context);
-				this.game.logManager().declaresAsAttacker(challenge.attacker(), att, context);
+	public IAgotFlowStep after (ChooseOptionalAttackerRequest decision, AgotContext context) {
+		if (decision.isHasPassed ()) {
+			var challenge = new Challenge (this.challengeType, this.activePlayer, this.defender, this.attackers,
+			        this.bypassed);
+			this.game.logManager ().initiatesAchallenge (challenge.attacker (), challenge.defender (),
+			        challenge.type (), context);
+			challenge.attackers ().forEach (att -> {
+				att.kneel (context);
+				this.game.logManager ().declaresAsAttacker (challenge.attacker (), att, context);
 			});
-			challenge.bypassed().forEach(bypassed -> {
-				this.game.logManager().charactedIsBypassed(challenge.attacker(), bypassed, context);
+			challenge.bypassed ().forEach (bypassed -> {
+				this.game.logManager ().charactedIsBypassed (challenge.attacker (), bypassed, context);
 			});
 			this.challenge = challenge;
-			this.game.setChallenge(challenge);
-			AgotEvent event = new InitiateAChallengeEvent(challenge, this.game);
-			return new AgotEventProcess(event, this.game, this);
+			this.game.setChallenge (challenge);
+			AgotEvent event = new InitiateAChallengeEvent (challenge, this.game);
+			return new AgotEventProcess (event, this.game, this);
 		} else {
-			var attacker = decision.getChoosenModel();
-			return afterChooseAttacker(attacker, context);
+			var attacker = decision.getChoosenModel ();
+			return afterChooseAttacker (attacker, context);
 		}
 	}
 	
 	@Override
-	public IAgotFlowStep after(ResolveStealthRequest decision, AgotContext context) {
-		if (!decision.isHasPassed()) {
-			var bypassedCha = decision.getChoosenModel();
-			this.bypassed.add(bypassedCha);
+	public IAgotFlowStep after (ResolveStealthRequest decision, AgotContext context) {
+		if (!decision.isHasPassed ()) {
+			var bypassedCha = decision.getChoosenModel ();
+			this.bypassed.add (bypassedCha);
 		}
-		return new ChooseOptionalAttackerRequest(this.availableAttackers, this.activePlayer, this);
+		return new ChooseOptionalAttackerRequest (this.availableAttackers, this.activePlayer, this);
 	}
-	
+
 	@Override
-	public IAgotFlowStep after(AgotEventProcess eventProcess, AgotContext context) {
+	public IAgotFlowStep after (AgotEventProcess eventProcess, AgotContext context) {
 		return null;
 	}
 	

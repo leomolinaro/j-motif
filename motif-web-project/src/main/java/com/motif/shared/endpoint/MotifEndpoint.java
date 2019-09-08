@@ -15,8 +15,8 @@ public class MotifEndpoint {
 	
 	@GraphQLMutation
 	public MotifToken login (String username) {
-		var token = sessionManager.addUser (username);
-		return new MotifToken (token);
+		var user = sessionManager.registerUser (username);
+		return new MotifToken (user);
 	} // login
 	
 } // MotifEndpoint

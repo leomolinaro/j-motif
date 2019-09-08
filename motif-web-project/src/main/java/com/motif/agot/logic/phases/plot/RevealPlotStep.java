@@ -8,6 +8,7 @@ import com.motif.agot.ang.AgotText;
 import com.motif.agot.endpoint.AgotContext;
 import com.motif.agot.logic.flow.IAgotFlowProcess;
 import com.motif.agot.logic.flow.IAgotFlowStep;
+import com.motif.agot.logic.other.EnterGameProcedure;
 import com.motif.agot.logic.phases.APhaseStep;
 import com.motif.agot.logic.requests.FirstPlayerRequest;
 import com.motif.agot.logic.requests.FirstPlayerRequest.IHasFirstPlayerRequest;
@@ -36,10 +37,10 @@ public class RevealPlotStep extends APhaseStep<IPlotPhaseStep> implements IHasFi
 
 	@Override
 	public FirstPlayerRequest stepStart(AgotContext context) {
-		game.forEachPlayer(player -> {
-			player.revealedPlot().reveal(context);
-			if (player.emptyPlotDeck()) {
-				player.resetPlotDeck(context);
+		game.forEachPlayer (player -> {
+			EnterGameProcedure.reveal (player.revealedPlot ().get (), player, game, context);
+			if (player.emptyPlotDeck ()) {
+				player.resetPlotDeck (context);
 			}
 		});
 
@@ -79,11 +80,11 @@ public class RevealPlotStep extends APhaseStep<IPlotPhaseStep> implements IHasFi
 	}
 
 	@Override
-	public IAgotFlowStep after(FirstPlayerRequest firstPlayerRequest, AgotContext context) {
-		var firstPlayer = firstPlayerRequest.getChoosenModel();
-		game.setFirstPlayer(firstPlayer, context);
-		game.logManager().becomesFirstPlayer(firstPlayer, context);
+	public IAgotFlowStep after (FirstPlayerRequest firstPlayerRequest, AgotContext context) {
+		var firstPlayer = firstPlayerRequest.getChoosenModel ();
+		game.setFirstPlayer (firstPlayer, context);
+		game.logManager ().becomesFirstPlayer (firstPlayer, context);
 		return null;
-	}
+	} // after
 
 }

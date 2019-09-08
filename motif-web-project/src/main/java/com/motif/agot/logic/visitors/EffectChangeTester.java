@@ -8,11 +8,6 @@ import com.motif.agot.ang.text.filters.AngPlayerFilter;
 import com.motif.agot.ang.text.instants.AngChooseACard;
 import com.motif.agot.ang.text.instants.AngDrawNCards;
 import com.motif.agot.ang.text.instants.AngGainNGold;
-import com.motif.agot.ang.text.instants.AngLastingEffect;
-import com.motif.agot.ang.text.instants.AngMovePowersFromAFactionToAFaction;
-import com.motif.agot.ang.text.instants.AngPutThatIntoPlayUnderYourControl;
-import com.motif.agot.ang.text.instants.AngReduceTheCostOTheNextCardYouMarshallThisPhaseByN;
-import com.motif.agot.ang.text.instants.AngReturnThisToYourHand;
 import com.motif.agot.ang.text.instants.AngInstants.AngDiscardFromPlayEach;
 import com.motif.agot.ang.text.instants.AngInstants.AngDiscardFromPlayThat;
 import com.motif.agot.ang.text.instants.AngInstants.AngDiscardNCardsAtRandomFromEachPlayerHand;
@@ -35,6 +30,10 @@ import com.motif.agot.ang.text.instants.AngInstants.AngStandEach;
 import com.motif.agot.ang.text.instants.AngInstants.AngStandThat;
 import com.motif.agot.ang.text.instants.AngInstants.AngStandThis;
 import com.motif.agot.ang.text.instants.AngInstants.AngTakeControlOfThat;
+import com.motif.agot.ang.text.instants.AngLastingEffect;
+import com.motif.agot.ang.text.instants.AngMovePowersFromAFactionToAFaction;
+import com.motif.agot.ang.text.instants.AngPutThatIntoPlayUnderYourControl;
+import com.motif.agot.ang.text.instants.AngReturnThisToYourHand;
 import com.motif.agot.logic.other.AbilityContext;
 import com.motif.agot.logic.other.FilterMatcher;
 import com.motif.agot.state.AgotGame;
@@ -102,7 +101,6 @@ public class EffectChangeTester implements IAngEffectVisitor {
 		.anyMatch (p -> FilterMatcher.doesMatch (p, ac.you, fromFilter, game) && p.getPower () > 0);
 	} // visit
 	
-	@Override public boolean visit (AngReduceTheCostOTheNextCardYouMarshallThisPhaseByN effect) { return true; }
 	@Override public boolean visit (AngReturnThisToYourHand effect) { return !ac.you.hasInHand ((DrawCard<?>) ac.thisCard); }
 	@Override public boolean visit (AngShuffleThatBackIntoYourDeck effect) { return !ac.you.hasInDeck ((DrawCard<?>) ac.thatCard); }
 	@Override public boolean visit (AngPutThatIntoPlayUnderYourControl effect) { return !ac.thatCard.isControlledBy (ac.you); }
@@ -111,12 +109,7 @@ public class EffectChangeTester implements IAngEffectVisitor {
 	@Override public boolean visit (AngSaveThis effect) { return true; }
 	@Override public boolean visit (AngSaveAttached effect) { return true; }
 
-
-	@Override
-	public boolean visit (AngLastingEffect effect) {
-		// TODO Auto-generated method stub
-		return false;
-	}
+	@Override public boolean visit (AngLastingEffect effect) { /*TODO da verificare*/ return true; }
 	
 	@Override
 	public boolean visit (AngDiscardNCardsAtRandomFromEachPlayerHand effect) {

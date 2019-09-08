@@ -14,15 +14,6 @@ import com.motif.agot.ang.text.instants.AngDiscardATokenFromThis;
 import com.motif.agot.ang.text.instants.AngDiscardNCardsFromYourHand;
 import com.motif.agot.ang.text.instants.AngDrawNCards;
 import com.motif.agot.ang.text.instants.AngGainNGold;
-import com.motif.agot.ang.text.instants.AngKneelYourFactionCard;
-import com.motif.agot.ang.text.instants.AngLastingEffect;
-import com.motif.agot.ang.text.instants.AngMovePowersFromAFactionToAFaction;
-import com.motif.agot.ang.text.instants.AngPayNGold;
-import com.motif.agot.ang.text.instants.AngPutThatIntoPlayUnderYourControl;
-import com.motif.agot.ang.text.instants.AngReduceTheCostOTheNextCardYouMarshallThisPhaseByN;
-import com.motif.agot.ang.text.instants.AngRemoveThisFromTheGame;
-import com.motif.agot.ang.text.instants.AngReturnThisToYourHand;
-import com.motif.agot.ang.text.instants.AngSacrificeThis;
 import com.motif.agot.ang.text.instants.AngInstants.AngDiscardFromPlayEach;
 import com.motif.agot.ang.text.instants.AngInstants.AngDiscardFromPlayThat;
 import com.motif.agot.ang.text.instants.AngInstants.AngDiscardNCardsAtRandomFromEachPlayerHand;
@@ -45,6 +36,14 @@ import com.motif.agot.ang.text.instants.AngInstants.AngStandEach;
 import com.motif.agot.ang.text.instants.AngInstants.AngStandThat;
 import com.motif.agot.ang.text.instants.AngInstants.AngStandThis;
 import com.motif.agot.ang.text.instants.AngInstants.AngTakeControlOfThat;
+import com.motif.agot.ang.text.instants.AngKneelYourFactionCard;
+import com.motif.agot.ang.text.instants.AngLastingEffect;
+import com.motif.agot.ang.text.instants.AngMovePowersFromAFactionToAFaction;
+import com.motif.agot.ang.text.instants.AngPayNGold;
+import com.motif.agot.ang.text.instants.AngPutThatIntoPlayUnderYourControl;
+import com.motif.agot.ang.text.instants.AngRemoveThisFromTheGame;
+import com.motif.agot.ang.text.instants.AngReturnThisToYourHand;
+import com.motif.agot.ang.text.instants.AngSacrificeThis;
 import com.motif.agot.logic.events.AgotEvent;
 import com.motif.agot.logic.events.list.ApplyLastingEffectEvent;
 import com.motif.agot.logic.events.list.DiscardFromPlayEvent;
@@ -135,12 +134,6 @@ public class CardEventCreator implements IAngEffectVisitor, IAngCostVisitor {
 	@Override public boolean visit (AngSaveThis effect) { event = new SaveEvent ((MarshallCard<?>) ac.thisCard, game); return true; }
 	@Override public boolean visit (AngSaveAttached effect) { event = new SaveEvent (((AttachmentCard) ac.thisCard).getAttachTo (), game); return true; }
 	@Override public boolean visit (AngSaveThat effect) { event = new SaveEvent ((MarshallCard<?>) ac.thatCard, game); return true; }
-	
-	@Override
-	public boolean visit (AngReduceTheCostOTheNextCardYouMarshallThisPhaseByN effect) {
-		// TODO Auto-generated method stub
-		return false;
-	} // visit
 	
 	@Override
 	public boolean visit (AngPutThatIntoPlayUnderYourControl effect) {

@@ -20,18 +20,18 @@ public class MotifGraphqlUtil {
 		} // if
 		var finalSinks = sinks;
 		Flux<T> flux = Flux.create (sink -> {
-			System.out.println ("sink");
 			finalSinks.add (sink);
-			sink.onDispose (() -> {
-				finalSinks.remove (sink);
-				if (finalSinks.isEmpty ()) {
-					sinksByUser.remove (user.getUsername ());
-				} // if
-			}); // onDispose
+			sink.onDispose (() -> onSinkDispose (sink, finalSinks, sinksByUser, user));
 		}); // create
-		System.out.println ("return");
 		return flux;
 	} // subscribe
+	
+	private static <T> void onSinkDispose (FluxSink<T> sink, List<FluxSink<T>> sinks, Map<String, List<FluxSink<T>>> sinksByUser, MotifUser user) {
+		sinks.remove (sink);
+		if (sinks.isEmpty ()) {
+			sinksByUser.remove (user.getUsername ());
+		} // if
+	} // onSinkDispose
 	
 	public static <T> void publish (T element, Map<String, List<FluxSink<T>>> sinksByUser, Collection<MotifUser> users) {
 		for (var user : users) {

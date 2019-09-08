@@ -3,11 +3,14 @@ package com.motif.agot.state.cards;
 import java.util.stream.Stream;
 
 import com.motif.agot.ang.cards.AngTextCard;
+import com.motif.agot.ang.sets.AgotCardSeed;
 import com.motif.agot.ang.text.AngAction;
 import com.motif.agot.ang.text.AngConsAbility;
 import com.motif.agot.ang.text.AngInterrupt;
 import com.motif.agot.ang.text.AngReaction;
 import com.motif.agot.state.AgotPlayer;
+
+import io.leangen.graphql.annotations.GraphQLQuery;
 
 public abstract class TextCard<A extends AngTextCard> extends Card<A> {
 
@@ -33,4 +36,7 @@ public abstract class TextCard<A extends AngTextCard> extends Card<A> {
 	public boolean hasConsAbilities () { return ang.hasConsAbilities (); }
 	public Stream<AngConsAbility> consAbilities () { return ang.consAbilities (); }
 
+	@GraphQLQuery public AgotCardSeed seed () { return this.ang.getSeed (); }
+
+	
 } // TextCard

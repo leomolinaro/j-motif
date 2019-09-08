@@ -40,61 +40,61 @@ public abstract class TrigAbilityAct<T extends AngTrigAbility> extends Act imple
 	protected final AgotGame game;
 	
 	@Override
-	public final IAgotFlowStep start(AgotContext context) {
-		if (this.trigAbility.hasCost()) {
-			return new TrigAbilityPayCostStep(this.trigAbility.getCost(), this.ac, this.game, this);
+	public final IAgotFlowStep start (AgotContext context) {
+		if (this.trigAbility.hasCost ()) {
+			return new TrigAbilityPayCostStep (this.trigAbility.getCost (), this.ac, this.game, this);
 		} else {
-			return after((TrigAbilityPayCostStep) null, context);
+			return after ((TrigAbilityPayCostStep) null, context);
 		}
 	}
 
 	@Override
-	public IAgotFlowStep after(TrigAbilityPayCostStep actPayCostStep, AgotContext context) {
-		ChooseATargetCardRequest chooseTargetStep = chooseTargetStep(context);
+	public IAgotFlowStep after (TrigAbilityPayCostStep actPayCostStep, AgotContext context) {
+		ChooseATargetCardRequest chooseTargetStep = chooseTargetStep (context);
 		if (chooseTargetStep == null) {
-			return actEventStep(context);
+			return actEventStep (this.trigAbility.getEffect (), context);
 		} else {
 			return chooseTargetStep;
 		}
 	}
 	
-	private ChooseATargetCardRequest chooseTargetStep(AgotContext context) {
-		if (this.trigAbility.getEffect() instanceof AngChooseACard) {
-			AngChooseACard chooseEffect = (AngChooseACard) this.trigAbility.getEffect();
-			AngCardFilter cardFilter = chooseEffect.getCardFilter();
-			IAngEffect targetEffect = chooseEffect.getTargetEffect();
-			List<Card<?>> targettableCards = this.game.inPlayCards()
-			        .filter(card -> FilterMatcher.doesMatch(card, this.ac.you, cardFilter))
-			        .filter(targetCard -> {
-			        	this.ac.setThatCard(targetCard);
-				        var doesChangeState = EffectChangeTester.doesChangeState(targetEffect, this.ac, this.game);
-				        this.ac.setThatCard(null);
+	private ChooseATargetCardRequest chooseTargetStep (AgotContext context) {
+		if (this.trigAbility.getEffect () instanceof AngChooseACard) {
+			AngChooseACard chooseEffect = (AngChooseACard) this.trigAbility.getEffect ();
+			AngCardFilter cardFilter = chooseEffect.getCardFilter ();
+			IAngEffect targetEffect = chooseEffect.getTargetEffect ();
+			List<Card<?>> targettableCards = this.game.inPlayCards ()
+			        .filter (card -> FilterMatcher.doesMatch (card, this.ac.you, cardFilter)).filter (targetCard -> {
+				        this.ac.setThatCard (targetCard);
+				        var doesChangeState = EffectChangeTester.doesChangeState (targetEffect, this.ac, this.game);
+				        this.ac.setThatCard (null);
 				        return doesChangeState;
-			        })
-			        .collect(Collectors.toList());
-			return new ChooseATargetCardRequest(targettableCards, this.ac.you, this);
+			        }).collect (Collectors.toList ());
+			return new ChooseATargetCardRequest (targettableCards, this.ac.you, this);
 		} else {
 			return null;
 		}
 	}
 	
 	@Override
-	public IAgotFlowStep after(ChooseATargetCardRequest decision, AgotContext context) {
-		var targetCard = decision.getChoosenModel();
-		this.ac.setThatCard(targetCard);
-		return actEventStep(context);
-	}
+	public IAgotFlowStep after (ChooseATargetCardRequest decision, AgotContext context) {
+		var targetCard = decision.getChoosenModel ();
+		this.ac.setThatCard (targetCard);
+		var chooseEffect = (AngChooseACard) this.trigAbility.getEffect ();
+		var targetEffect = chooseEffect.getTargetEffect ();
+		return actEventStep (targetEffect, context);
+	} // after
 	
-	private AgotEventProcess actEventStep(AgotContext context) {
-		if (trigAbility.hasTrigLimit()) {
-			game.registerAbility(trigAbility, (MarshallCard<?>) ac.thisCard);
+	private AgotEventProcess actEventStep (IAngEffect effect, AgotContext context) {
+		if (trigAbility.hasTrigLimit ()) {
+			game.registerAbility (trigAbility, (MarshallCard<?>) ac.thisCard);
 		}
-		if (ac.thisCard.isType(AngType.EVENT)) {
-			ExitGameProcedure.playEvent((EventCard) ac.thisCard, ac.you, game, context);
+		if (ac.thisCard.isType (AngType.EVENT)) {
+			ExitGameProcedure.playEvent ((EventCard) ac.thisCard, ac.you, game, context);
 		}
-		var event = CardEventCreator.getEvent(this.trigAbility.getEffect(), this.ac, this.game);
-		return new AgotEventProcess(event, this.game, this);
-	}
+		var event = CardEventCreator.getEvent (effect, this.ac, this.game);
+		return new AgotEventProcess (event, this.game, this);
+	} // actEventStep
 	
 	@Override
 	public boolean canBeInitiated () {

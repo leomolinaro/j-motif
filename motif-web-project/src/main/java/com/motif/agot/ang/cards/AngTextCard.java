@@ -6,6 +6,7 @@ import com.motif.agot.ang.enums.AngFaction;
 import com.motif.agot.ang.enums.AngKeyword;
 import com.motif.agot.ang.enums.AngTrait;
 import com.motif.agot.ang.enums.AngType;
+import com.motif.agot.ang.sets.AgotCardSeed;
 import com.motif.agot.ang.sets.AgotPack;
 import com.motif.agot.ang.text.AngAction;
 import com.motif.agot.ang.text.AngConsAbility;
@@ -46,9 +47,13 @@ public abstract class AngTextCard extends AngCard {
 	public boolean hasConsAbilities () { return text.hasConsAbilities (); }
 	public Stream<AngConsAbility> consAbilities () { return text.consAbilities (); }
 	
-	public AngTextCard (AgotPack pack, int setId, String title, AngType type, AngFaction faction, AngText text) {
+	private AgotCardSeed seed;
+	public AgotCardSeed getSeed () { return this.seed; }
+	
+	public AngTextCard (AgotCardSeed cardSeed, AgotPack pack, int setId, String title, AngType type, AngFaction faction, AngText text) {
 		super (title, type, faction, buildImageSource (pack, setId));
 		this.text = text;
+		this.seed = cardSeed;
 	} // AngTextCard
 
 	public abstract void accept (AngTextCardVisitor visitor);

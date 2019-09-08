@@ -3,11 +3,6 @@ package com.motif.agot.ang.text.effects;
 import com.motif.agot.ang.text.instants.AngChooseACard;
 import com.motif.agot.ang.text.instants.AngDrawNCards;
 import com.motif.agot.ang.text.instants.AngGainNGold;
-import com.motif.agot.ang.text.instants.AngLastingEffect;
-import com.motif.agot.ang.text.instants.AngMovePowersFromAFactionToAFaction;
-import com.motif.agot.ang.text.instants.AngPutThatIntoPlayUnderYourControl;
-import com.motif.agot.ang.text.instants.AngReduceTheCostOTheNextCardYouMarshallThisPhaseByN;
-import com.motif.agot.ang.text.instants.AngReturnThisToYourHand;
 import com.motif.agot.ang.text.instants.AngInstants.AngDiscardFromPlayEach;
 import com.motif.agot.ang.text.instants.AngInstants.AngDiscardFromPlayThat;
 import com.motif.agot.ang.text.instants.AngInstants.AngDiscardNCardsAtRandomFromEachPlayerHand;
@@ -29,12 +24,15 @@ import com.motif.agot.ang.text.instants.AngInstants.AngStandEach;
 import com.motif.agot.ang.text.instants.AngInstants.AngStandThat;
 import com.motif.agot.ang.text.instants.AngInstants.AngStandThis;
 import com.motif.agot.ang.text.instants.AngInstants.AngTakeControlOfThat;
+import com.motif.agot.ang.text.instants.AngLastingEffect;
+import com.motif.agot.ang.text.instants.AngMovePowersFromAFactionToAFaction;
+import com.motif.agot.ang.text.instants.AngPutThatIntoPlayUnderYourControl;
+import com.motif.agot.ang.text.instants.AngReturnThisToYourHand;
 
 public interface IAngEffectVisitor {
 
 	public boolean visit (AngChooseACard effect);
 	public boolean visit (AngGainNGold effect);
-	public boolean visit (AngReduceTheCostOTheNextCardYouMarshallThisPhaseByN effect);
 	public boolean visit (AngDrawNCards effect);
 	
 	public boolean visit (AngStandThis effect);

@@ -7,6 +7,7 @@ import com.motif.agot.logic.flow.IAgotFlowProcess;
 import com.motif.agot.logic.flow.IAgotFlowStep;
 import com.motif.agot.logic.other.AbilityContext;
 import com.motif.agot.logic.requests.AgotChoice;
+import com.motif.agot.logic.requests.AAgotRequest.AgotRequestType;
 import com.motif.agot.logic.requests.AgotChoice.AgotChoiceCardAction;
 import com.motif.agot.logic.visitors.TriggerChecker;
 import com.motif.agot.state.AgotGame;
@@ -47,8 +48,8 @@ public final class InterruptAct extends TrigAbilityAct<AngInterrupt> {
 	}
 
 	@Override
-	public AgotChoice getChoice() {
-		return AgotChoice.selectCardActionChoice(this.getTrigCard(), AgotChoiceCardAction.INTERRUPT);
+	public AgotChoice getChoice (AgotRequestType requestType) {
+		return AgotChoice.selectCardActionChoice (requestType, this.getTrigCard(), AgotChoiceCardAction.INTERRUPT);
 	}
 	
 }

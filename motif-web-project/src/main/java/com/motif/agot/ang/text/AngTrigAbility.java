@@ -5,6 +5,7 @@ import com.motif.agot.ang.enums.AngTime;
 import com.motif.agot.ang.enums.AngToken;
 import com.motif.agot.ang.text.consconditions.IAngIfCondition;
 import com.motif.agot.ang.text.conseffects.AngConsEffects.AngThatGetsStrength;
+import com.motif.agot.ang.text.conseffects.AngConsEffects.AngReduceTheCostOfTheNextCardYouMarshallByN;
 import com.motif.agot.ang.text.costs.IAngCost;
 import com.motif.agot.ang.text.costs.IAngCostVisitor;
 import com.motif.agot.ang.text.effects.IAngEffect;
@@ -22,7 +23,6 @@ import com.motif.agot.ang.text.instants.AngLastingEffect;
 import com.motif.agot.ang.text.instants.AngMovePowersFromAFactionToAFaction;
 import com.motif.agot.ang.text.instants.AngPayNGold;
 import com.motif.agot.ang.text.instants.AngPutThatIntoPlayUnderYourControl;
-import com.motif.agot.ang.text.instants.AngReduceTheCostOTheNextCardYouMarshallThisPhaseByN;
 import com.motif.agot.ang.text.instants.AngRemoveThisFromTheGame;
 import com.motif.agot.ang.text.instants.AngReturnThisToYourHand;
 import com.motif.agot.ang.text.instants.AngSacrificeThis;
@@ -100,6 +100,7 @@ public abstract class AngTrigAbility {
 		public class EB {
 			protected EB () {}
 			
+			public LEB untilTheEndOfTheRound () { return new LEB (new AngUntilTheEndOfThePhase ()); }
 			public LEB untilTheEndOfThePhase () { return new LEB (new AngUntilTheEndOfThePhase ()); }
 			public LEB untilTheEndOfTheChallenge () { return new LEB (new AngUntilTheEndOfTheChallenge ()); }
 
@@ -126,7 +127,8 @@ public abstract class AngTrigAbility {
 			public T returnThisToYourHand () { effect = new AngReturnThisToYourHand (); return getThis (); }
 			public T discardEachFromPlay (CFB cardFilterBuilder) { effect = new AngDiscardFromPlayEach (cardFilterBuilder.build ()); return getThis (); }
 			public T movePowersFromAFactionToAFaction (int n, PFB fromPlayer, PFB toPlayer) { effect = new AngMovePowersFromAFactionToAFaction (n, fromPlayer.build (), toPlayer.build ()); return getThis (); }
-			public T reduceTheCostOfTheNextCardYouMarshallThisPhaseByN (CFB cardFilterBuilder, int n) { effect = new AngReduceTheCostOTheNextCardYouMarshallThisPhaseByN (cardFilterBuilder.build (), n); return getThis (); }
+			public T reduceTheCostOfTheNextCardYouMarshallThisPhaseByN (CFB cardFilterBuilder, int n) { return untilTheEndOfThePhase ().reduceTheCostOfTheNextCardYouMarshallThisByN (cardFilterBuilder.build (), n); }
+			public T reduceTheCostOfTheFirstCardYouMarshallThisRoundByN (CFB cardFilterBuilder, int n) { return untilTheEndOfTheRound ().reduceTheCostOfTheNextCardYouMarshallThisByN (cardFilterBuilder.build (), n); }
 			public T placeOneTokenOnThis (AngToken token)  { effect = new AngPlaceOneTokenOnThis (token); return getThis (); }
 			public T discardNCardsAtRandomFromEachPlayerHand (int n, PFB pfb)  { effect = new AngDiscardNCardsAtRandomFromEachPlayerHand (n, pfb.build ()); return getThis (); }
 			
@@ -167,6 +169,7 @@ public abstract class AngTrigAbility {
 			private LEB (IAngUntilCondition until) {
 				this.until = until;
 			} // LEB
+			public T reduceTheCostOfTheNextCardYouMarshallThisByN (AngCardFilter cf, int n) { effect = new AngLastingEffect (new AngReduceTheCostOfTheNextCardYouMarshallByN (cf, n), until); return getThis (); }
 			public T thatCardGetsStrength (int strength) { return thatCardGetsStrength (strength, null, null); }
 			public T thatCardGetsStrength (int strength, Integer strengthInstead, IAngIfCondition ifInstead) { effect = new AngLastingEffect (new AngThatGetsStrength (strength, strengthInstead, ifInstead), until); return getThis (); }
 		} // LEB

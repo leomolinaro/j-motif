@@ -82,5 +82,5 @@ public class ConsCondTester implements IAngWhileConditionVisitor, IAngIfConditio
 	public boolean visit (AngThisHasADuplicate whileCond) {
 		return ((MarshallCard<?>) ac.thisCard).duplicates ().findFirst ().isPresent ();
 	} // visit
-	
+
 } // WhileChecker

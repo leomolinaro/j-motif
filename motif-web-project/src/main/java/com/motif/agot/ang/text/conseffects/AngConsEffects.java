@@ -112,5 +112,14 @@ public class AngConsEffects {
 		public AngMultiConsEffect (IAngConsEffect...effects) { this.effects = Arrays.asList (effects); }
 		@Override public boolean accept (IAngConsEffectVisitor visitor) { return visitor.visit (this); }
 	}
+	public static class AngReduceTheCostOfTheNextCardYouMarshallByN implements IAngConsEffect {
+		@Getter private AngCardFilter cardFilter;
+		@Getter private int n;
+		public AngReduceTheCostOfTheNextCardYouMarshallByN (AngCardFilter cardFilter, int n) {
+			this.cardFilter = cardFilter;
+			this.n = n;
+		} // AngReduceTheCostOfTheNextCardYouMarshallByN
+		@Override public boolean accept (IAngConsEffectVisitor visitor) { return visitor.visit (this); }
+	} // AngReduceTheCostOfTheNextCardYouMarshallByN
 	
 }
