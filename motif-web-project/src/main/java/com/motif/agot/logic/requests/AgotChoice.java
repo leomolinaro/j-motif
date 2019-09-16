@@ -34,7 +34,9 @@ public class AgotChoice {
 		PLAY,
 		ACTION,
 		REACTION,
-		INTERRUPT
+		INTERRUPT,
+		SETUP,
+		WHEN_REVEALED
 	} // AgotChoiceCardAction
 	
 	@Setter private AgotRequestType requestType;

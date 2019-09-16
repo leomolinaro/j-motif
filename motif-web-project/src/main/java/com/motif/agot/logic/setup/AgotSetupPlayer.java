@@ -3,19 +3,25 @@ package com.motif.agot.logic.setup;
 import java.util.stream.Collectors;
 
 import com.motif.agot.ang.AgotText;
+import com.motif.agot.ang.enums.AngType;
 import com.motif.agot.endpoint.AgotContext;
+import com.motif.agot.logic.act.SetupAct;
+import com.motif.agot.logic.act.SetupAct.IHasSetupAct;
 import com.motif.agot.logic.flow.IAgotFlowProcess;
 import com.motif.agot.logic.flow.IAgotFlowStep;
 import com.motif.agot.logic.requests.DrawRequest;
 import com.motif.agot.logic.requests.DrawRequest.IHasDrawRequest;
+import com.motif.agot.logic.requests.SelectCardToSetupRequest;
+import com.motif.agot.logic.requests.SelectCardToSetupRequest.IHasSelectCardToSetupRequest;
 import com.motif.agot.logic.requests.YesNoRequest;
 import com.motif.agot.logic.requests.YesNoRequest.IHasYesNoRequest;
 import com.motif.agot.state.AgotGame;
 import com.motif.agot.state.AgotPlayer;
+import com.motif.agot.state.cards.MarshallCard;
 
 import lombok.Getter;
 
-public class AgotSetupPlayer implements IAgotFlowProcess, IHasYesNoRequest, IHasDrawRequest {
+public class AgotSetupPlayer implements IAgotFlowProcess, IHasYesNoRequest, IHasDrawRequest, IHasSetupAct, IHasSelectCardToSetupRequest {
 
 	private final AgotPlayer player;
 	private final AgotGame game;
@@ -33,6 +39,7 @@ public class AgotSetupPlayer implements IAgotFlowProcess, IHasYesNoRequest, IHas
 	@Override
 	public IAgotFlowStep start (AgotContext context) {
 		this.player.shuffleDeck ();
+		this.player.gainGold (8, context);
 		return new DrawRequest (7, AgotText.request ().drawCards (7, this.player), this.player, this);
 	} // start
 
@@ -45,7 +52,7 @@ public class AgotSetupPlayer implements IAgotFlowProcess, IHasYesNoRequest, IHas
 		} // if
 		this.player.draw (cardsToDraw, context);
 		if (mulliganDone) {
-			return null;
+			return chooseSetupCard ();
 		} else {
 			return new YesNoRequest (AgotText.request ().askForMulligan (this.player), this.player, this);			
 		} // if - else
@@ -63,8 +70,33 @@ public class AgotSetupPlayer implements IAgotFlowProcess, IHasYesNoRequest, IHas
 				.forEach (c -> this.player.returnToDeckFromHand (c, context));
 			this.player.shuffleDeck ();
 			return new DrawRequest (7, AgotText.request ().drawCards (7, this.player), this.player, this);
-		} // if
-		return null;			
+		} else {
+			return chooseSetupCard ();
+		} // if - else
 	} // after
+	
+	private IAgotFlowStep chooseSetupCard () {
+		var availableSetups = this.player.hand ().filter (card -> !card.isType (AngType.EVENT))
+        .map (card -> new SetupAct ((MarshallCard<?>) card, this.player, this.game, this))
+        .filter (act -> act.canBeSetup ())
+        .collect (Collectors.toList ());
+		return new SelectCardToSetupRequest (availableSetups, this.player, this);
+	} // chooseSetupCard
+
+	@Override
+	public IAgotFlowStep after (SelectCardToSetupRequest decision, AgotContext context) {
+		if (decision.isHasPassed ()) {
+			this.player.resetGold (context);
+			return null;
+		} else {
+			var setupAct = decision.getChoosenModel ();
+			return setupAct;			
+		} // if - else
+	} // after
+
+	@Override
+	public IAgotFlowStep after (SetupAct setupAct, AgotContext context) {
+		return chooseSetupCard ();
+	} // chooseSetupCard
 	
 } // AgotSetupPlayer

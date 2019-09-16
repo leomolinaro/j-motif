@@ -28,7 +28,7 @@ public abstract class AngTextCard extends AngCard {
 		return s.toString ();
 	} // buildImageSource
 	
-	private AngText text;
+	protected AngText text;
 	public AngAction getAction () { return text.getAction (); }
 	public boolean hasAction () { return text.hasAction (); }
 	public AngInterrupt getInterrupt () { return text.getInterrupt (); }

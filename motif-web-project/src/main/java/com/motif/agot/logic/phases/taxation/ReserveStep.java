@@ -32,13 +32,15 @@ public class ReserveStep extends APhaseStep<ITaxationPhaseStep> implements IHasR
 	public String getStepTitle() { return AgotText.title().reserveStep(); }
 
 	@Override
-	protected IAgotFlowStep stepStart(AgotContext context) {
-		this.player = this.game.firstPlayer();
-		var handSize = this.player.handSize();
-		var reserve = this.player.getReserve();
-		this.numToDiscard = Integer.max(handSize - reserve, 0);
-		return this.next();
-	}
+	protected IAgotFlowStep stepStart (AgotContext context) {
+		this.player = this.game.firstPlayer ();
+		var handSize = this.player.handSize ();
+		var reserve = this.player.getReserve ();
+		reserve += this.player.inPlayTextCards ()
+				.collect (Collectors.summingInt (card -> card.getReserveModifier ()));
+		this.numToDiscard = Integer.max (handSize - reserve, 0);
+		return this.next ();
+	} // stepStart
 	
 	private IAgotFlowStep next() {
 		if (this.numToDiscard > 0) {

@@ -12,6 +12,7 @@ import io.leangen.graphql.annotations.GraphQLQuery;
 public abstract class AAgotRequest implements IAgotFlowRequest {
 
 	public enum AgotRequestType {
+		SELECT_CARD_TO_SETUP,
 		SELECT_ACTION_TO_PERFORM,
 		SELECT_REACTION_TO_PERFORM,
 		SELECT_INTERRUPT_TO_PERFORM,
@@ -22,6 +23,7 @@ public abstract class AAgotRequest implements IAgotFlowRequest {
 		SELECT_CHARACTER_TO_BYPASS,
 		SELECT_DEFENDER,
 		SELECT_PLOT_TO_REVEAL,
+		SELECT_WHEN_REVEALED_TO_PERFORM,
 		SELECT_FIRST_PLAYER,
 		SELECT_CARD_TO_ATTACH,
 		SELECT_CARD_TO_DISCARD,
@@ -29,7 +31,7 @@ public abstract class AAgotRequest implements IAgotFlowRequest {
 		CONTINUE,
 		DRAW,
 		YES_NO
-	}
+	} // AgotRequestType
 	
 	private final AgotRequestType type;
 	@GraphQLQuery (name = "type") public AgotRequestType getType () { return this.type; }

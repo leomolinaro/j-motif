@@ -46,6 +46,7 @@ import com.motif.agot.ang.text.instants.AngInstants.AngTakeControlOfThat;
 import com.motif.agot.ang.text.limit.AngTrigLimit;
 import com.motif.agot.ang.text.untilconditions.AngUntilTheEndOfTheChallenge;
 import com.motif.agot.ang.text.untilconditions.AngUntilTheEndOfThePhase;
+import com.motif.agot.ang.text.untilconditions.AngUntilTheEndOfTheRound;
 import com.motif.agot.ang.text.untilconditions.IAngUntilCondition;
 
 public abstract class AngTrigAbility {
@@ -100,7 +101,7 @@ public abstract class AngTrigAbility {
 		public class EB {
 			protected EB () {}
 			
-			public LEB untilTheEndOfTheRound () { return new LEB (new AngUntilTheEndOfThePhase ()); }
+			public LEB untilTheEndOfTheRound () { return new LEB (new AngUntilTheEndOfTheRound ()); }
 			public LEB untilTheEndOfThePhase () { return new LEB (new AngUntilTheEndOfThePhase ()); }
 			public LEB untilTheEndOfTheChallenge () { return new LEB (new AngUntilTheEndOfTheChallenge ()); }
 

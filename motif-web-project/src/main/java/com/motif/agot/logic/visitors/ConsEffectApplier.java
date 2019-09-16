@@ -37,27 +37,27 @@ import com.motif.agot.state.cards.MarshallCard;
 
 public class ConsEffectApplier implements IAngConsEffectVisitor {
 
-	public static void applyAll(IAngConsEffect effect, AbilityContext ac, AgotGame game) {
-		var applier = new ConsEffectApplier(ac, game, true);
-		effect.accept(applier);
-	}
+	public static void applyAll (IAngConsEffect effect, AbilityContext ac, AgotGame game) {
+		var applier = new ConsEffectApplier (ac, game, true);
+		effect.accept (applier);
+	} // applyAll
 
-	public static void unapplyAll(IAngConsEffect effect, AbilityContext ac, AgotGame game) {
-		var unapplier = new ConsEffectApplier(ac, game, false);
-		effect.accept(unapplier);
-	}
+	public static void unapplyAll (IAngConsEffect effect, AbilityContext ac, AgotGame game) {
+		var unapplier = new ConsEffectApplier (ac, game, false);
+		effect.accept (unapplier);
+	} // unapplyAll
 	
 	boolean activate;
 	private AbilityContext ac;
 	private AgotGame game;
 	
-	private ConsEffectApplier(AbilityContext ac, AgotGame game, boolean activate) {
+	private ConsEffectApplier (AbilityContext ac, AgotGame game, boolean activate) {
 		this.ac = ac;
 		this.game = game;
 		this.activate = activate;
 	}
 	
-	private MarshallCard<?> getAttached() { return ((AttachmentCard) ac.thisCard).getAttachTo (); }
+	private MarshallCard<?> getAttached () { return ((AttachmentCard) ac.thisCard).getAttachTo (); }
 	
 	private boolean applyGainsAnIcon(AngIcon icon, CharacterCard card) { if (activate) { card.addIcon(icon); } else { card.removeIcon(icon); } return true; }
 	@Override public boolean visit(AngAttachedGainsAnIcon consEffect) { return applyGainsAnIcon(consEffect.getIcon(), (CharacterCard) getAttached()); }
@@ -69,14 +69,14 @@ public class ConsEffectApplier implements IAngConsEffectVisitor {
 	@Override public boolean visit (AngThisGainsAKeyword consEffect) { return applyGainsAKeyword (consEffect.getKeyword (), (CharacterCard) ac.thisCard, activate); }
 	@Override public boolean visit (AngThatGainsAKeyword consEffect) { return applyGainsAKeyword (consEffect.getKeyword (), (CharacterCard) ac.thatCard, activate); }
 	@Override public boolean visit (AngEachCardGainsAKeyword consEffect) {
-		FilterMatcher.allMatches (ac.you, game, consEffect.getFilter ())
+		FilterMatcher.allMatches (ac, game, consEffect.getFilter ())
 		.forEach (c -> applyGainsAKeyword (consEffect.getKeyword (), (CharacterCard) c, activate));
 		return true;
 	} // visit
 	
 	public static boolean applyGetsStrength (int strength, CharacterCard card, boolean activate) { card.modifyStrength (strength * (activate ? 1 : -1)); return true; }
 	@Override public boolean visit (AngEachCardGetsStrength consEffect) {
-		FilterMatcher.allMatches (ac.you, game, consEffect.getFilter ())
+		FilterMatcher.allMatches (ac, game, consEffect.getFilter ())
 		.forEach (c -> applyGetsStrength (consEffect.getStrength (), (CharacterCard) c, activate));
 		return true;
 	} // visit
@@ -96,9 +96,9 @@ public class ConsEffectApplier implements IAngConsEffectVisitor {
 	@Override
 	public boolean visit (AngReduceTheCostOfTheNextCardYouMarshallByN consEffect) {
 		if (this.activate) {
-			this.ac.you.addMarshallModifier (consEffect);			
+			this.ac.you.addMarshallModifier (consEffect, this.ac);			
 		} else {
-			this.ac.you.removeMarshallModifier (consEffect);			
+			this.ac.you.removeMarshallModifier (consEffect, this.ac);			
 		} // if - else
 		return true;
 	} // visit
@@ -107,19 +107,19 @@ public class ConsEffectApplier implements IAngConsEffectVisitor {
 	public boolean visit (AngTreatEachCardAsIfItsPrintedTextBoxWereBlackExceptForTrait consAbility) {
 		// TODO applicare AngTreatEachCardAsIfItsPrintedTextBoxWereBlackExceptForTrait
 		return false;
-	}
+	} // visit
 
 	@Override
 	public boolean visit (AngYouCannotMarshallOrPlay consAbility) {
 		// TODO applicare AngYouCannotMarshallOrPlay
 		return false;
-	}
+	} // visit
 
 	@Override
 	public boolean visit (AngTreatTheBaseGoldValueOfEachCardAsIfItWereN consAbility) {
 		// TODO applicare AngTreatTheBaseGoldValueOfEachCardAsIfItWereN
 		return false;
-	}
+	} // visit
 
 	@Override
 	public boolean visit (AngYouMayInitiateAnAdditionalChallengeDuringTheChallengePhase consAbility) {
@@ -135,7 +135,7 @@ public class ConsEffectApplier implements IAngConsEffectVisitor {
 	public boolean visit (AngEachPlayerCannotStandMoreThanNCardsDuringTheStandingPhase consAbility) {
 		// TODO Auto-generated method stub
 		return false;
-	}
+	} // visit
 
 	public static boolean applyCannotBeBypassedByStealth (CharacterCard card, boolean activate) {
 		if (activate) {
@@ -145,9 +145,10 @@ public class ConsEffectApplier implements IAngConsEffectVisitor {
 		} // if - else
 		return true;
 	} // applyCannotBeBypassedByStealth
+	
 	@Override
 	public boolean visit (AngEachCardCannotBeBypassedByStealth consEffect) {
-		FilterMatcher.allMatches (ac.you, game, consEffect.getCardFilter ())
+		FilterMatcher.allMatches (ac, game, consEffect.getCardFilter ())
 		.forEach (c -> applyCannotBeBypassedByStealth ((CharacterCard) c, activate));
 		return true;
 	} // visit
@@ -156,30 +157,30 @@ public class ConsEffectApplier implements IAngConsEffectVisitor {
 	public boolean visit (AngEachPlayerCannotInitiateMoreThanNChallengesDuringTheChallengePhase consAbility) {
 		// TODO Auto-generated method stub
 		return false;
-	}
+	} // visit
 
 	@Override
 	public boolean visit (AngEachPlayerCannotTriggerCardAbilities consAbility) {
 		// TODO Auto-generated method stub
 		return false;
-	}
+	} // visit
 
 	@Override
 	public boolean visit (AngEachPlayerCannotDeclareMoreThanNCharacters consAbility) {
 		// TODO Auto-generated method stub
 		return false;
-	}
+	} // visit
 
 	@Override
 	public boolean visit (AngMultiConsEffect consEffect) {
 		// TODO Auto-generated method stub
 		return false;
-	}
+	} // visit
 
 	@Override
 	public boolean visit (AngThisDoesNotKneelWhenDeclared consEffect) {
 		// TODO Auto-generated method stub
 		return false;
-	}
+	} // visit
 
-}
+} // ConsEffectApplier

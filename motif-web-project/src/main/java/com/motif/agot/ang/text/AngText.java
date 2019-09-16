@@ -42,8 +42,8 @@ public class AngText {
 	public AngInterrupt getForcedInterrupt () { return forcedInterrupt; }
 
 	private AngWhenRevealed whenRevealed = null;
-	public boolean hasWhenRevealed () { return whenRevealed != null; }
-	public AngWhenRevealed getWhenRevealed  () { return whenRevealed; }
+	public boolean hasWhenRevealed (boolean implicit) { return this.whenRevealed != null && this.whenRevealed.isImplicit () == implicit; }
+	public AngWhenRevealed getWhenRevealed  () { return this.whenRevealed; }
 	
 	private ArrayList<AngConsAbility> consAbilities = null;
 	public boolean hasConsAbilities () { return consAbilities != null; }

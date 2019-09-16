@@ -85,7 +85,6 @@ public class CardEventCreator implements IAngEffectVisitor, IAngCostVisitor {
 		AgotEvent event = creator.event;
 		return event;
 	} // getEvent
-
 	
 	private AgotEvent event;
 	private AbilityContext ac;
@@ -97,7 +96,7 @@ public class CardEventCreator implements IAngEffectVisitor, IAngCostVisitor {
 	} // CardEffectCreator
 	
 	private boolean visit (AngEffectEachCard effect, Function<? super Card<?>, ? extends AgotEvent> mapper) {
-		List<? extends AgotEvent> events = FilterMatcher.allMatches (ac.you, game, effect.getFilter ())
+		List<? extends AgotEvent> events = FilterMatcher.allMatches (ac, game, effect.getFilter ())
 		.map (mapper)
 		.collect (Collectors.toList ());
 		event = new MultiEvent (events, game);
@@ -151,11 +150,11 @@ public class CardEventCreator implements IAngEffectVisitor, IAngCostVisitor {
 	public boolean visit (AngMovePowersFromAFactionToAFaction effect) {
 		AngPlayerFilter fromFilter = effect.getFromPlayer ();
 		AgotPlayer fromPlayer = game.players ()
-		.filter (p -> FilterMatcher.doesMatch (p, ac.you, fromFilter, game))
+		.filter (p -> FilterMatcher.doesMatch (p, ac, fromFilter, game))
 		.findFirst ().get ();
 		AngPlayerFilter toFilter = effect.getToPlayer ();
 		AgotPlayer toPlayer = game.players ()
-		.filter (p -> FilterMatcher.doesMatch (p, ac.you, toFilter, game))
+		.filter (p -> FilterMatcher.doesMatch (p, ac, toFilter, game))
 		.findFirst ().get ();
 		int nPower = Math.min (effect.getN (), fromPlayer.faction ().power ());
 		event = new MoveNPowerEvent (nPower, fromPlayer.faction (), toPlayer.faction (), game);

@@ -67,6 +67,10 @@ public class AngCardFilter {
 	@Getter private boolean plotRevealed;
 	@Getter private boolean withoutAttachments;
 	
+	private Boolean kneeling;
+	public boolean kneeling () { return kneeling != null && kneeling; }
+	public boolean standing () { return kneeling != null && !kneeling; }
+	
 	private Boolean unique;
 	public boolean unique () { return unique != null && unique; }
 	public boolean nonUnique () { return unique != null && !unique; }
@@ -128,6 +132,9 @@ public class AngCardFilter {
 		public CFB defending () { cf.duringChallenge = true; cf.attacking = false; return this; }
 		public CFB partecipating () { cf.duringChallenge = true; cf.partecipating = true; return this; }
 		
+		public CFB kneeling () { cf.kneeling = true; return this; }
+		public CFB standing () { cf.kneeling = true; return this; }
+
 		public CFB withoutAttachments () { cf.withoutAttachments = true; return this; }
 		
 		public CFB traits (AngTrait...inclusiveTraits) { cf.inclusiveTraits = Arrays.asList (inclusiveTraits); return this; }

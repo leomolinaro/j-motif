@@ -64,9 +64,11 @@ public class AgotText {
 
 	public static class AgotRequestMessage {
 
+		public String selectCardToSetup (AgotPlayer player) { return  MotifConsole.format ("{0}, select a card to setup.", player.name ()); }
 		public String selectActionToPerform (AgotPlayer player) { return  MotifConsole.format ("{0}, select an action to perform.", player.name ()); }
 		public String selectReactionToPerform (AgotPlayer player) { return  MotifConsole.format ("{0}, select a reaction to perform.", player.name ()); }
 		public String selectInterruptToPerform (AgotPlayer player) { return  MotifConsole.format ("{0}, select an interrupt to perform.", player.name ()); }
+		public String selectWhenRevealedToPerform (AgotPlayer player) { return  MotifConsole.format ("{0}, select a when revealed ability to activate.", player.name ()); }
 		public String selectCharacterToKill (AgotPlayer player) { return MotifConsole.format ("{0}, select a character to be killed.", player.name ()); }
 		public String selectCharacterToDefend (AgotPlayer player) { return MotifConsole.format ("{0}, select a character to defend.", player.name ()); }
 		public String selectChallengeToInitiate (AgotPlayer player) { return MotifConsole.format ("{0}, select a challenge to initiate.", player.name ()); }

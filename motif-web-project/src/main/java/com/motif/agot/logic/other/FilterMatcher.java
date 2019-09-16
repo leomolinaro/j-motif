@@ -18,25 +18,27 @@ import com.motif.shared.exceptions.MotifUnexpectedError;
 public class FilterMatcher {
 
 	@SuppressWarnings("unchecked")
-	public static <C extends Card<?>> Stream<C> allMatches (AgotPlayer you, AgotGame game, AngCardFilter cardFilter) {
+	public static <C extends Card<?>> Stream<C> allMatches (AbilityContext ac, AgotGame game, AngCardFilter cardFilter) {
 		return game.inPlayCards ()
-		.filter (c -> doesMatch (c, you, cardFilter))
+		.filter (c -> doesMatch (c, ac, cardFilter))
 		.map (c -> (C) c);
 	} // allMatches
 
-	public static Stream<AgotPlayer> allPlayerMatches (AgotPlayer you, AgotGame game, AngPlayerFilter playerFilter) {
+	public static Stream<AgotPlayer> allPlayerMatches (AbilityContext ac, AgotGame game, AngPlayerFilter playerFilter) {
 		return game.players ()
-				.filter (p -> doesMatch (p, you, playerFilter, game));
+				.filter (p -> doesMatch (p, ac, playerFilter, game));
 	} // allMatches
 
-	
-	public static boolean doesMatch (Card<?> card, AgotPlayer you, AngCardFilter cardFilter) {
+	public static boolean doesMatch (Card<?> card, AbilityContext ac, AngCardFilter cardFilter) {
 		AngCard ang = card.getAngCard ();
 		// TODO nuovi vincoli...
+		if (cardFilter.kneeling () && !card.isKneeling ()) { return false; }
+		if (cardFilter.standing () && !card.isStanding ()) { return false; }
 		if (cardFilter.hasTitle () && !ang.hasTitle (cardFilter.getTitle ())) { return false; }
 		if (cardFilter.hasTypes () && !cardFilter.types ().anyMatch (type -> ang.isType (type))) { return false; }
 		if (cardFilter.hasFaction () && !ang.isFaction (cardFilter.getFaction ())) { return false; }
-		if (cardFilter.hasYouControl () && cardFilter.getYouControl () != card.isControlledBy (you)) { return false; }
+		if (cardFilter.getOther () && card == ac.thisCard) { return false; }
+		if (cardFilter.hasYouControl () && cardFilter.getYouControl () != card.isControlledBy (ac.you)) { return false; }
 		if (card instanceof TextCard<?>) {
 			TextCard<?> textCard = (TextCard<?>) card;
 			AngTextCard angTextCard = textCard.getAngCard ();
@@ -45,7 +47,24 @@ public class FilterMatcher {
 		return true;
 	} // doesMatch
 	
-	public static boolean doesMatch (Challenge challenge, AgotPlayer you, Card<?> targetCard, TextCard<?> thisCard, AngChallengeFilter filter, AgotGame game) {
+//	public static boolean doesMatch (Card<?> card, AgotPlayer you, AngCardFilter cardFilter) {
+//		AngCard ang = card.getAngCard ();
+//		// TODO nuovi vincoli...
+//		if (cardFilter.kneeling () && !card.isKneeling ()) { return false; }
+//		if (cardFilter.standing () && !card.isStanding ()) { return false; }
+//		if (cardFilter.hasTitle () && !ang.hasTitle (cardFilter.getTitle ())) { return false; }
+//		if (cardFilter.hasTypes () && !cardFilter.types ().anyMatch (type -> ang.isType (type))) { return false; }
+//		if (cardFilter.hasFaction () && !ang.isFaction (cardFilter.getFaction ())) { return false; }
+//		if (cardFilter.hasYouControl () && cardFilter.getYouControl () != card.isControlledBy (you)) { return false; }
+//		if (card instanceof TextCard<?>) {
+//			TextCard<?> textCard = (TextCard<?>) card;
+//			AngTextCard angTextCard = textCard.getAngCard ();
+//			if (cardFilter.hasTraits () && !cardFilter.traits ().anyMatch (trait -> angTextCard.hasTrait (trait))) { return false; }
+//		} // if
+//		return true;
+//	} // doesMatch
+	
+	public static boolean doesMatch (Challenge challenge, AbilityContext ac, AngChallengeFilter filter, AgotGame game) {
 		if (filter.hasIcon () && !challenge.isType (filter.getIcon ())) { return false; }
 		if (filter.unopposed () && !challenge.unopposed ()) { return false; }
 		if (filter.hasPartecipatingCondition ()) {
@@ -57,12 +76,12 @@ public class FilterMatcher {
 				} else {
 					return false;
 				} // if - else
-			}, targetCard, thisCard, you, game);
+			}, ac, game);
 		} // if
 		return true;
 	} // doesMatch
 	
-	public static boolean doesMatch (AgotPlayer player, AgotPlayer you, AngPlayerFilter filter, AgotGame game) {
+	public static boolean doesMatch (AgotPlayer player, AbilityContext ac, AngPlayerFilter filter, AgotGame game) {
 		if (filter.duringChallenge ()) {
 			Challenge challenge = game.getChallenge ();
 			if (challenge == null) {
@@ -74,9 +93,9 @@ public class FilterMatcher {
 			} // if - else
 		} else {
 			if (filter.you ()) {
-				return player == you;
+				return player == ac.you;
 			} else if (filter.opponent ()) {
-				return player != you;
+				return player != ac.you;
 			} // if - else
 		} // if - else
 		throw new MotifUnexpectedError ();

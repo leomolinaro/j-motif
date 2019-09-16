@@ -30,7 +30,7 @@ public final class ReactionAct extends TrigAbilityAct<AngReaction> {
 		super(reaction, new AbilityContext(reactingCard, reactingPlayer), game);
 		this.event = event;
 		this.parent = parent;
-	} // ReactionStep
+	} // ReactionAct
 
 	@Override
 	public String toString() { return MotifConsole.format ("Reaction {0}", ac.thisCard.getTitle ()); }
@@ -39,13 +39,13 @@ public final class ReactionAct extends TrigAbilityAct<AngReaction> {
 	public boolean canBeInitiated () {
 		boolean canBeInitiated = super.canBeInitiated ();
 		if (!canBeInitiated) { return false; }
-		if (!TriggerChecker.canTrigger (event, trigAbility.getAfter (), ac.thisCard, ac.you, game)) { return false; }
+		if (!TriggerChecker.canTrigger (event, trigAbility.getAfter (), ac, game)) { return false; }
 		return true;
-	}
+	} // canBeInitiated
 	
 	@Override
 	public AgotChoice getChoice (AgotRequestType requestType) {
 		return AgotChoice.selectCardActionChoice (requestType, this.getTrigCard(), AgotChoiceCardAction.REACTION);
-	}
+	} // getChoice
 
 } // ReactionAct

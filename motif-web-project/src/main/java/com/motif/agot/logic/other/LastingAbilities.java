@@ -8,7 +8,7 @@ import com.motif.agot.logic.events.AgotEvent;
 import com.motif.agot.logic.visitors.ConsEffectApplier;
 import com.motif.agot.logic.visitors.UntilChecker;
 import com.motif.agot.state.AgotGame;
-import com.motif.agot.state.LastingEffect;
+import com.motif.agot.state.abilities.LastingEffect;
 
 public class LastingAbilities {
 

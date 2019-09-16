@@ -29,7 +29,10 @@ import com.motif.agot.ang.text.instants.AngLastingEffect;
 import com.motif.agot.endpoint.AgotContext;
 import com.motif.agot.logic.other.AbilityContext;
 import com.motif.agot.state.GameLog.GameLogRow;
+import com.motif.agot.state.abilities.ConsAbility;
+import com.motif.agot.state.abilities.ConsAlignAbility;
 import com.motif.agot.state.abilities.DelayedEffect;
+import com.motif.agot.state.abilities.LastingEffect;
 import com.motif.agot.state.cards.AgendaCard;
 import com.motif.agot.state.cards.AttachmentCard;
 import com.motif.agot.state.cards.Card;
@@ -154,26 +157,26 @@ public class AgotGame extends MotifGame<AgotPlayer> {
 	public Stream<ConsAbility> consAbilities () { return consAbilities.stream (); }
 	public Stream<ConsAlignAbility> consAlignAbilities () { return consAlignAbilities.stream (); }
 	
-	public ConsAbility subscribe (AngConsAbility angConsAbility, TextCard<?> card) {
+	public ConsAbility subscribe (AngConsAbility angConsAbility, AbilityContext ac) {
 		IAngConsEffect effect = angConsAbility.getConsEffect ();
 		ConsAbility consAbility;
 		if (effect instanceof IAngConsAlignEffect) {
-			ConsAlignAbility consAlignAbility = new ConsAlignAbility (angConsAbility, card);
+			ConsAlignAbility consAlignAbility = new ConsAlignAbility (angConsAbility, ac);
 			consAlignAbilities.add (consAlignAbility);
 			consAbility = consAlignAbility;
 		} else {
-			consAbility = new ConsAbility (angConsAbility, card);
+			consAbility = new ConsAbility (angConsAbility, ac);
 		} // if - else
 		consAbilities.add (consAbility);
 		return consAbility;
 	} // subscribe
 	
-	public ConsAbility unsubscribe (AngConsAbility angConsAbility, TextCard<?> card) {
+	public ConsAbility unsubscribe (AngConsAbility angConsAbility, AbilityContext ac) {
 		Iterator<ConsAbility> consAbilityIt = consAbilities.iterator ();
 		ConsAbility toReturn = null;
 		while (toReturn == null) {
 			ConsAbility ca = consAbilityIt.next ();
-			if (ca.getAng () == angConsAbility && ca.getCard () == card) {
+			if (ca.getAng () == angConsAbility && ca.getAbilityContext () == ac) {
 				consAbilityIt.remove ();
 				toReturn = ca;
 			} // if

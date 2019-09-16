@@ -18,6 +18,7 @@ import com.motif.agot.ang.enums.AngType;
 import com.motif.agot.ang.text.conseffects.AngConsEffects.AngReduceTheCostOfTheNextCardYouMarshallByN;
 import com.motif.agot.endpoint.AgotContext;
 import com.motif.agot.logic.flow.IAgotModelChoice;
+import com.motif.agot.logic.other.AbilityContext;
 import com.motif.agot.logic.requests.AAgotRequest.AgotRequestType;
 import com.motif.agot.logic.requests.AgotChoice;
 import com.motif.agot.state.cards.AgendaCard;
@@ -139,7 +140,7 @@ public class AgotPlayer extends MotifPlayer implements IAgotModelChoice {
 	private PlotCard revealedPlot = null;
 	private void setRevealedPlot (PlotCard card) { revealedPlot = card; }
 	@GraphQLQuery public Optional<PlotCard> revealedPlot () { return Optional.ofNullable (revealedPlot); }
-	public int getInitiative () {  return revealedPlot.getInitiative (); }
+	public int getInitiative () { return revealedPlot.getInitiative (); }
 	public int getIncome () { return revealedPlot.getIncome (); }
 	public int getReserve () { return revealedPlot.getReserve (); }
 	
@@ -464,10 +465,23 @@ public class AgotPlayer extends MotifPlayer implements IAgotModelChoice {
 	private int modDominanceStrength = 0;
 	public void increaseDominanceStrength (int strength) { modDominanceStrength += strength; }
 	
-	private List<AngReduceTheCostOfTheNextCardYouMarshallByN> marshallModifiers = new LinkedList<> ();
-	public Stream<AngReduceTheCostOfTheNextCardYouMarshallByN> marshallModifers () { return this.marshallModifiers.stream (); }
-	public void addMarshallModifier (AngReduceTheCostOfTheNextCardYouMarshallByN marshallModifier) { this.marshallModifiers.add (marshallModifier); }
-	public void removeMarshallModifier (AngReduceTheCostOfTheNextCardYouMarshallByN marshallModifier) { this.marshallModifiers.remove (marshallModifier); }
+	private List<MarshallModifier> marshallModifiers = new LinkedList<> ();
+	public Stream<MarshallModifier> marshallModifers () { return this.marshallModifiers.stream (); }
+	public void addMarshallModifier (AngReduceTheCostOfTheNextCardYouMarshallByN marshallModifier, AbilityContext ac) {
+		this.marshallModifiers.add (new MarshallModifier (marshallModifier, ac));
+	} // addMarshallModifier
+	public MarshallModifier removeMarshallModifier (AngReduceTheCostOfTheNextCardYouMarshallByN ang, AbilityContext ac) {
+		var marshallModifierIt = marshallModifiers.iterator ();
+		MarshallModifier toReturn = null;
+		while (toReturn == null) {
+			var ca = marshallModifierIt.next ();
+			if (ca.getAng () == ang && ca.getAbilityContext () == ac) {
+				marshallModifierIt.remove ();
+				toReturn = ca;
+			} // if
+		} // while
+		return toReturn;
+	} // removeMarshallModifier
 	public void removeAllMarshallModifiers () { this.marshallModifiers.clear (); }
 	
 	private List<AngIcon> additionalChallenges = new LinkedList<> ();

@@ -41,7 +41,7 @@ public final class InterruptAct extends TrigAbilityAct<AngInterrupt> {
 		if (!canBeInitiated) {
 			return false;
 		}
-		if (!TriggerChecker.canTrigger(event, trigAbility.getWhen(), ac.thisCard, ac.you, game)) {
+		if (!TriggerChecker.canTrigger(event, trigAbility.getWhen(), ac, game)) {
 			return false;
 		}
 		return true;

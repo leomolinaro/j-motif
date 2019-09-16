@@ -5,7 +5,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.motif.agot.ang.enums.AngType;
-import com.motif.agot.ang.text.conseffects.AngConsEffects.AngReduceTheCostOfTheNextCardYouMarshallByN;
 import com.motif.agot.ang.text.instants.AngPayNGold;
 import com.motif.agot.endpoint.AgotContext;
 import com.motif.agot.logic.act.MarshallingPayCostStep.IAgotHasMarshallingPayCostStep;
@@ -21,6 +20,7 @@ import com.motif.agot.logic.requests.AgotChoice.AgotChoiceCardAction;
 import com.motif.agot.logic.visitors.CostPayTester;
 import com.motif.agot.state.AgotGame;
 import com.motif.agot.state.AgotPlayer;
+import com.motif.agot.state.MarshallModifier;
 import com.motif.agot.state.cards.AttachmentCard;
 import com.motif.agot.state.cards.MarshallCard;
 import com.motif.shared.util.MotifConsole;
@@ -55,27 +55,27 @@ public class MarshallingAct extends Act implements IPhaseAct, IMarshallingPhaseS
 	
 	@Override
 	public boolean canBeInitiated () {
-		if (!this.card.isControlledBy(this.player)) { return false; }
-		if (!this.card.isInHand()) { return false; }
-		if (this.card.isLimited()) {
-			if (this.player.getMarshalledLimited() > 0) { return false; }
-		}
-		if (this.card.isType(AngType.ATTACHMENT)) { if (!canBeAttached()) { return false; } }
+		if (!this.card.isControlledBy (this.player)) { return false; }
+		if (!this.card.isInHand ()) { return false; }
+		if (this.card.isLimited ()) {
+			if (this.player.getMarshalledLimited () > 0) { return false; }
+		} // if
+		if (this.card.isType (AngType.ATTACHMENT)) { if (!canBeAttached ()) { return false; } }
 		return true;
-	}
+	} // canBeInitiated
 
-	private boolean canBeAttached() {
-		return attachableTo().findAny().isPresent();
+	private boolean canBeAttached () {
+		return attachableTo ().findAny ().isPresent ();
 	}
 	
-	private Stream<MarshallCard<?>> attachableTo() {
-		AttachmentCard att = (AttachmentCard) card;
-		Stream<MarshallCard<?>> attachable = game.players ().flatMap (p -> p.characters ());
+	private Stream<MarshallCard<?>> attachableTo () {
+		var att = (AttachmentCard) this.card;
+		Stream<MarshallCard<?>> attachable = this.game.players ().flatMap (p -> p.characters ());
 		if (att.hasRestriction ()) {
-			attachable = attachable.filter (card -> FilterMatcher.doesMatch (card, player, att.getRestriction ()));
-		}
+			attachable = attachable.filter (card -> FilterMatcher.doesMatch (card, new AbilityContext (this.card, this.player), att.getRestriction ()));
+		} // if
 		return attachable;
-	}
+	} // attachableTo
 	
 	@Override
 	public boolean canBePaid () {
@@ -88,14 +88,15 @@ public class MarshallingAct extends Act implements IPhaseAct, IMarshallingPhaseS
 			return new AngPayNGold (0);
 		} else {
 			var cost = card.getCost ();
-			var usedModifiers = new ArrayList<AngReduceTheCostOfTheNextCardYouMarshallByN> ();
+			var usedModifiers = new ArrayList<MarshallModifier> ();
 			int modifiers = this.player.marshallModifers ()
-	        .filter (marshallModifier -> FilterMatcher.doesMatch (card, player, marshallModifier.getCardFilter ()))
+			.filter (marshallModifier -> !marshallModifier.isConsumed ())
+	        .filter (marshallModifier -> FilterMatcher.doesMatch (card, marshallModifier.getAbilityContext (), marshallModifier.getAng ().getCardFilter ()))
 	        .peek (marshallModifier -> usedModifiers.add (marshallModifier))
-	        .map (marshallModifier -> marshallModifier.getN ())
+	        .map (marshallModifier -> marshallModifier.getAng ().getN ())
 	        .collect (Collectors.summingInt (Integer::intValue));
 			if (removeUsedModifiers) {
-				usedModifiers.forEach (m -> this.player.removeMarshallModifier (m));
+				usedModifiers.forEach (m -> m.setConsumed (true));
 			} // if
 			int finalCost = Math.max (cost - modifiers, 0);
 			return new AngPayNGold (finalCost);

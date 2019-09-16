@@ -5,6 +5,7 @@ import com.motif.agot.ang.enums.AngType;
 import com.motif.agot.ang.sets.AgotCardSeed;
 import com.motif.agot.ang.sets.AgotPack;
 import com.motif.agot.ang.text.AngText.TB;
+import com.motif.agot.ang.text.AngWhenRevealed;
 
 public class AngPlotCard extends AngDeckCard {
 
@@ -27,5 +28,8 @@ public class AngPlotCard extends AngDeckCard {
 	} // AngPlotCard
 
 	@Override public void accept (AngTextCardVisitor visitor) { visitor.visit (this); }
+	
+	public AngWhenRevealed getWhenRevealed () { return text.getWhenRevealed (); }
+	public boolean hasWhenRevealed (boolean implicit) { return text.hasWhenRevealed (implicit); }
 	
 } // AngPlotCard

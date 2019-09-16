@@ -2,6 +2,7 @@ package com.motif.agot.logic.act;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.motif.agot.ang.enums.AngType;
 import com.motif.agot.ang.text.AngTrigAbility;
@@ -45,8 +46,8 @@ public abstract class TrigAbilityAct<T extends AngTrigAbility> extends Act imple
 			return new TrigAbilityPayCostStep (this.trigAbility.getCost (), this.ac, this.game, this);
 		} else {
 			return after ((TrigAbilityPayCostStep) null, context);
-		}
-	}
+		} // if - else
+	} // start
 
 	@Override
 	public IAgotFlowStep after (TrigAbilityPayCostStep actPayCostStep, AgotContext context) {
@@ -55,26 +56,18 @@ public abstract class TrigAbilityAct<T extends AngTrigAbility> extends Act imple
 			return actEventStep (this.trigAbility.getEffect (), context);
 		} else {
 			return chooseTargetStep;
-		}
-	}
+		} // if - else
+	} // after
 	
 	private ChooseATargetCardRequest chooseTargetStep (AgotContext context) {
 		if (this.trigAbility.getEffect () instanceof AngChooseACard) {
 			AngChooseACard chooseEffect = (AngChooseACard) this.trigAbility.getEffect ();
-			AngCardFilter cardFilter = chooseEffect.getCardFilter ();
-			IAngEffect targetEffect = chooseEffect.getTargetEffect ();
-			List<Card<?>> targettableCards = this.game.inPlayCards ()
-			        .filter (card -> FilterMatcher.doesMatch (card, this.ac.you, cardFilter)).filter (targetCard -> {
-				        this.ac.setThatCard (targetCard);
-				        var doesChangeState = EffectChangeTester.doesChangeState (targetEffect, this.ac, this.game);
-				        this.ac.setThatCard (null);
-				        return doesChangeState;
-			        }).collect (Collectors.toList ());
+			List<Card<?>> targettableCards = this.getTargettableCards (chooseEffect).collect (Collectors.toList ());
 			return new ChooseATargetCardRequest (targettableCards, this.ac.you, this);
 		} else {
 			return null;
-		}
-	}
+		} // if - else
+	} // chooseTargetStep
 	
 	@Override
 	public IAgotFlowStep after (ChooseATargetCardRequest decision, AgotContext context) {
@@ -98,43 +91,62 @@ public abstract class TrigAbilityAct<T extends AngTrigAbility> extends Act imple
 	
 	@Override
 	public boolean canBeInitiated () {
-		if (!this.ac.thisCard.isControlledBy(this.ac.you)) { return false; }
-		if (!this.ac.thisCard.isInteracting()) { return false; }
-		if (this.trigAbility.hasTrigLimit()) {
-			AngTrigLimit limit = this.trigAbility.getTrigLimit();
+		if (!this.ac.thisCard.isControlledBy (this.ac.you)) { return false; }
+		if (!this.ac.thisCard.isInteracting ()) { return false; }
+		if (this.trigAbility.hasTrigLimit ()) {
+			AngTrigLimit limit = this.trigAbility.getTrigLimit ();
 			int triggeredTimes;
-			switch (limit.getPer()) {
+			switch (limit.getPer ()) {
 				case GAME: throw new MotifUnexpectedError();
 				case PHASE: triggeredTimes = this.game.getPhaseCounter(this.trigAbility, (MarshallCard<?>) this.ac.thisCard); break;
 				case ROUND: triggeredTimes = this.game.getRoundCounter(this.trigAbility, (MarshallCard<?>) this.ac.thisCard); break;
 				default: throw new MotifUnexpectedError();
 			}
-			if (triggeredTimes >= limit.getTimes()) { return false; }
+			if (triggeredTimes >= limit.getTimes ()) { return false; }
 		}
-		if (this.trigAbility.hasTrigMax()) {
+		if (this.trigAbility.hasTrigMax ()) {
 			AngTrigLimit max = this.trigAbility.getTrigMax ();
 			int triggeredTimes;
 			switch (max.getPer ()) {
-				case GAME: throw new MotifUnexpectedError();
-				case PHASE: triggeredTimes = this.game.getPhaseCounter(((EventCard) this.ac.thisCard).getAngCard (), this.ac.you); break;
-				case ROUND: triggeredTimes = this.game.getRoundCounter(((EventCard) this.ac.thisCard).getAngCard (), this.ac.you); break;
-				default: throw new MotifUnexpectedError();
+				case GAME: throw new MotifUnexpectedError ();
+				case PHASE: triggeredTimes = this.game.getPhaseCounter (((EventCard) this.ac.thisCard).getAngCard (), this.ac.you); break;
+				case ROUND: triggeredTimes = this.game.getRoundCounter (((EventCard) this.ac.thisCard).getAngCard (), this.ac.you); break;
+				default: throw new MotifUnexpectedError ();
 			} // switch
 			if (triggeredTimes >= max.getTimes()) { return false; }
 		}
-		boolean doesChangeState = EffectChangeTester.doesChangeState(this.trigAbility.getEffect (), this.ac, this.game);
+		// In caso di bersagli, verifico l'esistenza di almeno un bersaglio valido.
+		if (this.trigAbility.getEffect () instanceof AngChooseACard) {
+			AngChooseACard chooseEffect = (AngChooseACard) this.trigAbility.getEffect ();
+			var nTargettableCards = this.getTargettableCards (chooseEffect).collect (Collectors.counting ());
+			if (nTargettableCards <= 0) { return false; }
+		} // if
+		boolean doesChangeState = EffectChangeTester.doesChangeState (this.trigAbility.getEffect (), this.ac, this.game);
 		if (!doesChangeState) { return false; }
 		return true;
-	}
+	} // canBeInitiated
+	
+	private Stream<Card<?>> getTargettableCards (AngChooseACard chooseEffect) {
+		AngCardFilter cardFilter = chooseEffect.getCardFilter ();
+		IAngEffect targetEffect = chooseEffect.getTargetEffect ();
+		return this.game.inPlayCards ()
+		        .filter (card -> FilterMatcher.doesMatch (card, this.ac, cardFilter))
+		        .filter (targetCard -> {
+			        this.ac.setThatCard (targetCard);
+			        var doesChangeState = EffectChangeTester.doesChangeState (targetEffect, this.ac, this.game);
+			        this.ac.setThatCard (null);
+			        return doesChangeState;
+		        });
+	} // getTargettableCards
 	
 	@Override
-	public final boolean canBePaid() {
-		if (trigAbility.hasCost()) {
-			boolean canBePaid = CostPayTester.canBePaid(trigAbility.getCost(), ac.thisCard, ac.you, game);
+	public final boolean canBePaid () {
+		if (trigAbility.hasCost ()) {
+			boolean canBePaid = CostPayTester.canBePaid (trigAbility.getCost (), ac.thisCard, ac.you, game);
 			return canBePaid;
 		} else {
 			return true;
-		}
-	}
+		} // if - else
+	} // canBePaid
 	
-}
+} // TrigAbilityAct

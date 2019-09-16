@@ -1,4 +1,4 @@
-package com.motif.agot.state;
+package com.motif.agot.state.abilities;
 
 import com.motif.agot.ang.text.conseffects.IAngConsEffect;
 import com.motif.agot.ang.text.instants.AngLastingEffect;
@@ -18,6 +18,6 @@ public class LastingEffect {
 	public LastingEffect (AngLastingEffect ang, AbilityContext abilityContext) {
 		this.ang = ang;
 		this.abilityContext = abilityContext;
-	}
+	} // LastingEffect
 	
 } // LastingEffect

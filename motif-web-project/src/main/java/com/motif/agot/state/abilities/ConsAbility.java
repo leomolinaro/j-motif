@@ -1,9 +1,9 @@
-package com.motif.agot.state;
+package com.motif.agot.state.abilities;
 
 import com.motif.agot.ang.text.AngConsAbility;
 import com.motif.agot.ang.text.consconditions.IAngWhileCondition;
 import com.motif.agot.ang.text.conseffects.IAngConsEffect;
-import com.motif.agot.state.cards.TextCard;
+import com.motif.agot.logic.other.AbilityContext;
 
 import lombok.Getter;
 
@@ -18,14 +18,14 @@ public class ConsAbility {
 	public IAngWhileCondition getWhileCond () { return ang.getWhileCond (); }
 	public boolean hasWhileCond () { return ang.hasWhileCond (); }
 
-	public TextCard<?> getCard () { return card; }
-	public AgotPlayer getCardController () { return card.getController (); }
-	private TextCard<?> card;
+//	public TextCard<?> getCard () { return card; }
+//	public AgotPlayer getCardController () { return card.getController (); }
+	@Getter private AbilityContext abilityContext;
 	
-	public ConsAbility (AngConsAbility ang, TextCard<?> card) {
+	public ConsAbility (AngConsAbility ang, AbilityContext ac) {
 		super ();
 		this.ang = ang;
-		this.card = card;
+		this.abilityContext = ac;
 	} // ConsAbility
 	
 } // ConsAbility

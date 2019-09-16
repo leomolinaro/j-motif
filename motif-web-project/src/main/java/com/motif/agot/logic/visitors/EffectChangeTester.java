@@ -60,14 +60,14 @@ public class EffectChangeTester implements IAngEffectVisitor {
 	
 	private boolean visit (AngEffectEachCard effect, Predicate<? super Card<?>> predicate) {
 		return game.inPlayCards ()
-		.anyMatch (c -> FilterMatcher.doesMatch (c, ac.you, effect.getFilter ()) && predicate.test (c));
+		.anyMatch (c -> FilterMatcher.doesMatch (c, ac, effect.getFilter ()) && predicate.test (c));
 	} // visit
 	
 	@Override
 	public boolean visit (AngChooseACard effect) {
-		// TODO controllare cambio con i target
+		// Già controllato in canBeInitiated
 		return true;
-	}
+	} // visit
 
 	@Override public boolean visit (AngGainNGold effect) { return true; }
 	@Override public boolean visit (AngDrawNCards effect) { return ac.you.canDraw (); }
@@ -98,7 +98,7 @@ public class EffectChangeTester implements IAngEffectVisitor {
 	public boolean visit (AngMovePowersFromAFactionToAFaction effect) {
 		AngPlayerFilter fromFilter = effect.getFromPlayer ();
 		return game.players ()
-		.anyMatch (p -> FilterMatcher.doesMatch (p, ac.you, fromFilter, game) && p.getPower () > 0);
+		.anyMatch (p -> FilterMatcher.doesMatch (p, ac, fromFilter, game) && p.getPower () > 0);
 	} // visit
 	
 	@Override public boolean visit (AngReturnThisToYourHand effect) { return !ac.you.hasInHand ((DrawCard<?>) ac.thisCard); }
@@ -113,7 +113,7 @@ public class EffectChangeTester implements IAngEffectVisitor {
 	
 	@Override
 	public boolean visit (AngDiscardNCardsAtRandomFromEachPlayerHand effect) {
-		return FilterMatcher.allPlayerMatches (ac.you, game, effect.getPlayerFilter ())
+		return FilterMatcher.allPlayerMatches (ac, game, effect.getPlayerFilter ())
 		.anyMatch (p -> p.handSize () > 0);
 	} // visit
 	

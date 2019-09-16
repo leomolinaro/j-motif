@@ -24,19 +24,19 @@ public class CollectIncomeStep extends APhaseStep<IMarshallingPhaseStep> {
 		super(game);
 		this.activePlayer = activePlayer;
 		this.parent = parent;
-	}
+	} // CollectIncomeStep
 
 	@Override
-	public String getStepTitle () { return AgotText.title().collectIncomeStep(activePlayer); }
+	public String getStepTitle () { return AgotText.title ().collectIncomeStep (activePlayer); }
 
 	@Override
-	protected IAgotFlowStep stepStart(AgotContext context) {
+	protected IAgotFlowStep stepStart (AgotContext context) {
 		int income = this.activePlayer.getIncome ();
-		income += this.activePlayer.inPlayTextCards()
-				.collect(Collectors.summingInt (card -> card.getGoldModifier()));
-		this.activePlayer.gainGold(income, context);
-		this.game.logManager().collectsGold(this.activePlayer, income, context);
+		income += this.activePlayer.inPlayTextCards ()
+				.collect (Collectors.summingInt (card -> card.getGoldModifier ()));
+		this.activePlayer.gainGold (income, context);
+		this.game.logManager ().collectsGold (this.activePlayer, income, context);
 		return null;
-	}
+	} // stepStart
 
-}
+} // CollectIncomeStep

@@ -1,13 +1,13 @@
-package com.motif.agot.state;
+package com.motif.agot.state.abilities;
 
 import com.motif.agot.ang.text.AngConsAbility;
 import com.motif.agot.ang.text.conseffects.IAngConsAlignEffect;
-import com.motif.agot.state.cards.TextCard;
+import com.motif.agot.logic.other.AbilityContext;
 
 public class ConsAlignAbility extends ConsAbility {
 
-	public ConsAlignAbility (AngConsAbility ang, TextCard<?> card) {
-		super (ang, card);
+	public ConsAlignAbility (AngConsAbility ang, AbilityContext ac) {
+		super (ang, ac);
 	} // ConsAlignAbility
 
 	@Override

@@ -66,7 +66,8 @@ public class AgotCardCreator {
 			case CALLING_THE_BANNERS_Core: return new AngPlotCard (cardSeed, AgotPack.CORE_SET, 7, "Calling the Banners", AngFaction.NEUTRAL, noLoy, 3, 6, 1, 6,
 					TB.i ().traits (AngTrait.KINGDOM).whenRevealed (WRB.i ().chooseAPlayer (PFB.i ().anOpponent ()).andGainNGold (1, CFB.i ().character ().targetControl ())));
 			case CALM_OVER_WESTEROS_Core: return new AngPlotCard (cardSeed, AgotPack.CORE_SET, 8, "Calm Over Westeros", AngFaction.NEUTRAL, noLoy, 5, 3, 1, 6, TB.i ());
-			case CONFISCATION_Core: return new AngPlotCard (cardSeed, AgotPack.CORE_SET, 9, "Confiscation", AngFaction.NEUTRAL, noLoy, 4, 5, 1, 6, TB.i ());
+			/*DONE*/case CONFISCATION_Core: return new AngPlotCard (cardSeed, AgotPack.CORE_SET, 9, "Confiscation", AngFaction.NEUTRAL, noLoy, 4, 5, 1, 6,
+					TB.i ().traits (AngTrait.EDICT).whenRevealed (WRB.i ().chooseACard (CFB.i ().attachment ()).andDiscardItFromPlay ()));
 			/*DONE*/case COUNTING_COPPERS_Core: return new AngPlotCard (cardSeed, AgotPack.CORE_SET, 10, "Counting Coppers", AngFaction.NEUTRAL, noLoy, 2, 3, 1, 10,
 					TB.i ().traits (AngTrait.KINGDOM).whenRevealed (WRB.i ().drawNCards (3)));
 			/*DONE*/case FILTHY_ACCUSATIONS_Core: return new AngPlotCard (cardSeed, AgotPack.CORE_SET, 11, "Filthy Accusations", AngFaction.NEUTRAL, noLoy, 4, 4, 1, 6,
@@ -130,7 +131,8 @@ public class AgotCardCreator {
 					TB.i ().traits (AngTrait.MAESTER).marshallingAction (AB.i ().kneelThisTo ().chooseACard (CFB.i ().attachment ().traits (AngTrait.CONDITION)).andDiscardItFromPlay ()));
 			/*DONE*/case MELISANDRE_Core: return new AngCharacterCard (cardSeed, AgotPack.CORE_SET, 47, "Melisandre", AngFaction.BARATHEON, noLoy, 5, unique, new IcB ().intrigue ().power (), 4,
 					TB.i ().traits (AngTrait.LADY, AngTrait.RHLLOR).reaction (RB.i ().afterYouMarshallOrPlayACard (CFB.i ().traits (AngTrait.RHLLOR)).chooseACard (CFB.i ().character ()).andKneelIt ().limitPerRound (1)));
-			case ROBERT_BARATHEON_Core: return new AngCharacterCard (cardSeed, AgotPack.CORE_SET, 48, "Robert Baratheon", AngFaction.BARATHEON, loyal, 7, unique, new IcB ().military ().power (), 5, TB.i ().intimidate ().renown ());
+			case ROBERT_BARATHEON_Core: return new AngCharacterCard (cardSeed, AgotPack.CORE_SET, 48, "Robert Baratheon", AngFaction.BARATHEON, loyal, 7, unique, new IcB ().military ().power (), 5,
+					TB.i ().traits (AngTrait.KING, AngTrait.LORD).intimidate ().renown ().consAbility (CAB.i ().thisGetsStrength (1).forEach (CFB.i ().kneeling ().other ().character ())));
 			case SELYSE_BARATHEON_Core: return new AngCharacterCard (cardSeed, AgotPack.CORE_SET, 49, "Selyse Baratheon", AngFaction.BARATHEON, noLoy, 3, unique, new IcB ().intrigue ().power (), 2, TB.i ());
 			/*DONE*/case SER_DAVOS_SEAWORTH_Core: return new AngCharacterCard (cardSeed, AgotPack.CORE_SET, 50, "Ser Davos Seaworth", AngFaction.BARATHEON, noLoy, 4, unique, new IcB ().military ().power (), 3,
 					TB.i ().traits (AngTrait.KNIGHT, AngTrait.SMUGGLER).stealth ().interrupt (new IB ().whenThisIsKilled ().returnThisToYourHand ().insteadOfPlacingThisInYourDeadPile ()));

@@ -13,19 +13,20 @@ public class ApplyLastingEffectEvent extends AgotEvent {
 
 	private final AngLastingEffect effect;
 	private final AbilityContext ac;
-	
-	public ApplyLastingEffectEvent(AngLastingEffect effect, AbilityContext ac, AgotGame game) {
-		super(game);
+
+	public ApplyLastingEffectEvent (AngLastingEffect effect, AbilityContext ac, AgotGame game) {
+		super (game);
 		this.effect = effect;
 		this.ac = ac;
-	}
-	
-	@Override public boolean accept (IEventVisitor visitor) { return visitor.visit (this); }
+	} // ApplyLastingEffectEvent
 
 	@Override
-	public IAgotFlowStep start(AgotContext context) {
-		LastingAbilities.subscribe(this.effect, this.ac, this.game);
+	public boolean accept (IEventVisitor visitor) { return visitor.visit (this); }
+
+	@Override
+	public IAgotFlowStep start (AgotContext context) {
+		LastingAbilities.subscribe (this.effect, this.ac, this.game);
 		return null;
-	}
+	} // start
 	
-}
+} // ApplyLastingEffectEvent

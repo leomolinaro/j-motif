@@ -48,19 +48,18 @@ import com.motif.agot.logic.events.list.RoundEndsEvent;
 import com.motif.agot.logic.events.list.SaveEvent;
 import com.motif.agot.logic.events.list.StandEvent;
 import com.motif.agot.logic.events.list.WinDominanceEvent;
+import com.motif.agot.logic.other.AbilityContext;
 import com.motif.agot.logic.other.FilterMatcher;
 import com.motif.agot.logic.other.Subjects;
 import com.motif.agot.state.AgotGame;
-import com.motif.agot.state.AgotPlayer;
 import com.motif.agot.state.Challenge;
 import com.motif.agot.state.cards.Card;
 import com.motif.agot.state.cards.CharacterCard;
-import com.motif.agot.state.cards.TextCard;
 
 public class TriggerChecker implements IEventVisitor {
 
-	public static boolean canTrigger (AgotEvent event, IAngTriggeringCondition trigCond, TextCard<?> trigCard, AgotPlayer trigPlayer, AgotGame game) {
-		TriggerChecker checker = new TriggerChecker (trigCard, trigPlayer, game);
+	public static boolean canTrigger (AgotEvent event, IAngTriggeringCondition trigCond, AbilityContext ac, AgotGame game) {
+		TriggerChecker checker = new TriggerChecker (ac, game);
 		boolean hasEventChecker = event.accept (checker);
 		if (hasEventChecker) {
 			EventTrigChecker<?> eventChecker = checker.eventTrigChecker;
@@ -71,19 +70,17 @@ public class TriggerChecker implements IEventVisitor {
 		} // if - else
 	} // canTrigger
 	
-	private TextCard<?> trigCard;
-	private AgotPlayer you;
+	private AbilityContext ac;
 	private AgotGame game;
 	private EventTrigChecker<?> eventTrigChecker = null;
 	
-	private TriggerChecker (TextCard<?> trigCard, AgotPlayer you, AgotGame game) {
-		this.trigCard = trigCard;
-		this.you = you;
+	private TriggerChecker (AbilityContext ac, AgotGame game) {
+		this.ac = ac;
 		this.game = game;
 	} // TriggerChecker
 	
 	private boolean checkSubject (AngSubject subject, AngCardFilter cardFilter, Predicate<? super Card<?>> predicate) {
-		return Subjects.test (subject, cardFilter, predicate, null, trigCard, you, game);
+		return Subjects.test (subject, cardFilter, predicate, this.ac, this.game);
 	} // checkSubject
 	
 	private abstract class EventTrigChecker<E extends AgotEvent> implements IAngTriggeringConditionVisitor {
@@ -130,7 +127,7 @@ public class TriggerChecker implements IEventVisitor {
 			if (event.isSaved ()) {
 				return false;
 			} else {
-				return FilterMatcher.doesMatch (event.getCard (), event.getCard ().getController (), cardFilter); }				
+				return FilterMatcher.doesMatch (event.getCard (), ac, cardFilter); }				
 			} // if - else
 		@Override public boolean visit (AngACardIsDiscardedFromPlay trigCond) { return doesMatch (trigCond.getCardFilter ()); }
 		@Override public boolean visit (AngACardLeavesPlay trigCond) { return doesMatch (trigCond.getCardFilter ()); }
@@ -138,7 +135,7 @@ public class TriggerChecker implements IEventVisitor {
 	
 	private class ReturnToYourHandEventTrigChecker extends StandardEventTrigChecker<ReturnToYourHandEvent> {
 		protected ReturnToYourHandEventTrigChecker (ReturnToYourHandEvent event) { super (event); }
-		private boolean doesMatch (AngCardFilter cardFilter) { return FilterMatcher.doesMatch (event.getCard (), event.getCard ().getController (), cardFilter); }
+		private boolean doesMatch (AngCardFilter cardFilter) { return FilterMatcher.doesMatch (event.getCard (), TriggerChecker.this.ac, cardFilter); }
 		@Override public boolean visit (AngACardLeavesPlay trigCond) { return doesMatch (trigCond.getCardFilter ()); }
 	} // ReturnToYourHandEventTrigChecker
 	
@@ -155,10 +152,10 @@ public class TriggerChecker implements IEventVisitor {
 	
 	private class MarshallEventTrigChecker extends StandardEventTrigChecker<MarshallEvent> {
 		protected MarshallEventTrigChecker (MarshallEvent event) { super (event); }
-		@Override public boolean visit (AngYouMarshallThis trigCond) { return event.getMarshalledCard () == trigCard; }
-		@Override public boolean visit (AngACardEntersPlay trigCond) { return event.getMarshalledCard () == trigCard; }
+		@Override public boolean visit (AngYouMarshallThis trigCond) { return event.getMarshalledCard () == TriggerChecker.this.ac.thisCard; }
+		@Override public boolean visit (AngACardEntersPlay trigCond) { return event.getMarshalledCard () == TriggerChecker.this.ac.thisCard; }
 		@Override public boolean visit (AngYouMarshallOrPlayACard trigCond) {
-			boolean doesMatch = FilterMatcher.doesMatch (event.getMarshalledCard (), you, trigCond.getCardFilter ());
+			boolean doesMatch = FilterMatcher.doesMatch (event.getMarshalledCard (), TriggerChecker.this.ac, trigCond.getCardFilter ());
 			return doesMatch;
 		} // visit
 	} // MarshallEventTrigChecker
@@ -213,14 +210,14 @@ public class TriggerChecker implements IEventVisitor {
 	private class InitiateAChallengeEventTrigChecker extends StandardEventTrigChecker<InitiateAChallengeEvent> {
 		protected InitiateAChallengeEventTrigChecker (InitiateAChallengeEvent event) { super (event); }
 		@Override public boolean visit (AngAChallengeIsInitiated trigCond) {
-			return FilterMatcher.doesMatch (event.getChallenge (), you, null, trigCard, trigCond.getChallengeFilter (), game);
+			return FilterMatcher.doesMatch (event.getChallenge (), TriggerChecker.this.ac, trigCond.getChallengeFilter (), game);
 		} // visit
 	} // InitiateAChallengeEventTrigChecker
 
 	private class WinDominanceEventTrigChecker extends StandardEventTrigChecker<WinDominanceEvent> {
 		protected WinDominanceEventTrigChecker (WinDominanceEvent event) { super (event); }
 		@Override public boolean visit (AngYouWinDominance trigCond) {
-			return event.getWinner () == you;
+			return event.getWinner () == ac.you;
 		} // visit
 	} // WinDominanceEventTrigChecker
 
@@ -228,12 +225,12 @@ public class TriggerChecker implements IEventVisitor {
 		protected DetermineAChallengeEventTrigChecker (DetermineAChallengeEvent event) { super (event); }
 		@Override public boolean visit (AngAChallengeIsWon trigCond) {
 			Challenge challenge = event.getChallenge ();
-			boolean challengeMathces = FilterMatcher.doesMatch (challenge, you, null, trigCard, trigCond.getChallengeFilter (), game);
+			boolean challengeMathces = FilterMatcher.doesMatch (challenge, TriggerChecker.this.ac, trigCond.getChallengeFilter (), game);
 			if (challengeMathces && (challenge.attackWins () || challenge.defenseWins ())) {
 				if (trigCond.byYou ()) {
-					return challenge.winner () == you;
+					return challenge.winner () == ac.you;
 				} else if (trigCond.againstYou ()) {
-					return challenge.winner () != you;
+					return challenge.winner () != ac.you;
 				} else {
 					return true;
 				} // if - else
@@ -243,12 +240,12 @@ public class TriggerChecker implements IEventVisitor {
 		} // visit
 		@Override public boolean visit (AngAChallengeIsLost trigCond) {
 			Challenge challenge = event.getChallenge ();
-			boolean challengeMathces = FilterMatcher.doesMatch (challenge, you, null, trigCard, trigCond.getChallengeFilter (), game);
+			boolean challengeMathces = FilterMatcher.doesMatch (challenge, ac, trigCond.getChallengeFilter (), game);
 			if (challengeMathces && (challenge.attackLoses () || challenge.defenseLoses ())) {
 				if (trigCond.byYou ()) {
-					return challenge.loser () == you;
+					return challenge.loser () == ac.you;
 				} else if (trigCond.againstYou ()) {
-					return challenge.loser () != you;
+					return challenge.loser () != ac.you;
 				} else {
 					return true;
 				} // if - else

@@ -21,27 +21,27 @@ public class AgotEventProcess implements IAgotHasInterruptWindow, IAgotHasEvent,
 	@Override public IAgotFlowStep next(AgotContext context) { return this.parent.after(this, context); }
 	
 	@Override
-	public IAgotFlowStep start(AgotContext context) {
-		return new AgotInterruptWindow(event, game, this); // new WouldInterruptWindow (event, game);
-	}
+	public IAgotFlowStep start (AgotContext context) {
+		return new AgotInterruptWindow (event, game, this); // new WouldInterruptWindow (event, game);
+	} // start
 
 	@Override
-	public IAgotFlowStep after(AgotInterruptWindow interruptWindow, AgotContext context) {
-		this.event.setParent(this);
+	public IAgotFlowStep after (AgotInterruptWindow interruptWindow, AgotContext context) {
+		this.event.setParent (this);
 		return this.event;
-	}
+	} // after
 	
 	@Override
-	public IAgotFlowStep after(AgotEvent event, AgotContext context) {
-		LastingAbilities.refresh(event, game);
-		ConsAbilities.refresh(game);
-		return new AgotReactionWindow(event, game, this);
-	}
+	public IAgotFlowStep after (AgotEvent event, AgotContext context) {
+		LastingAbilities.refresh (event, this.game);
+		ConsAbilities.refresh (this.game);
+		return new AgotReactionWindow (event, this.game, this);
+	} // after
 
 	@Override
-	public IAgotFlowStep after(AgotReactionWindow reactionWindow, AgotContext context) {
+	public IAgotFlowStep after (AgotReactionWindow reactionWindow, AgotContext context) {
 		// TODO Auto-generated method stub
 		return null;
-	}
+	} // after
 
-}
+} // AgotEventProcess

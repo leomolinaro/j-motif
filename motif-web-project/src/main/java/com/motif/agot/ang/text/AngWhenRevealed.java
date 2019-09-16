@@ -3,9 +3,11 @@ package com.motif.agot.ang.text;
 import com.motif.agot.ang.text.effects.IAngEffect;
 import com.motif.agot.ang.text.limit.AngTrigLimit;
 
+import lombok.Getter;
+
 public class AngWhenRevealed extends AngTrigAbility {
 
-	private final boolean implicit;
+	@Getter private final boolean implicit;
 
 	public AngWhenRevealed (IAngEffect effect, AngTrigLimit limit, boolean implicit) {
 		super (null, effect, limit);

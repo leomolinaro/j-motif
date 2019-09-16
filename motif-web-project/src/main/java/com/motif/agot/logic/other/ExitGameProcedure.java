@@ -11,10 +11,18 @@ import com.motif.agot.state.cards.EventCard;
 import com.motif.agot.state.cards.LocationCard;
 import com.motif.agot.state.cards.MarshallCard;
 import com.motif.agot.state.cards.PlotCard;
+import com.motif.agot.state.cards.TextCard;
 import com.motif.shared.util.ListUtil;
 
 public class ExitGameProcedure {
 
+	private static void deregisterConsAbilities (TextCard<?> card, AgotGame game) {
+		if (card.hasConsAbilities ()) {
+			AbilityContext ac = new AbilityContext (card, card.getController ());
+			card.consAbilities ().forEach (consAbility -> ConsAbilities.unsubscribe (consAbility, ac, game));
+		} // if
+	} // registerConsAbility
+	
 	public static void discardCard (MarshallCard<?> card, AgotGame game, AgotContext context) {
 		 AgotPlayer player = card.getController ();
 		 removeAttachments (card, player, game, context);
@@ -42,9 +50,7 @@ public class ExitGameProcedure {
 	private static void resetCard (MarshallCard<?> card, AgotGame game, AgotContext context) {
 		if (card.isKneeling ()) { card.stand (context); }
 		if (card.power () > 0) { card.losePower (card.power (), context); }
-		if (card.hasConsAbilities ()) {
-			card.consAbilities ().forEach (consAbility -> ConsAbilities.unsubscribe (consAbility, card, game));
-		} // if
+		deregisterConsAbilities (card, game);
 		ConsAbilities.unsubmitConsAbilities (card, game);
 	} // resetCard
 	
@@ -74,9 +80,7 @@ public class ExitGameProcedure {
 	} // playEvent
 	
 	public static void discardPlot (PlotCard card, AgotPlayer player, AgotGame game, AgotContext context) {
-		if (card.hasConsAbilities ()) {
-			card.consAbilities ().forEach (consAbility -> ConsAbilities.unsubscribe (consAbility, card, game));
-		} // if
+		deregisterConsAbilities (card, game);
 		player.discardPlot (card, context);
 	} // discardPlot
 	

@@ -45,7 +45,7 @@ public class ConsCondTester implements IAngWhileConditionVisitor, IAngIfConditio
 		AttachmentCard att = (AttachmentCard) ac.thisCard;
 		AngCardFilter cardFilter = whileCond.getCardFilter ();
 		MarshallCard<?> attachTo = att.getAttachTo ();
-		boolean doesMatch = FilterMatcher.doesMatch (attachTo, att.getController (), cardFilter);
+		boolean doesMatch = FilterMatcher.doesMatch (attachTo, ac, cardFilter);
 		return doesMatch;
 	} // visit
 
@@ -68,7 +68,7 @@ public class ConsCondTester implements IAngWhileConditionVisitor, IAngIfConditio
 		if (challenge == null) {
 			return false;
 		} else {
-			if (!FilterMatcher.doesMatch (challenge, ac.you, null, ac.thisCard, whileCond.getChallFilter (), game)) { return false; }
+			if (!FilterMatcher.doesMatch (challenge, ac, whileCond.getChallFilter (), game)) { return false; }
 			return true;
 		} // if - else
 	} // visit
